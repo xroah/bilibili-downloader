@@ -7,5 +7,4 @@ pyinstaller==5.2
 pyinstaller-hooks-contrib==2022.8
 pywin32-ctypes==0.2.0
 six==1.16.0
-some-package==0.1
 wxPython310==4.1.2a2
