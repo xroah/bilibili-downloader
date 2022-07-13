@@ -1,7 +1,9 @@
 import wx
+from mainFrame.MainFrame import MainFrame
+
 
 app = wx.App()
-frm = wx.Frame(None, title="Hello world")
+frm = MainFrame(None, title="BiliBili下载器")
 
 frm.Show()
 app.MainLoop()
