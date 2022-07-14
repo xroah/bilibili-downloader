@@ -1,14 +1,16 @@
 import wx
-from pathlib import Path
+from ..utils import utils
 
 
 class MainFrame(wx.Frame):
+    __min_w = 1024
+    __min_h = 768
+
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        p = Path(f"{__file__}/../..")
-        d = p.resolve()
+        size = wx.Size(self.__min_w, self.__min_h)
+
+        super().__init__(*args, size=size, **kwargs)
         icon = wx.Icon()
-        icon.LoadFile(f"{d}/resources/logo.png", wx.BITMAP_TYPE_PNG)
-        utils.get_resource_path("aa")
+        icon.LoadFile(utils.get_resource_path("logo.png"), wx.BITMAP_TYPE_PNG)
         self.SetIcon(icon)
-        self.SetMinSize(wx.Size(1024, 768))
+        self.SetMinSize(size)
