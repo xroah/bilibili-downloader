@@ -1,9 +1,8 @@
 import wx
-from mainFrame.MainFrame import MainFrame
-
+from downloader.mainFrame import MainFrame
 
 app = wx.App()
-frm = MainFrame(None, title="BiliBili下载器")
+frm = MainFrame(None, title="Bilibili下载器")
 
 frm.Show()
 app.MainLoop()

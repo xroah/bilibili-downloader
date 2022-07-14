@@ -9,6 +9,6 @@ class MainFrame(wx.Frame):
         d = p.resolve()
         icon = wx.Icon()
         icon.LoadFile(f"{d}/resources/logo.png", wx.BITMAP_TYPE_PNG)
-
+        utils.get_resource_path("aa")
         self.SetIcon(icon)
         self.SetMinSize(wx.Size(1024, 768))
