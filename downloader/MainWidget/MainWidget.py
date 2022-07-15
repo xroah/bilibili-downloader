@@ -27,11 +27,10 @@ class MainWidget(QtWidgets.QWidget):
 
         layout = QtWidgets.QHBoxLayout()
         layout.addWidget(menu_widget, 1)
-        layout.addWidget(main_widget, 4)
-        self.style().setProperty("border", "5px solid red")
+        layout.addWidget(main_widget, 5)
+        layout.setContentsMargins(0, 0, 0, 0)
 
         with open(utils.get_resource_path("style.qss")) as style:
             self.setStyleSheet(style.read())
 
-        self.setGeometry(0, 0, 0, 0)
         self.setLayout(layout)
