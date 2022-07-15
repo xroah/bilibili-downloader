@@ -16,6 +16,7 @@ class MainWidget(QtWidgets.QWidget):
         menu_widget.setCurrentRow(0)
         text_widget = QtWidgets.QLabel(self)
         text_widget.setText("Hello world")
+        self.setObjectName("mainWidget")
 
         content_layout = QtWidgets.QVBoxLayout()
         button = QtWidgets.QPushButton("Something")
@@ -27,8 +28,10 @@ class MainWidget(QtWidgets.QWidget):
         layout = QtWidgets.QHBoxLayout()
         layout.addWidget(menu_widget, 1)
         layout.addWidget(main_widget, 4)
+        self.style().setProperty("border", "5px solid red")
 
         with open(utils.get_resource_path("style.qss")) as style:
             self.setStyleSheet(style.read())
 
+        self.setGeometry(0, 0, 0, 0)
         self.setLayout(layout)
