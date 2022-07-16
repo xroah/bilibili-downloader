@@ -1,15 +1,10 @@
 import sys
-from PySide6 import QtWidgets, QtCore
-from downloader.MainWidget import MainWidget
+from PySide6 import QtWidgets
+from downloader.MainWindow import MainWindow
 
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
-
-    main_win = QtWidgets.QMainWindow()
-    main_win.setCentralWidget(MainWidget())
-    main_win.setWindowTitle("Bilibili下载器")
-    main_win.setMinimumSize(QtCore.QSize(1080, 720))
-    main_win.show()
+    main_win = MainWindow()
 
     sys.exit(app.exec())
