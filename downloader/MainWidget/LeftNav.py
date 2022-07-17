@@ -4,6 +4,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout
 )
 from PySide6.QtCore import Qt, Signal
+from typing import Any
 
 
 class LeftNav(QWidget):
@@ -13,24 +14,38 @@ class LeftNav(QWidget):
         super().__init__(parent)
         self.current: QPushButton | None = None
         layout = QVBoxLayout(parent)
-        self.downloading_btn = self.create_btn("downloading-btn", "正在下载")
-        self.downloaded_btn = self.create_btn("downloaded-btn", "已下载")
+        self.downloading_btn = self.create_btn(
+            "downloading-btn",
+            "正在下载",
+            self.downloading_btn_check
+        )
+        self.downloaded_btn = self.create_btn(
+            "downloaded-btn",
+            "已下载",
+            self.downloaded_btn_check
+        )
         layout.addWidget(self.downloading_btn)
         layout.addWidget(self.downloaded_btn)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addStretch()
         layout.setSpacing(0)
+        # enable apply style sheet
         self.setAttribute(Qt.WA_StyledBackground)
         self.setLayout(layout)
         self.set_qss()
         self.switch_tab(self.downloading_btn)
-        self.downloading_btn.clicked.connect(self.downloading_btn_click)
-        self.downloaded_btn.clicked.connect(self.downloaded_btn_click)
 
-    def create_btn(self, classname: str, text: str) -> QPushButton:
+    def create_btn(
+            self,
+            classname: str,
+            text: str,
+            toggle_cb: Any
+    ) -> QPushButton:
         btn = QPushButton(parent=self, text=text)
         btn.setProperty("class", classname)
         btn.setCursor(Qt.PointingHandCursor)
+        btn.setCheckable(True)
+        btn.toggled.connect(toggle_cb)
 
         return btn
 
@@ -39,20 +54,17 @@ class LeftNav(QWidget):
             if self.current == btn:
                 return
 
-            self.current.setStyleSheet("")
+            self.current.setChecked(False)
 
         self.current = btn
-        btn.setStyleSheet("""
-            background-color: rgba(13, 110, 253, .8);
-            color: #fff;
-        """)
+        btn.setChecked(True)
         self.changed.emit(btn)
 
-    def downloading_btn_click(self):
+    def downloading_btn_check(self):
         print("downloading btn")
         self.switch_tab(self.downloading_btn)
 
-    def downloaded_btn_click(self):
+    def downloaded_btn_check(self):
         print("downloaded btn")
         self.switch_tab(self.downloaded_btn)
 
@@ -66,18 +78,20 @@ class LeftNav(QWidget):
             QPushButton {
                 padding: 10px;
                 border: none;
+                border-bottom: 1px solid #f0f0f0;
             }
 
             QPushButton:hover {
                 background-color: rgba(13, 110, 253, .5);
                 color: #fff;
             }
+            
+            QPushButton:checked {
+               background-color: rgba(13, 110, 253, .8);
+                color: #fff; 
+            }
 
             QPushButton.active {
                 background-color: red;
-            }
-
-            QPushButton.downloading-btn {
-                border-bottom: 1px solid #f0f0f0;
             }
         """)
