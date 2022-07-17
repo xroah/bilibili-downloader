@@ -23,6 +23,7 @@ class LeftNav(QWidget):
         self.setAttribute(Qt.WA_StyledBackground)
         self.setLayout(layout)
         self.set_qss()
+        self.switch_tab(self.downloading_btn)
         self.downloading_btn.clicked.connect(self.downloading_btn_click)
         self.downloaded_btn.clicked.connect(self.downloaded_btn_click)
 
