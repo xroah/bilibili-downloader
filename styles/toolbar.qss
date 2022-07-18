@@ -1,0 +1,17 @@
+QToolBar#toolbar {
+    padding: 5px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+.placeholder {
+    background-color: transparent;
+}
+
+QToolButton {
+    width: 24px;
+    height: 24px;
+}
+QToolButton::menu-indicator {
+    width: 0;
+}
