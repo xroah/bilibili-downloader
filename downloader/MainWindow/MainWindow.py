@@ -1,12 +1,13 @@
 from PySide6.QtCore import QSize, Qt
-from PySide6.QtGui import QIcon, QPixmap, QAction
+from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtWidgets import (
     QMainWindow,
     QToolBar,
     QToolButton,
     QWidget,
     QSizePolicy,
-    QMenu
+    QMenu,
+    QMessageBox
 )
 import sys
 
@@ -26,8 +27,8 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(QIcon(QPixmap(":/logo.png")))
         self.add_btn.setIcon(QIcon(QPixmap(":/plus.png")))
         self.menu_btn.setIcon(QIcon(QPixmap(":/menu.png")))
-        self.set_toolbar()
         self.set_menu(self.menu_btn)
+        self.set_toolbar()
         self.show()
 
     def set_menu(self, btn: QToolButton):
@@ -57,9 +58,13 @@ class MainWindow(QMainWindow):
                 background-color: rgba(13, 110, 253, .6);
             }
         """)
+        menu.setTitle("菜单")
 
     def about_action(self):
-        print("about")
+        msg_box = QMessageBox()
+        msg_box.setIcon(QMessageBox.Information)
+        msg_box.setWindowTitle("关于")
+        msg_box.exec()
 
     def exit_action(self):
         sys.exit(0)
