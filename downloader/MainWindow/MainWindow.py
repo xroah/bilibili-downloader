@@ -1,18 +1,18 @@
 from PySide6.QtCore import QSize, Qt
-from PySide6.QtGui import QIcon, QPixmap
+from PySide6.QtGui import QIcon, QMoveEvent
 from PySide6.QtWidgets import (
     QMainWindow,
     QToolBar,
     QToolButton,
     QWidget,
     QSizePolicy,
-    QMenu,
-    QMessageBox
+    QMenu
 )
 import sys
 
 from ..MainWidget import MainWidget
 from ..utils import utils
+from ..Dialog import Dialog
 import downloader.QRC.Icons
 
 
@@ -21,25 +21,25 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.add_btn = QToolButton()
         self.menu_btn = QToolButton()
+        self.menu = QMenu(self)
         self.setCentralWidget(MainWidget())
         self.setWindowTitle("Bilibili下载器")
         self.setMinimumSize(QSize(1080, 720))
-        self.setWindowIcon(QIcon(QPixmap(":/logo.png")))
-        self.add_btn.setIcon(QIcon(QPixmap(":/plus.png")))
-        self.menu_btn.setIcon(QIcon(QPixmap(":/menu.png")))
+        self.setWindowIcon(QIcon(":/logo.png"))
+        self.add_btn.setIcon(QIcon(":/plus.png"))
+        self.menu_btn.setIcon(QIcon(":/menu.png"))
         self.set_menu(self.menu_btn)
         self.set_toolbar()
         self.show()
 
     def set_menu(self, btn: QToolButton):
-        menu = QMenu(self)
-        about_action = menu.addAction("关于")
-        exit_action = menu.addAction("退出")
+        about_action = self.menu.addAction("关于")
+        exit_action = self.menu.addAction("退出")
         about_action.triggered.connect(self.about_action)
         exit_action.triggered.connect(self.exit_action)
         btn.setPopupMode(QToolButton.InstantPopup)
-        btn.setMenu(menu)
-        menu.setStyleSheet("""
+        btn.setMenu(self.menu)
+        self.menu.setStyleSheet("""
             QMenu {
                 padding: 0;
                 border-radius: 5px;
@@ -49,7 +49,7 @@ class MainWindow(QMainWindow):
             
             QMenu::item {
                 margin: 0;
-                min-width: 150px;
+                width: 150px;
                 padding: 10px;
             }
             
@@ -58,13 +58,12 @@ class MainWindow(QMainWindow):
                 background-color: rgba(13, 110, 253, .6);
             }
         """)
-        menu.setTitle("菜单")
+        self.menu.setTitle("菜单")
 
     def about_action(self):
-        msg_box = QMessageBox()
-        msg_box.setIcon(QMessageBox.Information)
-        msg_box.setWindowTitle("关于")
-        msg_box.exec()
+        dialog = Dialog(self, QSize(360, 360), "关于")
+
+        dialog.show_dialog()
 
     def exit_action(self):
         sys.exit(0)
@@ -85,3 +84,7 @@ class MainWindow(QMainWindow):
             toolbar.setStyleSheet(ss.read())
 
         self.addToolBar(toolbar)
+
+    def moveEvent(self, event: QMoveEvent) -> None:
+        pos = event.pos()
+        print(pos)
