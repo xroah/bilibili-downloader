@@ -1,5 +1,5 @@
 from PySide6.QtCore import QSize
-from PySide6.QtGui import QIcon
+from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtWidgets import (
     QMainWindow,
     QToolBar,
@@ -9,35 +9,39 @@ from PySide6.QtWidgets import (
 )
 
 from ..MainWidget import MainWidget
-from ..utils import utils
+import downloader.QRC.Icons
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        icon = QIcon(utils.get_resource_path("logo.ico"))
+        self.add_btn = QToolButton()
+        self.menu_btn = QToolButton()
         self.setCentralWidget(MainWidget())
         self.setWindowTitle("Bilibili下载器")
-        self.setWindowIcon(icon)
         self.setMinimumSize(QSize(1080, 720))
+        self.setWindowIcon(QIcon(QPixmap(":/logo.png")))
+        self.add_btn.setIcon(QIcon(QPixmap(":/plus.png")))
+        self.menu_btn.setIcon(QIcon(QPixmap(":/menu.png")))
         self.set_toolbar()
         self.show()
+
+    def set_menu(self, btn: QToolButton):
+        pass
 
     def set_toolbar(self):
         toolbar = QToolBar(self)
         toolbar.setMovable(False)
-        add_btn = QToolButton()
-        menu_btn = QToolButton()
         placeholder = QWidget()
         placeholder.setProperty("class", "placeholder")
         placeholder.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         toolbar.setObjectName("toolbar")
-        toolbar.addWidget(add_btn)
+        toolbar.addWidget(self.add_btn)
         toolbar.addWidget(placeholder)
-        toolbar.addWidget(menu_btn)
+        toolbar.addWidget(self.menu_btn)
         toolbar.setStyleSheet("""
             QToolBar#toolbar {
-                padding: 10px;
+                padding: 5px;
                 border-bottom: 1px solid rgba(0, 0, 0, .1);
                 background-color: #fff;
             }
@@ -49,12 +53,9 @@ class MainWindow(QMainWindow):
             QToolButton {
                 width: 24px;
                 height: 24px;
-                background-color: blue;
             }
             
-            QToolButton:hover {
-                background-color: red;
-            }
+            
         """)
 
         self.addToolBar(toolbar)
