@@ -17,7 +17,7 @@
     background-color: #fff;
 }
 
-.footer QWidget {
+.footer {
     background-color: #f0f0f0;
 }
 
