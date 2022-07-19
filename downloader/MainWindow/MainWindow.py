@@ -1,4 +1,4 @@
-from PySide6.QtCore import QSize, Qt
+from PySide6.QtCore import QSize, Qt, __version__
 from PySide6.QtGui import QIcon, QMoveEvent
 from PySide6.QtWidgets import (
     QMainWindow,
@@ -6,14 +6,16 @@ from PySide6.QtWidgets import (
     QToolButton,
     QWidget,
     QSizePolicy,
-    QMenu
+    QMenu,
+    QLabel,
+    QVBoxLayout
 )
 import sys
 
 from ..MainWidget import MainWidget
 from ..utils import utils
 from ..Dialog import Dialog
-import downloader.QRC.Icons
+import __main__
 
 
 class MainWindow(QMainWindow):
@@ -36,7 +38,7 @@ class MainWindow(QMainWindow):
         about_action = self.menu.addAction("关于")
         exit_action = self.menu.addAction("退出")
         about_action.triggered.connect(self.about_action)
-        exit_action.triggered.connect(self.exit_action)
+        exit_action.triggered.connect(lambda: sys.exit(0))
         btn.setPopupMode(QToolButton.InstantPopup)
         btn.setMenu(self.menu)
         self.menu.setStyleSheet("""
@@ -61,12 +63,27 @@ class MainWindow(QMainWindow):
         self.menu.setTitle("菜单")
 
     def about_action(self):
-        dialog = Dialog(self, QSize(360, 360), "关于")
+        dialog = Dialog(
+            self,
+            QSize(260, 200),
+            "关于",
+            QLabel("dddd")
+        )
+        filename = utils.get_resource_path("resources/about.html")
 
-        dialog.show_dialog()
+        with open(filename, "r", encoding="utf-8") as f:
+            text = f.read().format(v=__main__.__version__, pv=__version__)
 
-    def exit_action(self):
-        sys.exit(0)
+        w = QWidget(dialog.body)
+        about = QLabel()
+        layout = QVBoxLayout(w)
+        about.setText(text)
+        about.setOpenExternalLinks(True)
+        layout.addWidget(about)
+        w.setLayout(layout)
+
+        dialog.set_content(w)
+        dialog.open()
 
     def set_toolbar(self):
         toolbar = QToolBar(self)
