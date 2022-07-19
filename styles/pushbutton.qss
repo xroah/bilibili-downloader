@@ -1,0 +1,18 @@
+PushButton {
+    border-radius: 3px;
+    background-color: #fff;
+}
+
+PushButton:hover {
+    background-color: #ddd;
+}
+
+PushButton.primary {
+    %s;
+    color: #fff;
+    border-radius: 3px;
+}
+
+PushButton.primary:hover {
+    %s;
+}

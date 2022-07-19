@@ -1,6 +1,8 @@
 from PySide6.QtWidgets import QPushButton, QWidget
 from PySide6.QtCore import Qt
-from ..Color import Color
+
+from ..Enums import Color
+from ..utils import utils
 
 
 class PushButton(QPushButton):
@@ -18,27 +20,11 @@ class PushButton(QPushButton):
             self.setProperty("class", classname)
 
         if primary:
+            self.setProperty("class", "primary")
+
+        ss_filename = utils.get_resource_path("styles/pushbutton.qss")
+        with open(ss_filename) as ss:
+            text = ss.read()
             self.setStyleSheet(
-                """
-                PushButton {
-                    bg;
-                    color: #fff;
-                    border-radius: 3px;
-                }
-                PushButton:hover {
-                    hover_color;
-                }
-            """.replace("hover_color", Color.BUTTON_HOVER.value)
-                .replace("bg", Color.BUTTON_PRIMARY.value)
+                text % (Color.BUTTON_PRIMARY.value, Color.BUTTON_HOVER.value)
             )
-        else:
-            self.setStyleSheet("""
-                PushButton {
-                    border-radius: 3px;
-                    background-color: #fff;
-                }
-                
-                PushButton:hover {
-                    background-color: #ddd;
-                }
-            """)

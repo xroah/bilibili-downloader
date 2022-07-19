@@ -1,15 +1,14 @@
-from PySide6.QtCore import Qt, QSize, Signal
-from PySide6.QtGui import QIcon, QShowEvent
+from PySide6.QtCore import Qt, QSize
+from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import (
     QDialog,
     QWidget,
     QVBoxLayout,
     QHBoxLayout,
     QLabel,
-    QPushButton
 )
 from ..CommonWidgets import PushButton, ToolButton
-from ..Color import Color
+from ..utils import utils
 
 
 class Dialog(QDialog):
@@ -45,26 +44,9 @@ class Dialog(QDialog):
         v_box_layout.setContentsMargins(0, 0, 0, 0)
         v_box_layout.setSpacing(0)
         self.setLayout(v_box_layout)
-        self.setStyleSheet("""
-            .header {
-                background-color: #16181d;
-            }
-            
-            .header QLabel {
-                padding: 5px;
-                color: #fff;
-            }
-            
-            .header QToolButton {
-                padding: 0;
-                margin-right: 5px;
-                border: none;
-            }
-            
-            .body {
-                background-color: #fff;
-            }
-       """)
+
+        with open(utils.get_resource_path("styles/dialog.qss")) as ss:
+            self.setStyleSheet(ss.read())
 
     def _get_header(self) -> QWidget:
         header = QWidget(self)
@@ -99,23 +81,7 @@ class Dialog(QDialog):
         layout = QHBoxLayout(footer)
         ok_btn = PushButton(parent=footer, text="确定")
 
-        footer.setStyleSheet("""
-            QWidget {
-                background-color: #f0f0f0;
-            }
-        
-            PushButton, QPushButton {
-                width: 60px;
-                padding: 8px 5px;
-                margin-right: 5px;
-                border: none;
-            }
-            
-            .ok {
-                margin-left: 5px;
-            }
-        """)
-        ok_btn.setProperty("class", "ok")
+        footer.setProperty("class", "footer")
         ok_btn.clicked.connect(self._ok)
         layout.addStretch()
 

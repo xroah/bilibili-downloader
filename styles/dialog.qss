@@ -1,0 +1,31 @@
+.header {
+    background-color: #16181d;
+}
+
+.header QLabel {
+    padding: 8px 5px;
+    color: #fff;
+}
+
+.header QToolButton {
+    padding: 0;
+    margin-right: 5px;
+    border: none;
+}
+
+.body {
+    background-color: #fff;
+}
+
+.footer QWidget {
+    background-color: #f0f0f0;
+}
+
+.footer PushButton,
+.footer QPushButton {
+    width: 60px;
+    padding: 8px 5px;
+    margin-right: 5px;
+    margin-left: 10px;
+    border: none;
+}
