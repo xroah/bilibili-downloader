@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QIcon
+from PySide6.QtGui import QIcon, QShowEvent
 from PySide6.QtWidgets import (
     QDialog,
     QWidget,
@@ -29,15 +29,6 @@ class Dialog(QDialog):
         self.set_layout()
 
     def show_dialog(self):
-        p_size = self._parent.size()
-        size = self.size()
-        self.setGeometry(
-            (p_size.width() - size.width()) / 2,
-            (p_size.height() - size.height()) / 2,
-            size.width(),
-            size.height()
-        )
-
         self.open()
 
     def set_layout(self):
@@ -49,7 +40,7 @@ class Dialog(QDialog):
         title = QLabel(self.title)
         v_box_layout.addWidget(header)
         v_box_layout.addWidget(content, 1)
-        v_box_layout.setContentsMargins(5, 5, 5, 5)
+        v_box_layout.setContentsMargins(1, 1, 1, 1)
         v_box_layout.setSpacing(0)
         self.setLayout(v_box_layout)
         header_layout.setContentsMargins(0, 0, 0, 0)
@@ -64,7 +55,7 @@ class Dialog(QDialog):
         content.setProperty("class", "content")
         self.setStyleSheet("""
             Dialog {
-                background-color: rgba(0, 0, 0, .2);
+                border: 1px solid #ccc;
             }
         
             .header {
@@ -90,3 +81,11 @@ class Dialog(QDialog):
 
     def close_dialog(self):
         self.done(0)
+
+    def showEvent(self, e: QShowEvent) -> None:
+        p_geometry = self._parent.frameGeometry()
+        size = self.size()
+        left = (p_geometry.width() - size.width()) / 2
+        top = (p_geometry.height() - size.height()) / 2
+
+        self.move(p_geometry.x() + left, p_geometry.y() + top)
