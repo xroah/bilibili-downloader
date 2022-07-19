@@ -2,13 +2,14 @@ import sys
 from typing import Callable
 
 from PySide6.QtCore import QSize, __version__
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, QShowEvent, QCursor
 from PySide6.QtWidgets import (
     QMenu,
     QWidget,
     QLabel,
     QVBoxLayout,
-    QMainWindow
+    QMainWindow,
+    QToolButton
 )
 
 import __main__
@@ -17,9 +18,15 @@ from ..utils import utils
 
 
 class Menu(QMenu):
-    def __init__(self, window: QMainWindow,  parent: QWidget = None):
+    def __init__(
+        self,
+        window: QMainWindow,
+        parent: QWidget = None,
+        related_btn: QToolButton = None
+    ):
         super().__init__(parent)
-        self.window = window
+        self.related_btn = related_btn
+        self._window = window
         self.init()
 
     def init(self):
@@ -42,7 +49,7 @@ class Menu(QMenu):
 
     def about_action(self):
         dialog = Dialog(
-            self.window,
+            self._window,
             QSize(260, 200),
             "关于"
         )
@@ -64,3 +71,21 @@ class Menu(QMenu):
 
         dialog.set_content(w)
         dialog.open()
+
+    def showEvent(self, event: QShowEvent) -> None:
+        super().showEvent(event)
+        point = QCursor.pos()
+        size = self.size()
+        x = point.x() - size.width()
+        y = point.y()
+        
+        if self.related_btn:
+            win_rect = self._window.geometry()
+            rect = self.related_btn.geometry()
+            offset_y = point.y() - win_rect.y() - rect.y()
+            offset_x = point.x() - win_rect.x() - rect.x()
+            x += rect.width() - offset_x
+            y += rect.height() - offset_y
+
+        self.move(x, y)
+

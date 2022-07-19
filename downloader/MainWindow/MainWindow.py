@@ -17,5 +17,6 @@ class MainWindow(QMainWindow):
         self.show()
 
     def moveEvent(self, event: QMoveEvent) -> None:
+        super().moveEvent(event)
         pos = event.pos()
         print(pos)

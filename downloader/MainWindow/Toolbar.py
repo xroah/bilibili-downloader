@@ -1,5 +1,4 @@
-from PySide6.QtCore import QSize, Qt, __version__
-from PySide6.QtGui import QAction
+from PySide6.QtCore import Qt, __version__
 from PySide6.QtWidgets import (
     QToolBar,
     QToolButton,
@@ -18,7 +17,7 @@ class Toolbar(QToolBar):
         super().__init__(parent)
         self.add_btn = ToolButton(self, ":/plus.png")
         self.menu_btn = ToolButton(self, ":/menu.png")
-        self.menu = Menu(parent, self)
+        self.menu = Menu(parent, self, self.menu_btn)
         self.menu_btn.setPopupMode(QToolButton.InstantPopup)
         self.menu_btn.setMenu(self.menu)
         self.init()

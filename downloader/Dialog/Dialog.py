@@ -1,11 +1,10 @@
-from PySide6.QtCore import Qt, QSize
+from PySide6.QtCore import QSize
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import (
     QDialog,
     QWidget,
     QVBoxLayout,
     QHBoxLayout,
-    QLabel,
 )
 from ..CommonWidgets import PushButton, ToolButton
 from ..utils import utils
@@ -26,7 +25,7 @@ class Dialog(QDialog):
         self.content = content
         self.show_cancel = show_cancel
         self.body = self._get_body()
-        self.setWindowFlag(Qt.FramelessWindowHint)
+        self.setWindowTitle(title)
         self.setModal(True)
         self.setFixedSize(size)
         self._set_layout()
@@ -35,34 +34,16 @@ class Dialog(QDialog):
         super().open()
 
     def _set_layout(self):
-        v_box_layout = QVBoxLayout(self)
-        header = self._get_header()
+        layout = QVBoxLayout(self)
         footer = self._get_footer()
-        v_box_layout.addWidget(header)
-        v_box_layout.addWidget(self.body, 1)
-        v_box_layout.addWidget(footer)
-        v_box_layout.setContentsMargins(0, 0, 0, 0)
-        v_box_layout.setSpacing(0)
-        self.setLayout(v_box_layout)
+        layout.addWidget(self.body, 1)
+        layout.addWidget(footer)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+        self.setLayout(layout)
 
         with open(utils.get_resource_path("styles/dialog.qss")) as ss:
             self.setStyleSheet(ss.read())
-
-    def _get_header(self) -> QWidget:
-        header = QWidget(self)
-        title = QLabel(self.title)
-        close_btn = ToolButton(header, ":/close.png")
-        layout = QHBoxLayout(header)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.addWidget(title)
-        close_btn.setIconSize(QSize(24, 24))
-        close_btn.clicked.connect(self._cancel)
-
-        layout.addWidget(close_btn)
-        header.setLayout(layout)
-        header.setProperty("class", "header")
-
-        return header
 
     def _get_body(self) -> QWidget:
         body = QWidget(self)
@@ -86,7 +67,11 @@ class Dialog(QDialog):
         layout.addStretch()
 
         if self.show_cancel:
-            cancel_btn = PushButton(parent=footer, text="取消", primary=False)
+            cancel_btn = PushButton(
+                parent=footer,
+                text="取消",
+                primary=False
+            )
             cancel_btn.setProperty("class", "cancel")
             cancel_btn.clicked.connect(self._cancel)
             layout.addWidget(cancel_btn)
@@ -118,6 +103,7 @@ class Dialog(QDialog):
         self.reject()
 
     def showEvent(self, e: QShowEvent) -> None:
+        super().showEvent(e)
         p_geometry = self._parent.frameGeometry()
         size = self.size()
         left = (p_geometry.width() - size.width()) / 2
