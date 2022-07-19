@@ -6,6 +6,9 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, Signal
 from typing import Any
 
+from ..Color import Color
+from ..CommonWidgets import PushButton
+
 
 class LeftNav(QWidget):
     changed = Signal(QPushButton)
@@ -41,9 +44,9 @@ class LeftNav(QWidget):
             text: str,
             press_cb: Any
     ) -> QPushButton:
-        btn = QPushButton(parent=self, text=text)
+        btn = PushButton(parent=self, text=text)
         btn.setProperty("class", classname)
-        btn.setCursor(Qt.PointingHandCursor)
+        btn.setStyleSheet("")
         btn.pressed.connect(press_cb)
 
         return btn
@@ -56,8 +59,8 @@ class LeftNav(QWidget):
             self.current.setStyleSheet("")
 
         self.current = btn
-        btn.setStyleSheet("""
-            background-color: rgba(13, 110, 253, .8);
+        btn.setStyleSheet(f"""
+            {Color.BUTTON_PRESSED.value};
             color: #fff; 
         """)
         self.changed.emit(btn)
@@ -71,20 +74,16 @@ class LeftNav(QWidget):
         self.switch_tab(self.downloaded_btn)
 
     def set_qss(self):
-        self.setStyleSheet("""
+        qss_text = """
             LeftNav {
                 background-color: #fff;
                 border-right: 1px solid rgba(0, 0, 0, .2);
             }
 
-            QPushButton {
+            .downloading-btn, .downloaded-btn {
                 padding: 10px;
                 border: none;
                 border-bottom: 1px solid #f0f0f0;
             }
-
-            QPushButton:hover {
-                background-color: rgba(13, 110, 253, .5);
-                color: #fff;
-            }
-        """)
+        """
+        self.setStyleSheet(qss_text)

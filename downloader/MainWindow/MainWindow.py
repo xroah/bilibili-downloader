@@ -1,5 +1,5 @@
 from PySide6.QtCore import QSize, Qt, __version__
-from PySide6.QtGui import QIcon, QMoveEvent
+from PySide6.QtGui import QIcon, QMoveEvent, QAction
 from PySide6.QtWidgets import (
     QMainWindow,
     QToolBar,
@@ -11,37 +11,33 @@ from PySide6.QtWidgets import (
     QVBoxLayout
 )
 import sys
+from typing import Callable
 
 from ..MainWidget import MainWidget
 from ..utils import utils
 from ..Dialog import Dialog
+from ..Color import Color
+from ..CommonWidgets import ToolButton, PushButton
 import __main__
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.add_btn = QToolButton()
-        self.menu_btn = QToolButton()
+        self.add_btn = ToolButton(self, ":/plus.png")
+        self.menu_btn = ToolButton(self, ":/menu.png")
         self.menu = QMenu(self)
         self.setCentralWidget(MainWidget())
         self.setWindowTitle("Bilibili下载器")
         self.setMinimumSize(QSize(1080, 720))
         self.setWindowIcon(QIcon(":/logo.png"))
-        self.add_btn.setIcon(QIcon(":/plus.png"))
-        self.menu_btn.setIcon(QIcon(":/menu.png"))
+        self.menu_btn.setCursor(Qt.PointingHandCursor)
         self.set_menu(self.menu_btn)
         self.set_toolbar()
         self.show()
 
     def set_menu(self, btn: QToolButton):
-        about_action = self.menu.addAction("关于")
-        exit_action = self.menu.addAction("退出")
-        about_action.triggered.connect(self.about_action)
-        exit_action.triggered.connect(lambda: sys.exit(0))
-        btn.setPopupMode(QToolButton.InstantPopup)
-        btn.setMenu(self.menu)
-        self.menu.setStyleSheet("""
+        qss_text = """
             QMenu {
                 padding: 0;
                 border-radius: 5px;
@@ -57,17 +53,34 @@ class MainWindow(QMainWindow):
             
             QMenu::item:selected {
                 color: #fff;
-                background-color: rgba(13, 110, 253, .6);
+                hover_color;
             }
-        """)
-        self.menu.setTitle("菜单")
+        """.replace("hover_color", Color.BUTTON_HOVER.value)
+        self.add_action("关于", self.about_action)
+        self.add_action("退出", lambda: sys.exit(0))
+        btn.setPopupMode(QToolButton.InstantPopup)
+        btn.setMenu(self.menu)
+        self.menu.setStyleSheet(qss_text)
+
+    def add_action(
+            self,
+            text: str,
+            cb: Callable[[bool], None]
+    ) -> QAction:
+        action = self.menu.addAction(text)
+
+        if cb is not None:
+            action.triggered.connect(cb)
+
+        return action
 
     def about_action(self):
         dialog = Dialog(
             self,
             QSize(260, 200),
             "关于",
-            QLabel("dddd")
+            QLabel("dddd"),
+            True
         )
         filename = utils.get_resource_path("resources/about.html")
 

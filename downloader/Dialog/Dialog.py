@@ -6,9 +6,10 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QLabel,
-    QToolButton,
     QPushButton
 )
+from ..CommonWidgets import PushButton, ToolButton
+from ..Color import Color
 
 
 class Dialog(QDialog):
@@ -29,10 +30,10 @@ class Dialog(QDialog):
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setModal(True)
         self.setFixedSize(size)
+        self._set_layout()
 
     def open(self):
         super().open()
-        self._set_layout()
 
     def _set_layout(self):
         v_box_layout = QVBoxLayout(self)
@@ -41,14 +42,10 @@ class Dialog(QDialog):
         v_box_layout.addWidget(header)
         v_box_layout.addWidget(self.body, 1)
         v_box_layout.addWidget(footer)
-        v_box_layout.setContentsMargins(1, 1, 1, 1)
+        v_box_layout.setContentsMargins(0, 0, 0, 0)
         v_box_layout.setSpacing(0)
         self.setLayout(v_box_layout)
         self.setStyleSheet("""
-            Dialog {
-                border: 1px solid #ccc;
-            }
-        
             .header {
                 background-color: #16181d;
             }
@@ -72,11 +69,10 @@ class Dialog(QDialog):
     def _get_header(self) -> QWidget:
         header = QWidget(self)
         title = QLabel(self.title)
-        close_btn = QToolButton(header)
+        close_btn = ToolButton(header, ":/close.png")
         layout = QHBoxLayout(header)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(title)
-        close_btn.setIcon(QIcon(":/close.png"))
         close_btn.setIconSize(QSize(24, 24))
         close_btn.clicked.connect(self._cancel)
 
@@ -100,24 +96,37 @@ class Dialog(QDialog):
 
     def _get_footer(self) -> QWidget:
         footer = QWidget(self)
-        layout = QHBoxLayout(self)
-        ok_btn = QPushButton(parent=footer, text="确定")
+        layout = QHBoxLayout(footer)
+        ok_btn = PushButton(parent=footer, text="确定")
 
         footer.setStyleSheet("""
-            QPushButton {
+            QWidget {
+                background-color: #f0f0f0;
+            }
+        
+            PushButton, QPushButton {
                 width: 60px;
                 padding: 8px 5px;
                 margin-right: 5px;
+                border: none;
+            }
+            
+            .ok {
+                margin-left: 5px;
             }
         """)
+        ok_btn.setProperty("class", "ok")
         ok_btn.clicked.connect(self._ok)
         layout.addStretch()
 
         if self.show_cancel:
-            cancel_btn = QPushButton(parent=footer, text="取消")
+            cancel_btn = PushButton(parent=footer, text="取消", primary=False)
+            cancel_btn.setProperty("class", "cancel")
             cancel_btn.clicked.connect(self._cancel)
             layout.addWidget(cancel_btn)
 
+        layout.setSpacing(0)
+        layout.setContentsMargins(5, 5, 5, 5)
         layout.addWidget(ok_btn)
         footer.setLayout(layout)
 
