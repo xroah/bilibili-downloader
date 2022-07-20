@@ -13,6 +13,7 @@ from PySide6.QtWidgets import (
 import __main__
 from ..utils import utils
 from .AboutDialog import create_about_dialog
+from .SettingsDialog import create_settings_dialog
 
 
 class Menu(QMenu):
@@ -49,7 +50,7 @@ class Menu(QMenu):
         return action
 
     def settings_action(self):
-        print("settings")
+        create_settings_dialog(self._window)
 
     def about_action(self):
         create_about_dialog(self._window)

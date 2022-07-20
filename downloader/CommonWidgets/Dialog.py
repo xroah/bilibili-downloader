@@ -5,6 +5,7 @@ from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
     QHBoxLayout,
+    QMainWindow
 )
 from . import PushButton
 from ..utils import utils
@@ -13,7 +14,7 @@ from ..utils import utils
 class Dialog(QDialog):
     def __init__(
             self,
-            parent: QWidget,
+            parent: QMainWindow,
             size: QSize,
             title: str = "",
             content: QWidget = None,

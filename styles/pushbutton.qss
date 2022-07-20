@@ -16,3 +16,7 @@ PushButton.primary {
 PushButton.primary:hover {
     %s;
 }
+
+PushButton.primary:pressed {
+    %s;
+}

@@ -25,6 +25,9 @@ class PushButton(QPushButton):
         ss_filename = utils.get_resource_path("styles/pushbutton.qss")
         with open(ss_filename) as ss:
             text = ss.read()
-            self.setStyleSheet(
-                text % (Color.BUTTON_PRIMARY.value, Color.BUTTON_HOVER.value)
+            ss = text % (
+                Color.BUTTON_PRIMARY.value,
+                Color.BUTTON_HOVER.value,
+                Color.BUTTON_PRESSED.value
             )
+            self.setStyleSheet(ss)
