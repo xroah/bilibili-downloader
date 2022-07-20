@@ -7,6 +7,7 @@ from PySide6.QtCore import Qt, Signal
 from typing import Any
 
 from ..Enums import Color
+from ..utils import utils
 
 
 class LeftNav(QWidget):
@@ -72,20 +73,7 @@ class LeftNav(QWidget):
         self.switch_tab(self.downloaded_btn)
 
     def set_qss(self):
-        qss_text = """
-            LeftNav {
-                background-color: #fff;
-                border-right: 1px solid rgba(0, 0, 0, .2);
-            }
+        qss = utils.get_resource_path("styles/left-nav.qss")
 
-            QPushButton {
-                padding: 10px;
-                border: none;
-                border-bottom: 1px solid #f0f0f0;
-            }
-            
-            QPushButton:hover {
-                background-color: #f0f0f0;
-            }
-        """
-        self.setStyleSheet(qss_text)
+        with open(qss) as ss:
+            self.setStyleSheet(ss.read())

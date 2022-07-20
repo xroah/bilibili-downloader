@@ -7,9 +7,18 @@ QMenu {
 
 QMenu::item {
     margin: 0;
-    width: 100px;
+    width: 120px;
     padding: 10px;
     color: #333;
+}
+
+QMenu.contextmenu::item {
+    width: 80px;
+    padding: 6px 15px;
+}
+
+QMenu::item:disabled {
+    color: #999;
 }
 
 QMenu::icon {
@@ -17,6 +26,6 @@ QMenu::icon {
     left: 10px;
 }
 
-QMenu::item:selected {
+QMenu::item:!disabled:selected {
     background-color: #f0f0f0;
 }

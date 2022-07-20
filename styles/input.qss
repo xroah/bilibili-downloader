@@ -1,0 +1,16 @@
+.clear {
+    padding: 0;
+    border: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 10px;
+    background-color: #999;
+}
+
+.clear:hover {
+    background-color: #888;
+}
+
+.clear:pressed {
+    background-color: #666;
+}

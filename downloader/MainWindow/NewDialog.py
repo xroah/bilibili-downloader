@@ -1,13 +1,13 @@
 from ..CommonWidgets import Dialog
 from ..utils import utils
+from ..CommonWidgets import Input
 
 from PySide6.QtCore import QSize
 from PySide6.QtWidgets import (
     QLabel,
     QMainWindow,
     QWidget,
-    QVBoxLayout,
-    QLineEdit
+    QVBoxLayout
 )
 
 
@@ -25,10 +25,11 @@ class NewDialog:
     def init(self):
         content = QWidget()
         layout = QVBoxLayout(content)
-        input_ = QLineEdit(content)
+        input_ = Input(content)
         qss = utils.get_resource_path("styles/new-dialog.qss")
         input_.setFrame(False)
         input_.setProperty("class", "input")
+
         layout.addWidget(QLabel("输入BV号/视频地址/搜索内容"))
         layout.addWidget(input_)
         content.setProperty("class", "new-dialog")

@@ -1,0 +1,15 @@
+LeftNav {
+    background-color: #fff;
+    border-right: 1px solid rgba(0, 0, 0, .2);
+}
+
+QPushButton {
+    width: 150px;
+    padding: 10px;
+    border: none;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+QPushButton:hover {
+    background-color: #f0f0f0;
+}

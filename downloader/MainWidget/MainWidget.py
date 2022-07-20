@@ -17,8 +17,8 @@ class MainWidget(QWidget):
         right.setStyleSheet("background-color: #fff;")
 
         layout = QHBoxLayout()
-        layout.addWidget(left_nav, 1)
-        layout.addWidget(right, 5)
+        layout.addWidget(left_nav)
+        layout.addWidget(right, 1)
         layout.setSpacing(0)
         layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
