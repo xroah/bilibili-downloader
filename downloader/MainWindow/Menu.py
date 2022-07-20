@@ -1,20 +1,18 @@
 import sys
 from typing import Callable
 
-from PySide6.QtCore import QSize, __version__
+from PySide6.QtCore import __version__
 from PySide6.QtGui import QAction, QShowEvent, QCursor
 from PySide6.QtWidgets import (
     QMenu,
     QWidget,
-    QLabel,
-    QVBoxLayout,
     QMainWindow,
     QToolButton
 )
 
 import __main__
-from ..Dialog import Dialog
 from ..utils import utils
+from .AboutDialog import create_about_dialog
 
 
 class Menu(QMenu):
@@ -54,29 +52,7 @@ class Menu(QMenu):
         print("settings")
 
     def about_action(self):
-        dialog = Dialog(
-            self._window,
-            QSize(260, 200),
-            "关于"
-        )
-        filename = utils.get_resource_path("resources/about.html")
-
-        with open(filename, "r", encoding="utf-8") as f:
-            text = f.read().format(
-                v=__main__.__version__,
-                pv=__version__
-            )
-
-        w = QWidget(dialog.body)
-        about = QLabel()
-        layout = QVBoxLayout(w)
-        about.setText(text)
-        about.setOpenExternalLinks(True)
-        layout.addWidget(about)
-        w.setLayout(layout)
-
-        dialog.set_content(w)
-        dialog.open()
+        create_about_dialog(self._window)
 
     def showEvent(self, event: QShowEvent) -> None:
         super().showEvent(event)

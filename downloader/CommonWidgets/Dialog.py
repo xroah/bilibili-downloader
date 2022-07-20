@@ -6,7 +6,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
 )
-from ..CommonWidgets import PushButton
+from . import PushButton
 from ..utils import utils
 
 
