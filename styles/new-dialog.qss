@@ -1,0 +1,11 @@
+.new-dialog .input {
+    height: 30px;
+    padding: 0 10px;
+    margin-top: 5px;
+    border: 1px solid #ced4da;
+    border-radius: 3px;
+}
+
+.new-dialog .input:focus {
+    border-color: #86b7fe;
+}

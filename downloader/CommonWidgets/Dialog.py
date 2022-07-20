@@ -1,5 +1,5 @@
-from PySide6.QtCore import QSize
-from PySide6.QtGui import QShowEvent
+from PySide6.QtCore import QSize, Qt, Signal
+from PySide6.QtGui import QShowEvent, QKeyEvent
 from PySide6.QtWidgets import (
     QDialog,
     QWidget,
@@ -12,19 +12,23 @@ from ..utils import utils
 
 
 class Dialog(QDialog):
+    shown = Signal()
+
     def __init__(
             self,
             parent: QMainWindow,
             size: QSize,
             title: str = "",
             content: QWidget = None,
-            show_cancel: bool = False
+            show_cancel: bool = False,
+            close_on_enter: bool = True,
     ):
         super().__init__(parent)
         self._parent = parent
         self.title = title
         self.content = content
         self.show_cancel = show_cancel
+        self.close_on_enter = close_on_enter
         self.body = self._get_body()
         self.setWindowTitle(title)
         self.setModal(True)
@@ -78,7 +82,7 @@ class Dialog(QDialog):
             layout.addWidget(cancel_btn)
 
         layout.setSpacing(0)
-        layout.setContentsMargins(5, 5, 5, 5)
+        layout.setContentsMargins(8, 8, 8, 8)
         layout.addWidget(ok_btn)
         footer.setLayout(layout)
 
@@ -98,7 +102,8 @@ class Dialog(QDialog):
         layout.addWidget(content)
 
     def _ok(self):
-        self.accept()
+        if self.close_on_enter:
+            self.accept()
 
     def _cancel(self):
         self.reject()
@@ -111,3 +116,8 @@ class Dialog(QDialog):
         top = (p_geometry.height() - size.height()) / 2
 
         self.move(p_geometry.x() + left, p_geometry.y() + top)
+        self.shown.emit()
+
+    def keyPressEvent(self, e: QKeyEvent) -> None:
+        if e.key() == Qt.Key_Escape:
+            self.reject()

@@ -9,8 +9,8 @@
 .footer PushButton,
 .footer QPushButton {
     width: 60px;
-    padding: 8px 5px;
+    height: 26px;
+    padding: 5px;
     margin-right: 5px;
     margin-left: 10px;
-    border: none;
 }
