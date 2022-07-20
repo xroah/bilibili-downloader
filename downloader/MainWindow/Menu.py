@@ -1,7 +1,7 @@
 import sys
 from typing import Callable
 
-from PySide6.QtCore import QSize, __version__, Qt
+from PySide6.QtCore import QSize, __version__
 from PySide6.QtGui import QAction, QShowEvent, QCursor
 from PySide6.QtWidgets import (
     QMenu,
@@ -30,22 +30,28 @@ class Menu(QMenu):
         self.init()
 
     def init(self):
-        self.add_action("关于", self.about_action)
-        self.add_action("退出", lambda: sys.exit(0))
+        self.add_action("设置", "settings", self.settings_action)
+        self.add_action("关于", "about", self.about_action)
+        self.add_action("退出", "exit", lambda: sys.exit(0))
         with open(utils.get_resource_path("styles/menu.qss")) as ss:
             self.setStyleSheet(ss.read())
 
     def add_action(
             self,
             text: str,
-            cb: Callable[[bool], None]
+            icon: str,
+            cb: Callable[[bool], None] = None
     ) -> QAction:
         action = self.addAction(text)
+        action.setIcon(utils.get_icon(icon))
 
         if cb is not None:
             action.triggered.connect(cb)
 
         return action
+
+    def settings_action(self):
+        print("settings")
 
     def about_action(self):
         dialog = Dialog(

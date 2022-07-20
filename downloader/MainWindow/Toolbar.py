@@ -15,8 +15,8 @@ from .Menu import Menu
 class Toolbar(QToolBar):
     def __init__(self, parent: QMainWindow):
         super().__init__(parent)
-        self.add_btn = ToolButton(self, ":/icons/plus.png")
-        self.menu_btn = ToolButton(self, ":/icons/menu.png")
+        self.add_btn = ToolButton(self, "plus")
+        self.menu_btn = ToolButton(self, "menu")
         self.menu = Menu(parent, self, self.menu_btn)
         self.menu_btn.setPopupMode(QToolButton.InstantPopup)
         self.menu_btn.setMenu(self.menu)

@@ -1,9 +1,10 @@
 from PySide6.QtCore import QSize,  __version__
-from PySide6.QtGui import QIcon, QMoveEvent
+from PySide6.QtGui import QMoveEvent
 from PySide6.QtWidgets import QMainWindow
 
 from ..MainWidget import MainWidget
 from .Toolbar import Toolbar
+from ..utils import utils
 
 
 class MainWindow(QMainWindow):
@@ -12,7 +13,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(MainWidget())
         self.setWindowTitle("Bilibili下载器")
         self.setMinimumSize(QSize(800, 480))
-        self.setWindowIcon(QIcon(":/icons/logo.png"))
+        self.setWindowIcon(utils.get_icon("logo"))
         self.addToolBar(Toolbar(self))
         self.show()
 

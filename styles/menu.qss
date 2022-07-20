@@ -12,6 +12,11 @@ QMenu::item {
     color: #333;
 }
 
+QMenu::icon {
+    position: absolute;
+    left: 10px;
+}
+
 QMenu::item:selected {
     background-color: #f0f0f0;
 }
