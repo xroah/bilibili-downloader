@@ -9,9 +9,9 @@ QMenu::item {
     margin: 0;
     width: 150px;
     padding: 10px;
+    color: #333;
 }
 
 QMenu::item:selected {
-    color: #333;
     background-color: #f0f0f0;
 }

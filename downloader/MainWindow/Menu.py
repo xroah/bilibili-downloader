@@ -1,7 +1,7 @@
 import sys
 from typing import Callable
 
-from PySide6.QtCore import QSize, __version__
+from PySide6.QtCore import QSize, __version__, Qt
 from PySide6.QtGui import QAction, QShowEvent, QCursor
 from PySide6.QtWidgets import (
     QMenu,
