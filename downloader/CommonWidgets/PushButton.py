@@ -15,6 +15,7 @@ class PushButton(QPushButton):
     ):
         super().__init__(parent=parent, text=text)
         self.setCursor(Qt.PointingHandCursor)
+        self.setFocusPolicy(Qt.StrongFocus)
 
         if classname:
             self.setProperty("class", classname)
