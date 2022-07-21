@@ -24,7 +24,7 @@ def create_about_dialog(window: QMainWindow) -> QDialog:
         QSize(260, 200),
         "关于"
     )
-    filename = utils.get_resource_path("resources/about.html")
+    filename = utils.get_resource_path("about.html")
 
     with open(filename, "r", encoding="utf-8") as f:
         text = f.read().format(

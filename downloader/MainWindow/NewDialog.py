@@ -26,7 +26,6 @@ class NewDialog:
         content = QWidget()
         layout = QVBoxLayout(content)
         input_ = Input(content)
-        qss = utils.get_resource_path("styles/new-dialog.qss")
         input_.setFrame(False)
         input_.setProperty("class", "input")
 
@@ -34,9 +33,7 @@ class NewDialog:
         layout.addWidget(input_)
         content.setProperty("class", "new-dialog")
         content.setLayout(layout)
-
-        with open(qss) as ss:
-            content.setStyleSheet(ss.read())
+        content.setStyleSheet(utils.get_style("new-dialog"))
 
         self.dialog.shown.connect(lambda: input_.setFocus())
         self.dialog.set_content(content)

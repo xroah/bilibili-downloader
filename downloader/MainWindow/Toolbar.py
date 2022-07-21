@@ -35,9 +35,7 @@ class Toolbar(QToolBar):
         self.setContextMenuPolicy(Qt.PreventContextMenu)
         self.setObjectName("toolbar")
         self.setMovable(False)
-
-        with open(utils.get_resource_path("styles/toolbar.qss")) as ss:
-            self.setStyleSheet(ss.read())
+        self.setStyleSheet(utils.get_style("toolbar"))
 
     def show_new_dialog(self):
         dialog = NewDialog(self._window)

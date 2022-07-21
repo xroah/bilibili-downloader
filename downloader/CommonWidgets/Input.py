@@ -38,7 +38,6 @@ class Input(QLineEdit):
             self.setStyleSheet(ss.read())
 
     def get_menu(self) -> QMenu:
-        qss = utils.get_resource_path("styles/menu.qss")
         has_selected = self.hasSelectedText()
         menu = QMenu(self)
         undo_action = menu.addAction("撤销")
@@ -71,8 +70,7 @@ class Input(QLineEdit):
         select_action.triggered.connect(self.selectAll)
 
         menu.setProperty("class", "contextmenu")
-        with open(qss) as ss:
-            menu.setStyleSheet(ss.read())
+        self.setStyleSheet(utils.get_style("input"))
 
         return menu
 

@@ -34,7 +34,7 @@ class LeftNav(QWidget):
         layout.setSpacing(0)
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.setLayout(layout)
-        self.set_qss()
+        self.setStyleSheet(utils.get_style("left-nav"))
         self.switch_tab(self.downloading_btn)
 
     def create_btn(
@@ -71,9 +71,3 @@ class LeftNav(QWidget):
     def downloaded_btn_press(self):
         print("downloaded btn")
         self.switch_tab(self.downloaded_btn)
-
-    def set_qss(self):
-        qss = utils.get_resource_path("styles/left-nav.qss")
-
-        with open(qss) as ss:
-            self.setStyleSheet(ss.read())

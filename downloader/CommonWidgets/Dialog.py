@@ -46,9 +46,7 @@ class Dialog(QDialog):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
         self.setLayout(layout)
-
-        with open(utils.get_resource_path("styles/dialog.qss")) as ss:
-            self.setStyleSheet(ss.read())
+        self.setStyleSheet(utils.get_style("dialog"))
 
     def _get_body(self) -> QWidget:
         body = QWidget(self)

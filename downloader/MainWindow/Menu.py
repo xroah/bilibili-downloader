@@ -32,8 +32,7 @@ class Menu(QMenu):
         self.add_action("设置", "settings", self.settings_action)
         self.add_action("关于", "about", self.about_action)
         self.add_action("退出", "exit", lambda: sys.exit(0))
-        with open(utils.get_resource_path("styles/menu.qss")) as ss:
-            self.setStyleSheet(ss.read())
+        self.setStyleSheet(utils.get_style("menu"))
 
     def add_action(
             self,
