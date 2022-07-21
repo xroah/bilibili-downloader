@@ -7,11 +7,6 @@
     <file>./icons/settings.png</file>
     <file>./icons/about.png</file>
     <file>./icons/exit.png</file>
-    <file>./icons/copy.png</file>
-    <file>./icons/cut.png</file>
-    <file>./icons/delete.png</file>
-    <file>./icons/paste.png</file>
-    <file>./icons/redo.png</file>
-    <file>./icons/undo.png</file>
+    <file>./icons/history.png</file>
 </qresource>
 </RCC>

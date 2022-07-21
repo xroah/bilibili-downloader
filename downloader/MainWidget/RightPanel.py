@@ -2,7 +2,8 @@ from PySide6.QtWidgets import (
     QStackedWidget,
     QVBoxLayout,
     QWidget,
-    QLabel
+    QLabel,
+    QScrollArea
 )
 
 

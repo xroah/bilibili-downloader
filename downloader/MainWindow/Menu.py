@@ -27,10 +27,14 @@ class Menu(QMenu):
         self.init()
 
     def init(self):
+        self.add_action("历史记录", "history", self.history_action)
         self.add_action("设置", "settings", self.settings_action)
         self.add_action("关于", "about", self.about_action)
         self.add_action("退出", "exit", lambda: sys.exit(0))
         self.setStyleSheet(utils.get_style("menu"))
+
+    def history_action(self):
+        print("history")
 
     def add_action(
             self,
