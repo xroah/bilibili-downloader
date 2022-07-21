@@ -39,5 +39,5 @@ class NewDialog:
         self.dialog.set_content(content)
 
     def open(self):
-        self.dialog.open()
+        self.dialog.open_()
 

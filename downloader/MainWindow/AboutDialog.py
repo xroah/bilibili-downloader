@@ -18,7 +18,7 @@ def get_python_ver():
     ver = sys.version_info
     return "{0}.{1}.{2}".format(ver.major, ver.minor, ver.micro)
 
-def create_about_dialog(window: QMainWindow) -> QDialog:
+def create_about_dialog(window: QMainWindow) -> None:
     dialog = Dialog(
         window,
         QSize(260, 200),
@@ -41,6 +41,7 @@ def create_about_dialog(window: QMainWindow) -> QDialog:
     layout.addWidget(about)
     w.setLayout(layout)
     dialog.set_content(w)
-    dialog.open()
+
+    dialog.open_()
 
     return dialog

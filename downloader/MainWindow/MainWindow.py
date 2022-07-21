@@ -1,10 +1,12 @@
-from PySide6.QtCore import QSize
-from PySide6.QtGui import QMoveEvent, QCloseEvent
+from PySide6.QtCore import QSize, Qt
+from PySide6.QtGui import QMoveEvent, QCloseEvent, QKeyEvent
 from PySide6.QtWidgets import QMainWindow
 
 from ..MainWidget import MainWidget
 from .Toolbar import Toolbar
 from ..utils import utils
+
+import sys
 
 
 class MainWindow(QMainWindow):
@@ -29,3 +31,15 @@ class MainWindow(QMainWindow):
             e.ignore()
         else:
             e.accept()
+
+    def keyPressEvent(self, e: QKeyEvent) -> None:
+        combination = e.keyCombination()
+        print(sys.platform, e.key() == Qt.Key_W, 
+        combination.keyboardModifiers() == Qt.MetaModifier)
+        # mac os meta + w
+        if (
+            sys.platform == "darwin" and
+            e.key() == Qt.Key_W and
+            combination.keyboardModifiers() == Qt.MetaModifier
+        ):
+            self.hide()

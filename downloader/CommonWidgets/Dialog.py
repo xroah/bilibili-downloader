@@ -1,5 +1,9 @@
 from PySide6.QtCore import QSize, Qt, Signal
-from PySide6.QtGui import QShowEvent, QKeyEvent
+from PySide6.QtGui import (
+    QShowEvent,
+    QKeyEvent,
+    QGuiApplication
+)
 from PySide6.QtWidgets import (
     QDialog,
     QWidget,
@@ -19,6 +23,7 @@ class Dialog(QDialog):
             parent: QMainWindow,
             size: QSize,
             title: str = "",
+            is_modal: bool = True,
             content: QWidget = None,
             show_cancel: bool = False,
             close_on_enter: bool = True,
@@ -31,12 +36,16 @@ class Dialog(QDialog):
         self.close_on_enter = close_on_enter
         self.body = self._get_body()
         self.setWindowTitle(title)
-        self.setModal(True)
+        self.setModal(is_modal)
         self.setFixedSize(size)
         self._set_layout()
+        self.setAttribute(Qt.WA_DeleteOnClose, True)
 
-    def open(self):
-        super().open()
+    def open_(self):
+        if self.isModal():
+            self.open()
+        else:
+            self.show()
 
     def _set_layout(self):
         layout = QVBoxLayout(self)
@@ -107,13 +116,21 @@ class Dialog(QDialog):
         self.reject()
 
     def showEvent(self, e: QShowEvent) -> None:
-        super().showEvent(e)
-        p_geometry = self._parent.frameGeometry()
         size = self.size()
-        left = (p_geometry.width() - size.width()) / 2
-        top = (p_geometry.height() - size.height()) / 2
 
-        self.move(p_geometry.x() + left, p_geometry.y() + top)
+        if not self.isModal():
+            screen = QGuiApplication.primaryScreen()
+            avail_size = screen.availableSize()
+            left = (avail_size.width() - size.width()) / 2
+            top = (avail_size.height() - size.height()) / 2
+        else:
+            p_geometry = self._parent.frameGeometry()
+            left = (p_geometry.width() - size.width()) / 2
+            top = (p_geometry.height() - size.height()) / 2
+            left += p_geometry.x()
+            top += p_geometry.y()
+        
+        self.move(left, top)
         self.shown.emit()
 
     def keyPressEvent(self, e: QKeyEvent) -> None:
