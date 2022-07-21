@@ -70,6 +70,7 @@ class Input(QLineEdit):
         select_action.triggered.connect(self.selectAll)
 
         menu.setProperty("class", "contextmenu")
+        menu.setStyleSheet(utils.get_style("menu"))
         self.setStyleSheet(utils.get_style("input"))
 
         return menu

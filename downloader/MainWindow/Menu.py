@@ -1,7 +1,6 @@
 import sys
 from typing import Callable
 
-from PySide6.QtCore import __version__
 from PySide6.QtGui import QAction, QShowEvent, QCursor
 from PySide6.QtWidgets import (
     QMenu,
@@ -10,7 +9,6 @@ from PySide6.QtWidgets import (
     QToolButton
 )
 
-import __main__
 from ..utils import utils
 from .AboutDialog import create_about_dialog
 from .SettingsDialog import create_settings_dialog
