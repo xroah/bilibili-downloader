@@ -34,8 +34,6 @@ class MainWindow(QMainWindow):
 
     def keyPressEvent(self, e: QKeyEvent) -> None:
         combination = e.keyCombination()
-        print(sys.platform, e.key() == Qt.Key_W, 
-        combination.keyboardModifiers() == Qt.MetaModifier)
         # mac os meta + w
         if (
             sys.platform == "darwin" and

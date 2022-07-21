@@ -10,13 +10,14 @@ from PySide6.QtWidgets import (
     QLabel,
     QWidget,
     QVBoxLayout,
-    QMainWindow, 
-    QDialog
+    QMainWindow,
 )
+
 
 def get_python_ver():
     ver = sys.version_info
     return "{0}.{1}.{2}".format(ver.major, ver.minor, ver.micro)
+
 
 def create_about_dialog(window: QMainWindow) -> None:
     dialog = Dialog(
@@ -43,5 +44,3 @@ def create_about_dialog(window: QMainWindow) -> None:
     dialog.set_content(w)
 
     dialog.open_()
-
-    return dialog

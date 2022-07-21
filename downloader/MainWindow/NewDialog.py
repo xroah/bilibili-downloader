@@ -17,8 +17,7 @@ class NewDialog:
             title="新建下载",
             parent=window,
             show_cancel=True,
-            size=QSize(420, 150),
-            close_on_enter=False
+            size=QSize(420, 150)
         )
         self.init()
 

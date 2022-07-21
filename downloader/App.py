@@ -45,7 +45,7 @@ class App(QApplication):
     def tray_activated(self, reason):
         if (
             reason == QSystemTrayIcon.Trigger and
-            #mac os will show contextmenu on click
+            # mac os will show contextmenu on click
             sys.platform != "darwin"
         ):
             self.show_win()
@@ -79,6 +79,11 @@ class App(QApplication):
     def state_change(self, state):
         if (
             state == Qt.ApplicationActive and
-            not self.main_win.isVisible()
+            not self.main_win.isVisible() and
+            # macos: if the window is hidden,
+            # it will not show when click dock icon,
+            # but the app state will be active
+            # windows: tray right click will activate the app, just ignore
+            sys.platform == "darwin"
         ):
             self.show_win()

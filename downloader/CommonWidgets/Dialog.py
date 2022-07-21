@@ -1,8 +1,8 @@
 from PySide6.QtCore import QSize, Qt, Signal
 from PySide6.QtGui import (
     QShowEvent,
-    QKeyEvent,
-    QGuiApplication
+    QGuiApplication,
+    QCloseEvent
 )
 from PySide6.QtWidgets import (
     QDialog,
@@ -26,14 +26,14 @@ class Dialog(QDialog):
             is_modal: bool = True,
             content: QWidget = None,
             show_cancel: bool = False,
-            close_on_enter: bool = True,
+            show_footer: bool = True
     ):
         super().__init__(parent)
         self._parent = parent
         self.title = title
         self.content = content
         self.show_cancel = show_cancel
-        self.close_on_enter = close_on_enter
+        self.show_footer = show_footer
         self.body = self._get_body()
         self.setWindowTitle(title)
         self.setModal(is_modal)
@@ -49,9 +49,10 @@ class Dialog(QDialog):
 
     def _set_layout(self):
         layout = QVBoxLayout(self)
-        footer = self._get_footer()
         layout.addWidget(self.body, 1)
-        layout.addWidget(footer)
+        if self.show_footer:
+            footer = self._get_footer()
+            layout.addWidget(footer)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
         self.setLayout(layout)
@@ -132,7 +133,3 @@ class Dialog(QDialog):
         
         self.move(left, top)
         self.shown.emit()
-
-    def keyPressEvent(self, e: QKeyEvent) -> None:
-        if e.key() == Qt.Key_Escape:
-            self.reject()
