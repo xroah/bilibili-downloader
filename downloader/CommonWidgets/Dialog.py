@@ -1,9 +1,6 @@
 from PySide6.QtCore import QSize, Qt, Signal
-from PySide6.QtGui import (
-    QShowEvent,
-    QGuiApplication,
-    QCloseEvent
-)
+from PySide6.QtGui import QShowEvent, QGuiApplication
+
 from PySide6.QtWidgets import (
     QDialog,
     QWidget,
@@ -111,8 +108,7 @@ class Dialog(QDialog):
         layout.addWidget(content)
 
     def _ok(self):
-        if self.close_on_enter:
-            self.accept()
+        self.accept()
 
     def _cancel(self):
         self.reject()

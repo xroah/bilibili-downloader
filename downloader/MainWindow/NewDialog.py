@@ -28,7 +28,7 @@ class NewDialog:
         input_.setFrame(False)
         input_.setProperty("class", "input")
 
-        layout.addWidget(QLabel("输入BV号/视频地址/搜索内容"))
+        layout.addWidget(QLabel("输入BV号/视频地址"))
         layout.addWidget(input_)
         content.setProperty("class", "new-dialog")
         content.setLayout(layout)

@@ -6,157 +6,145 @@
 from PySide6 import QtCore
 
 qt_resource_data = b"\
-\x00\x00\x01\x1b\
+\x00\x00\x01\x1d\
 T\
 oolbar#toolbar {\
-\x0d\x0a    padding: 5\
-px;\x0d\x0a    border-\
-bottom: 1px soli\
-d rgba(0, 0, 0, \
-0.1);\x0d\x0a    backg\
-round-color: #ff\
-f;\x0d\x0a}\x0d\x0a\x0d\x0a.placeh\
-older {\x0d\x0a    bac\
-kground-color: t\
-ransparent;\x0d\x0a}\x0d\x0a\
-\x0d\x0aQToolButton {\x0d\
-\x0a    width: 24px\
-;\x0d\x0a    height: 2\
-4px;\x0d\x0a}\x0d\x0aQToolBu\
-tton::menu-indic\
-ator {\x0d\x0a    widt\
-h: 0;\x0d\x0a}\x0d\x0a\
-\x00\x00\x02\x16\
+\x0a    padding: 5p\
+x;\x0a    border-bo\
+ttom: 1px solid \
+rgba(0, 0, 0, 0.\
+1);\x0a    backgrou\
+nd-color: rgba(2\
+55, 255, 255, .5\
+);\x0a}\x0a\x0a.placehold\
+er {\x0a    backgro\
+und-color: trans\
+parent;\x0a}\x0a\x0aQTool\
+Button {\x0a    wid\
+th: 24px;\x0a    he\
+ight: 24px;\x0a}\x0aQT\
+oolButton::menu-\
+indicator {\x0a    \
+width: 0;\x0a}\x0a\
+\x00\x00\x01\xae\
 Q\
-Menu {\x0d\x0a    padd\
-ing: 0;\x0d\x0a    bor\
-der-radius: 5px;\
-\x0d\x0a    border: 1p\
-x solid #f0f0f0;\
-\x0d\x0a    background\
--color: #fff;\x0d\x0a}\
-\x0d\x0a\x0d\x0aQMenu::item \
-{\x0d\x0a    margin: 0\
-;\x0d\x0a    width: 12\
-0px;\x0d\x0a    paddin\
-g: 10px;\x0d\x0a    co\
-lor: #333;\x0d\x0a}\x0d\x0a\x0d\
-\x0aQMenu.contextme\
-nu::item {\x0d\x0a    \
-width: 80px;\x0d\x0a  \
+Menu {\x0a    paddi\
+ng: 0;\x0a    borde\
+r-radius: 5px;\x0a \
+   border: 1px s\
+olid #f0f0f0;\x0a  \
+  background-col\
+or: #fff;\x0a}\x0a\x0aQMe\
+nu::item {\x0a    m\
+argin: 0;\x0a    wi\
+dth: 120px;\x0a    \
+padding: 10px;\x0a \
+   color: #333;\x0a\
+}\x0a\x0aQMenu.context\
+menu::item {\x0a   \
+ width: 80px;\x0a  \
   padding: 6px 1\
-5px;\x0d\x0a}\x0d\x0a\x0d\x0aQMenu\
-.tray-contextmen\
-u::item {\x0d\x0a    w\
-idth: 60px;\x0d\x0a   \
- padding: 8px;\x0d\x0a\
-}\x0d\x0a\x0d\x0aQMenu::item\
-:disabled {\x0d\x0a   \
- color: #999;\x0d\x0a}\
-\x0d\x0a\x0d\x0aQMenu::icon \
-{\x0d\x0a    position:\
- absolute;\x0d\x0a    \
-left: 10px;\x0d\x0a}\x0d\x0a\
-\x0d\x0aQMenu::item:!d\
-isabled:selected\
- {\x0d\x0a    backgrou\
-nd-color: #f0f0f\
-0;\x0d\x0a}\
-\x00\x00\x00\xf2\
+5px;\x0a}\x0a\x0aQMenu::i\
+tem:disabled {\x0a \
+   color: #999;\x0a\
+}\x0a\x0aQMenu::icon {\
+\x0a    position: a\
+bsolute;\x0a    lef\
+t: 10px;\x0a}\x0a\x0aQMen\
+u::item:!disable\
+d:selected {\x0a   \
+ background-colo\
+r: #f0f0f0;\x0a}\
+\x00\x00\x00\xe2\
 .\
-body {\x0d\x0a    back\
-ground-color: #f\
-ff;\x0d\x0a}\x0d\x0a\x0d\x0a.foote\
-r {\x0d\x0a    backgro\
-und-color: #f0f0\
-f0;\x0d\x0a}\x0d\x0a\x0d\x0a.foote\
-r PushButton,\x0d\x0a.\
-footer QPushButt\
-on {\x0d\x0a    width:\
- 60px;\x0d\x0a    heig\
-ht: 26px;\x0d\x0a    p\
-adding: 5px;\x0d\x0a  \
-  margin-right: \
-5px;\x0d\x0a    margin\
--left: 10px;\x0d\x0a}\x0d\
+body {\x0a    backg\
+round-color: #ff\
+f;\x0a}\x0a\x0a.footer {\x0a\
+    background-c\
+olor: #f0f0f0;\x0a}\
+\x0a\x0a.footer PushBu\
+tton,\x0a.footer QP\
+ushButton {\x0a    \
+width: 60px;\x0a   \
+ height: 26px;\x0a \
+   padding: 5px;\
+\x0a    margin-righ\
+t: 5px;\x0a    marg\
+in-left: 10px;\x0a}\
 \x0a\
-\x00\x00\x01\x08\
+\x00\x00\x01\x0d\
 L\
-eftNav {\x0d\x0a    ba\
-ckground-color: \
-#fff;\x0d\x0a    borde\
-r-right: 1px sol\
-id rgba(0, 0, 0,\
- .2);\x0d\x0a}\x0d\x0a\x0d\x0aQPus\
-hButton {\x0d\x0a    w\
-idth: 150px;\x0d\x0a  \
-  padding: 10px;\
-\x0d\x0a    border: no\
-ne;\x0d\x0a    border-\
-bottom: 1px soli\
-d #f0f0f0;\x0d\x0a}\x0d\x0a\x0d\
-\x0aQPushButton:hov\
-er {\x0d\x0a    backgr\
-ound-color: #f0f\
-0f0;\x0d\x0a}\
-\x00\x00\x00\xd4\
+eftNav {\x0a    bac\
+kground-color: r\
+gba(255, 255, 25\
+5, .5);\x0a    bord\
+er-right: 1px so\
+lid rgba(0, 0, 0\
+, .2);\x0a}\x0a\x0aQPushB\
+utton {\x0a    widt\
+h: 150px;\x0a    pa\
+dding: 10px;\x0a   \
+ border: none;\x0a \
+   border-bottom\
+: 1px solid #f0f\
+0f0;\x0a}\x0a\x0aQPushBut\
+ton:hover {\x0a    \
+background-color\
+: #f0f0f0;\x0a}\
+\x00\x00\x00\xc9\
 .\
 new-dialog .inpu\
-t {\x0d\x0a    height:\
- 30px;\x0d\x0a    padd\
-ing-left: 5px;\x0d\x0a\
-    padding-righ\
-t: 30px;\x0d\x0a    bo\
-rder: 1px solid \
-#ced4da;\x0d\x0a    bo\
-rder-radius: 3px\
-;\x0d\x0a}\x0d\x0a\x0d\x0a.new-dia\
-log .input:focus\
- {\x0d\x0a    border-c\
-olor: #86b7fe;\x0d\x0a\
-}\x0d\x0a\
-\x00\x00\x00\xf1\
+t {\x0a    height: \
+30px;\x0a    paddin\
+g-left: 5px;\x0a   \
+ padding-right: \
+30px;\x0a    border\
+: 1px solid #ced\
+4da;\x0a    border-\
+radius: 3px;\x0a}\x0a\x0a\
+.new-dialog .inp\
+ut:focus {\x0a    b\
+order-color: #86\
+b7fe;\x0a}\x0a\
+\x00\x00\x00\xe2\
 .\
-clear {\x0d\x0a    pad\
-ding: 0;\x0d\x0a    bo\
-rder: none;\x0d\x0a   \
- width: 18px;\x0d\x0a \
-   height: 18px;\
-\x0d\x0a    border-rad\
-ius: 10px;\x0d\x0a    \
-background-color\
-: #999;\x0d\x0a}\x0d\x0a\x0d\x0a.c\
-lear:hover {\x0d\x0a  \
-  background-col\
-or: #888;\x0d\x0a}\x0d\x0a\x0d\x0a\
-.clear:pressed {\
-\x0d\x0a    background\
--color: #666;\x0d\x0a}\
-\
-\x00\x00\x01Y\
-P\
-ushButton {\x0d\x0a   \
+clear {\x0a    padd\
+ing: 0;\x0a    bord\
+er: none;\x0a    wi\
+dth: 18px;\x0a    h\
+eight: 18px;\x0a   \
  border-radius: \
-3px;\x0d\x0a    backgr\
-ound-color: #fff\
-;\x0d\x0a}\x0d\x0a\x0d\x0aPushButt\
-on:hover {\x0d\x0a    \
-background-color\
-: #ddd;\x0d\x0a}\x0d\x0a\x0d\x0aPu\
-shButton:focus {\
-\x0d\x0a    border: 3p\
-x solid #9bc2fd;\
-\x0d\x0a}\x0d\x0a\x0d\x0aPushButto\
-n.primary {\x0d\x0a   \
- %s;\x0d\x0a    color:\
- #fff;\x0d\x0a    bord\
-er-radius: 3px;\x0d\
-\x0a}\x0d\x0a\x0d\x0aPushButton\
-.primary:hover {\
-\x0d\x0a    %s;\x0d\x0a}\x0d\x0a\x0d\x0a\
-PushButton.prima\
-ry:pressed {\x0d\x0a  \
-  %s;\x0d\x0a}\
+10px;\x0a    backgr\
+ound-color: #999\
+;\x0a}\x0a\x0a.clear:hove\
+r {\x0a    backgrou\
+nd-color: #888;\x0a\
+}\x0a\x0a.clear:presse\
+d {\x0a    backgrou\
+nd-color: #666;\x0a\
+}\
+\x00\x00\x01@\
+P\
+ushButton {\x0a    \
+border-radius: 3\
+px;\x0a    backgrou\
+nd-color: #fff;\x0a\
+}\x0a\x0aPushButton:ho\
+ver {\x0a    backgr\
+ound-color: #ddd\
+;\x0a}\x0a\x0aPushButton:\
+focus {\x0a    bord\
+er: 3px solid #9\
+bc2fd;\x0a}\x0a\x0aPushBu\
+tton.primary {\x0a \
+   %s;\x0a    color\
+: #fff;\x0a    bord\
+er-radius: 3px;\x0a\
+}\x0a\x0aPushButton.pr\
+imary:hover {\x0a  \
+  %s;\x0a}\x0a\x0aPushBut\
+ton.primary:pres\
+sed {\x0a    %s;\x0a}\
 "
 
 qt_resource_name = b"\
@@ -199,20 +187,20 @@ qt_resource_struct = b"\
 \x00\x00\x00\x00\x00\x00\x00\x00\
 \x00\x00\x00\x00\x00\x02\x00\x00\x00\x07\x00\x00\x00\x02\
 \x00\x00\x00\x00\x00\x00\x00\x00\
-\x00\x00\x00\xb6\x00\x00\x00\x00\x00\x01\x00\x00\x07\x08\
-\x00\x00\x01\x82\x1b@\x1d\x81\
-\x00\x00\x00D\x00\x00\x00\x00\x00\x01\x00\x00\x039\
-\x00\x00\x01\x82\x1bB\x9d\xc2\
-\x00\x00\x00\x9e\x00\x00\x00\x00\x00\x01\x00\x00\x06\x13\
-\x00\x00\x01\x82\x1eM7O\
+\x00\x00\x00\xb6\x00\x00\x00\x00\x00\x01\x00\x00\x06}\
+\x00\x00\x01\x82\x1f=\xb3\x1f\
+\x00\x00\x00D\x00\x00\x00\x00\x00\x01\x00\x00\x02\xd3\
+\x00\x00\x01\x82\x1f=\xb3\x1c\
+\x00\x00\x00\x9e\x00\x00\x00\x00\x00\x01\x00\x00\x05\x97\
+\x00\x00\x01\x82\x1f=\xb3\x1c\
 \x00\x00\x00\x12\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\
-\x00\x00\x01\x82\x15\xae\xf2\x0d\
-\x00\x00\x00|\x00\x00\x00\x00\x00\x01\x00\x00\x05;\
-\x00\x00\x01\x82\x1eM7[\
-\x00\x00\x00^\x00\x00\x00\x00\x00\x01\x00\x00\x04/\
-\x00\x00\x01\x82\x1eM7S\
-\x00\x00\x00.\x00\x00\x00\x00\x00\x01\x00\x00\x01\x1f\
-\x00\x00\x01\x82\x1f\x0a\xb5\xec\
+\x00\x00\x01\x82#\xac\xf7\x08\
+\x00\x00\x00|\x00\x00\x00\x00\x00\x01\x00\x00\x04\xca\
+\x00\x00\x01\x82\x1f=\xb3\x1e\
+\x00\x00\x00^\x00\x00\x00\x00\x00\x01\x00\x00\x03\xb9\
+\x00\x00\x01\x82#\xab\x7f\xcf\
+\x00\x00\x00.\x00\x00\x00\x00\x00\x01\x00\x00\x01!\
+\x00\x00\x01\x82\x1f=\xb3\x1e\
 "
 
 def qInitResources():

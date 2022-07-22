@@ -14,7 +14,7 @@ class MainWidget(QWidget):
         right = RightPanel(self)
         self.left_nav = left_nav
         self.right_panel = right
-        right.setStyleSheet("background-color: #fff;")
+        right.setStyleSheet("background-color: rgba(255, 255, 255, .5);")
 
         layout = QHBoxLayout()
         layout.addWidget(left_nav)
