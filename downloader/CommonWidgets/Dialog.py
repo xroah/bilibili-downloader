@@ -46,6 +46,7 @@ class Dialog(QDialog):
             self.open()
         else:
             self.show()
+            self.raise_()
 
     def _set_layout(self):
         layout = QVBoxLayout(self)

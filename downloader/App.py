@@ -17,6 +17,7 @@ class App(QApplication):
         tray_avail = QSystemTrayIcon.isSystemTrayAvailable()
         self.tray = QSystemTrayIcon()
         self.main_win = MainWindow(tray_avail)
+        self.menu_visible = False
         # Keyboard shortcuts on macOS are typically based on the Command
         # (or Cmd) keyboard modifier, represented by the ⌘ symbol.
         # For example, the ‘Copy’ action is Command+C (⌘+C).
@@ -73,8 +74,16 @@ class App(QApplication):
         exit_action.triggered.connect(lambda: sys.exit(0))
         menu.setProperty("class", "contextmenu")
         menu.setStyleSheet(utils.get_style("menu"))
+        menu.aboutToShow.connect(self.menu_show)
+        menu.aboutToHide.connect(self.menu_hide)
 
         return menu
+
+    def menu_show(self):
+        self.menu_visible = True
+        
+    def menu_hide(self):
+        self.menu_visible = False
 
     def state_change(self, state):
         if (
@@ -83,7 +92,7 @@ class App(QApplication):
             # macos: if the window is hidden,
             # it will not show when click dock icon,
             # but the app state will be active
-            # windows: tray right click will activate the app, just ignore
-            sys.platform == "darwin"
+            # windows: tray right click will activate the app
+            not self.menu_visible
         ):
             self.show_win()
