@@ -1,7 +1,5 @@
 import sys
 from threading import Thread
-from time import sleep
-from turtle import update
 
 import downloader.QRC.Icons
 import downloader.QRC.Styles
