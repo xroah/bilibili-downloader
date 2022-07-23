@@ -116,7 +116,7 @@ class Dialog(QDialog):
     def showEvent(self, e: QShowEvent) -> None:
         size = self.size()
 
-        if not self.isModal():
+        if not self.isModal() and not self._parent.isVisible():
             screen = QGuiApplication.primaryScreen()
             avail_size = screen.availableSize()
             left = (avail_size.width() - size.width()) / 2

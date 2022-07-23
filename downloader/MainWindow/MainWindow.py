@@ -20,7 +20,7 @@ class MainWindow(QMainWindow):
     def __init__(self, hide_to_tray=True):
         super().__init__()
         self.hide_to_tray = hide_to_tray
-        self.bg = utils.get_resource_path("default-bg-blurred.png")
+        self.bg = utils.get_resource_path("default-bg.png")
         self.setCentralWidget(MainWidget())
         self.setWindowTitle("Bilibili下载器")
         self.setMinimumSize(QSize(800, 480))
