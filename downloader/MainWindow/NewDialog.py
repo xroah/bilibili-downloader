@@ -33,6 +33,7 @@ class NewDialog:
         content.setProperty("class", "new-dialog")
         content.setLayout(layout)
         content.setStyleSheet(utils.get_style("new-dialog"))
+        layout.setContentsMargins(5, 5, 5, 5)
 
         self.dialog.shown.connect(lambda: input_.setFocus())
         self.dialog.set_content(content)

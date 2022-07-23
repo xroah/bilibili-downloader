@@ -1,5 +1,7 @@
 import sys
 from multiprocessing import Process
+import os.path
+import os
 
 from downloader.MainWindow import MainWindow
 import downloader.QRC.Icons
@@ -9,8 +11,7 @@ from downloader.BingImage import download_img
 
 __version__ = "1.0.0"
 
-def download_callback(img_name: str, app: App) -> None:
-    print(img_name, app, "<<<<<")
+def download_callback(img_name: str) -> None:
     try:
         app.main_win.set_bg_path(img_name)
         app.main_win.set_bg_img(img_name)

@@ -9,7 +9,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QKeySequence, QContextMenuEvent
 
 from ..utils import utils
-
+from .Menu import Menu
 
 class Input(QLineEdit):
     def __init__(self, parent: QWidget = None):
@@ -39,7 +39,7 @@ class Input(QLineEdit):
 
     def get_menu(self) -> QMenu:
         has_selected = self.hasSelectedText()
-        menu = QMenu(self)
+        menu = Menu(self)
         undo_action = menu.addAction("撤销")
         redo_action = menu.addAction("重做")
         menu.addSeparator()
