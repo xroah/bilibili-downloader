@@ -29,7 +29,7 @@ class MainWindow(QMainWindow):
         self.set_bg_img()
         self.show()
 
-    def set_bg_path(self, bg_path):
+    def set_bg_path(self, bg_path: str):
         self.bg = bg_path
 
     def set_bg_img(self):

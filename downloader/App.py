@@ -34,7 +34,7 @@ class App(QApplication):
 
         if tray_avail:
             self.init_tray()
-
+            
     def init_tray(self):
         tray = self.tray
         tray.setIcon(utils.get_icon("logo"))

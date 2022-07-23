@@ -32,7 +32,7 @@ def blur_img(img: io.BytesIO, img_name: str) -> str:
         new_img.save(img_path)
 
 
-def download_img(callback: Callable[[str], None]) -> None:
+def download_img() -> str:
     name = time.strftime("%Y%m%d") + ".png"
     full_name = os.path.join(bg_dir, name)
     downloaded = False
@@ -50,11 +50,14 @@ def download_img(callback: Callable[[str], None]) -> None:
                     os.unlink(os.path.join(bg_dir, f.name))
 
     if downloaded:
-        return callback(full_name)
+        return full_name
 
     img_url = get_img_url()
 
     if img_url:
         res = httpx.get(img_url)
         blur_img(io.BytesIO(res.content), name)
-        callback(full_name)
+        
+        return full_name
+
+    return ""
