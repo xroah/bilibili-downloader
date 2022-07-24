@@ -14,6 +14,7 @@ from .Toolbar import Toolbar
 from ..utils import utils
 
 import sys
+import os.path
 
 
 class MainWindow(QMainWindow):
@@ -29,10 +30,13 @@ class MainWindow(QMainWindow):
         self.set_bg_img()
         self.show()
 
-    def set_bg_path(self, bg_path: str):
-        self.bg = bg_path
+    def set_bg_img(self, bg: str = ""):
+        if bg:
+            self.bg = bg
+            
+        if not self.bg or not os.path.exists(self.bg):
+            return
 
-    def set_bg_img(self):
         palette = self.palette()
         img = QImage(self.bg)
         img = img.scaled(self.size())

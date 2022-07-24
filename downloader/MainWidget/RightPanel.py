@@ -6,6 +6,8 @@ from PySide6.QtWidgets import (
     QScrollArea
 )
 
+from PySide6.QtCore import Qt
+
 
 class RightPanel(QWidget):
     def __init__(self, parent: QWidget = None):

@@ -1,6 +1,6 @@
 LeftNav {
-    background-color: rgba(255, 255, 255, .5);
-    border-right: 1px solid rgba(0, 0, 0, .2);
+    background-color: rgba(255, 255, 255, .6);
+    border-right: 1px solid #f0f0f0;
 }
 
 QPushButton {

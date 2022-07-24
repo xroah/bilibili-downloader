@@ -4,7 +4,6 @@ import httpx
 import os
 import os.path
 import time
-import io
 
 bing_host = "https://cn.bing.com"
 cwd = os.getcwd()
