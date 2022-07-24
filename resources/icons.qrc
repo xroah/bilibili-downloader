@@ -8,5 +8,6 @@
     <file>./icons/about.png</file>
     <file>./icons/exit.png</file>
     <file>./icons/history.png</file>
+    <file>./icons/empty.svg</file>
 </qresource>
 </RCC>

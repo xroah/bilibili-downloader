@@ -46,7 +46,7 @@ class Dialog(QDialog):
             self.raise_()
 
     def _set_layout(self):
-        layout = QVBoxLayout(self)
+        layout = QVBoxLayout()
         layout.addWidget(self.body, 1)
         if self.show_footer:
             footer = self._get_footer()
@@ -70,7 +70,7 @@ class Dialog(QDialog):
 
     def _get_footer(self) -> QWidget:
         footer = QWidget(self)
-        layout = QHBoxLayout(footer)
+        layout = QHBoxLayout()
         ok_btn = PushButton(parent=footer, text="确定")
 
         footer.setProperty("class", "footer")

@@ -23,7 +23,7 @@ class NewDialog:
 
     def init(self):
         content = QWidget()
-        layout = QVBoxLayout(content)
+        layout = QVBoxLayout()
         input_ = Input(content)
         input_.setFrame(False)
         input_.setProperty("class", "input")

@@ -16,7 +16,7 @@ class LeftNav(QWidget):
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)
         self.current: QPushButton | None = None
-        layout = QVBoxLayout(parent)
+        layout = QVBoxLayout()
         self.downloading_btn = self.create_btn(
             "downloading-btn",
             "正在下载",
