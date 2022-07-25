@@ -14,25 +14,29 @@ from .Toolbar import Toolbar
 from ..utils import utils
 
 import sys
+import os.path
 
 
 class MainWindow(QMainWindow):
     def __init__(self, hide_to_tray=True):
         super().__init__()
         self.hide_to_tray = hide_to_tray
-        self.bg = utils.get_resource_path("default-bg-blurred.png")
+        self.bg = utils.get_resource_path("default-bg.png")
         self.setCentralWidget(MainWidget())
         self.setWindowTitle("Bilibili下载器")
         self.setMinimumSize(QSize(800, 480))
-        self.setWindowIcon(utils.get_icon("logo"))
+        self.setWindowIcon(utils.get_icon("logo", "png"))
         self.addToolBar(Toolbar(self))
         self.set_bg_img()
         self.show()
 
-    def set_bg_path(self, bg_path: str):
-        self.bg = bg_path
+    def set_bg_img(self, bg: str = ""):
+        if bg:
+            self.bg = bg
+            
+        if not self.bg or not os.path.exists(self.bg):
+            return
 
-    def set_bg_img(self):
         palette = self.palette()
         img = QImage(self.bg)
         img = img.scaled(self.size())

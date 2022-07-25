@@ -7,5 +7,6 @@
     <file>./styles/new-dialog.qss</file>
     <file>./styles/pushbutton.qss</file>
     <file>./styles/toolbar.qss</file>
+    <file>./styles/main-widget.qss</file>
 </qresource>
 </RCC>

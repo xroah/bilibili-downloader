@@ -1,0 +1,17 @@
+.settings-dialog {
+    background-color: #fff;
+}
+
+.settings-dialog .show-file-dialog-btn {
+    min-width: 120px;
+    padding: 8px 0;
+}
+
+.settings-dialog .download-path {
+    border: none;
+    background-color: transparent;
+}
+
+.settings-dialog .used-text {
+    min-width: 80px;
+}

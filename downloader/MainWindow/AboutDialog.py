@@ -36,7 +36,7 @@ def create_about_dialog(window: QMainWindow) -> None:
 
     w = QWidget(dialog.body)
     about = QLabel()
-    layout = QVBoxLayout(w)
+    layout = QVBoxLayout()
     about.setText(text)
     about.setOpenExternalLinks(True)
     layout.addWidget(about)

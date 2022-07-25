@@ -4,7 +4,6 @@ import httpx
 import os
 import os.path
 import time
-import io
 
 bing_host = "https://cn.bing.com"
 cwd = os.getcwd()
@@ -36,7 +35,7 @@ def check(name: str) -> bool:
                 downloaded = True
             else:
                 os.unlink(os.path.join(bg_dir, f.name))
-    
+
     return downloaded
 
 

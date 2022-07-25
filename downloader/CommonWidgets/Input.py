@@ -16,7 +16,7 @@ class Input(QLineEdit):
         super().__init__(parent)
         self.clear_btn = QToolButton()
         clear_btn = self.clear_btn
-        layout = QVBoxLayout(self)
+        layout = QVBoxLayout()
         clear_btn.setIcon(utils.get_icon("close"))
         clear_btn.setProperty("class", "clear")
         clear_btn.setCursor(Qt.ArrowCursor)

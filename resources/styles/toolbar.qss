@@ -1,7 +1,7 @@
 Toolbar#toolbar {
     padding: 5px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    background-color: rgba(255, 255, 255, .5);
+    border-bottom: 1px solid #f0f0f0;
+    background-color: rgba(255, 255, 255, .6);
 }
 
 .placeholder {

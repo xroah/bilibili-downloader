@@ -2,7 +2,6 @@ import sys
 from threading import Thread
 
 import downloader.QRC.Icons
-import downloader.QRC.Styles
 from downloader.App import App
 from downloader.BingImage import download_img
 
@@ -18,16 +17,16 @@ def update_bg() -> None:
     try:
         img_name = download_img()
         if img_name:
-            app.main_win.set_bg_path(img_name)
-            app.main_win.set_bg_img()
+            app.main_win.set_bg_img(img_name)
     except Exception as e:
-        print(e)
+        print("======>", e)
+
 
 if __name__ == "__main__":
     app = App()
-    
-    t1 = Thread(target=update_bg)
-    t1.daemon = True
-    t1.start()
-        
+
+    t = Thread(target=update_bg)
+    t.daemon = True
+    t.start()
+
     sys.exit(app.exec())
