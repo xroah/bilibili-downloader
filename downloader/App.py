@@ -37,7 +37,7 @@ class App(QApplication):
             
     def init_tray(self):
         tray = self.tray
-        tray.setIcon(utils.get_icon("logo"))
+        tray.setIcon(utils.get_icon("logo", "png"))
         tray.show()
         tray.setToolTip("Bilibli下载器")
         tray.setContextMenu(self.get_ctx_menu())

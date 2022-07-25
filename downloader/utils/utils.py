@@ -10,11 +10,11 @@ def get_resource_path(resource: str):
     return os.path.normpath(file_path)
 
 
-def get_icon(name: str) -> QIcon:
+def get_icon(name: str, ext: str = "svg") -> QIcon:
     if not name:
         return None
 
-    return QIcon(f":/icons/{name}.png")
+    return QIcon(f":/icons/{name}.{ext}")
 
 
 def get_style(name: str) -> str:

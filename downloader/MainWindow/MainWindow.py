@@ -25,7 +25,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(MainWidget())
         self.setWindowTitle("Bilibili下载器")
         self.setMinimumSize(QSize(800, 480))
-        self.setWindowIcon(utils.get_icon("logo"))
+        self.setWindowIcon(utils.get_icon("logo", "png"))
         self.addToolBar(Toolbar(self))
         self.set_bg_img()
         self.show()
