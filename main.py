@@ -2,7 +2,6 @@ import sys
 from threading import Thread
 
 import downloader.QRC.Icons
-import downloader.QRC.Styles
 from downloader.App import App
 from downloader.BingImage import download_img
 

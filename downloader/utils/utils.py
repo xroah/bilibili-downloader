@@ -1,6 +1,5 @@
 import os
 from PySide6.QtGui import QIcon
-from PySide6.QtCore import QFile
 
 
 def get_resource_path(resource: str):
@@ -10,7 +9,7 @@ def get_resource_path(resource: str):
     return os.path.normpath(file_path)
 
 
-def get_icon(name: str, ext: str = "svg") -> QIcon:
+def get_icon(name: str, ext: str = "svg") -> QIcon | None:
     if not name:
         return None
 
@@ -18,12 +17,19 @@ def get_icon(name: str, ext: str = "svg") -> QIcon:
 
 
 def get_style(name: str) -> str:
-    file = QFile(f":/styles/{name}.qss")
+    file = get_resource_path(f"styles/{name}.qss")
 
-    if not file.open(QFile.ReadOnly | QFile.Text):
-        return ""
+    with open(file, "r") as f:
+        ss = f.read()
 
-    ss = file.readAll()
-    file.close()
+    return ss
 
-    return ss.toStdString()
+
+def get_default_download_path() -> str:
+    home = os.path.expanduser("~")
+    download_path = os.path.join(home, "Downloads")
+
+    if not os.path.exists(download_path):
+        os.makedirs(download_path)
+
+    return download_path
