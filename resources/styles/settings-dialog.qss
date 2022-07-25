@@ -4,11 +4,14 @@
 
 .settings-dialog .show-file-dialog-btn {
     min-width: 120px;
+    max-width: 120px;
     padding: 8px 0;
 }
 
 .settings-dialog .download-path {
     border: none;
+    margin: 0 10px;
+    text-align: left;
     background-color: transparent;
 }
 

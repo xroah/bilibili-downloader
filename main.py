@@ -5,6 +5,7 @@ import downloader.QRC.Icons
 from downloader.App import App
 from downloader.BingImage import download_img
 
+
 app: App | None = None
 
 __version__ = "1.0.0"

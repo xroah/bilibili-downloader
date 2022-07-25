@@ -48,6 +48,9 @@
          <property name="cursor">
           <cursorShape>PointingHandCursor</cursorShape>
          </property>
+         <property name="toolTip">
+          <string>打开文件夹</string>
+         </property>
          <property name="text">
           <string/>
          </property>
