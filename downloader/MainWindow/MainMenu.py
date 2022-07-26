@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (
 from ..CommonWidgets import Menu
 from ..utils import utils
 from .AboutDialog import create_about_dialog
-from ..SettingsDialog import SettingsDialog
+from ..Settings import SettingsDialog
 
 
 class MainMenu(Menu):

@@ -1,4 +1,4 @@
-from PySide6.QtCore import QSize, Qt
+from PySide6.QtCore import QSize, Qt, Signal
 from PySide6.QtGui import (
     QCloseEvent,
     QKeyEvent,
@@ -15,9 +15,12 @@ from ..utils import utils
 
 import sys
 import os.path
+from threading import Timer
 
 
 class MainWindow(QMainWindow):
+    hide_window = Signal()
+
     def __init__(self, hide_to_tray=True):
         super().__init__()
         self.hide_to_tray = hide_to_tray
@@ -29,13 +32,14 @@ class MainWindow(QMainWindow):
         self.resize(self._size)
         self.setWindowIcon(utils.get_icon("logo", "png"))
         self.addToolBar(Toolbar(self))
+        self.hide_window.connect(self.hide)
         self.set_bg_img()
         self.show()
 
     def set_bg_img(self, bg: str = ""):
         if bg:
             self.bg = bg
-            
+
         if not self.bg or not os.path.exists(self.bg):
             return
 

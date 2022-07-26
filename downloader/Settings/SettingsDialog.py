@@ -13,7 +13,7 @@ import os
 from typing import cast
 
 from ..utils import utils
-from .Settings import get_settings, save_settings
+from .Settings import Settings
 
 
 class SettingsDialog(QMainWindow):
@@ -46,22 +46,23 @@ class SettingsDialog(QMainWindow):
             QCheckBox,
             widget.findChild(QCheckBox, "isMonitorClipboard")
         )
-        self.settings = self.init_settings()
+        self.settings = Settings()
         self.show_btn.setStyleSheet(utils.get_style("pushbutton"))
         widget.setStyleSheet(utils.get_style("settings-dialog"))
 
         self.init_signal()
+        self.init_settings()
         self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.setCentralWidget(widget)
         self.setFixedSize(600, 300)
         self.show()
 
-    def init_settings(self) -> dict:
-        settings = get_settings()
-        path = settings["download_path"]
-        is_show_msg = settings["is_show_message"]
-        is_play = settings["is_play_ringtone"]
-        is_monitor = settings["is_monitor_clipboard"]
+    def init_settings(self):
+        s = self.settings
+        path =  s.get("download_path")
+        is_show_msg = s.get("is_show_message")
+        is_play = s.get("is_play_ringtone")
+        is_monitor = s.get("is_monitor_clipboard")
         self.setCheckboxState(self.is_show_msg_checkbox, is_show_msg)
         self.setCheckboxState(self.is_play_checkbox, is_play)
         self.setCheckboxState(self.is_monitor_checkbox, is_monitor)
@@ -69,8 +70,6 @@ class SettingsDialog(QMainWindow):
         if not os.path.exists(path):
             os.makedirs(path)
         self.set_path(path)
-
-        return settings
 
     def init_signal(self):
         self.show_btn.clicked.connect(self.get_dir)
@@ -92,8 +91,7 @@ class SettingsDialog(QMainWindow):
         return state == Qt.Checked
 
     def handle_change(self, prop: str, state: Qt.CheckState):
-        self.settings[prop] = self.get_checked(state)
-        save_settings(self.settings)
+        self.settings.set(prop, self.get_checked(state))
 
     def get_dir(self):
         ret = QFileDialog.getExistingDirectory(
@@ -121,8 +119,7 @@ class SettingsDialog(QMainWindow):
         self.used_label.setText(f"已使用: {size}")
 
         if save:
-            self.settings["download_path"] = path
-            save_settings(self.settings)
+            self.settings.set("download_path", path)
 
     def open_download_path(self):
         platform = sys.platform
