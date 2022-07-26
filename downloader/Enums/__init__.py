@@ -1,1 +1,1 @@
-from .Color import Color
+from .SettingsKey import SettingsKey

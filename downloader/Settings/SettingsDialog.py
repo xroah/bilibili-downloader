@@ -14,6 +14,7 @@ from typing import cast
 
 from ..utils import utils
 from .Settings import Settings
+from ..Enums import SettingsKey
 
 
 class SettingsDialog(QMainWindow):
@@ -59,10 +60,10 @@ class SettingsDialog(QMainWindow):
 
     def init_settings(self):
         s = self.settings
-        path =  s.get("download_path")
-        is_show_msg = s.get("is_show_message")
-        is_play = s.get("is_play_ringtone")
-        is_monitor = s.get("is_monitor_clipboard")
+        path = s.get(SettingsKey.DOWNLOAD_PATH)
+        is_show_msg = s.get(SettingsKey.IS_SHOW_MESSAGE)
+        is_play = s.get(SettingsKey.IS_PLAY_RINGTONE)
+        is_monitor = s.get(SettingsKey.IS_MONITOR_CLIPBOARD)
         self.setCheckboxState(self.is_show_msg_checkbox, is_show_msg)
         self.setCheckboxState(self.is_play_checkbox, is_play)
         self.setCheckboxState(self.is_monitor_checkbox, is_monitor)
@@ -75,13 +76,13 @@ class SettingsDialog(QMainWindow):
         self.show_btn.clicked.connect(self.get_dir)
         self.p_btn.clicked.connect(self.open_download_path)
         self.is_show_msg_checkbox.stateChanged.connect(
-            lambda s: self.handle_change("is_show_message", s)
+            lambda s: self.handle_change(SettingsKey.IS_SHOW_MESSAGE, s)
         )
         self.is_play_checkbox.stateChanged.connect(
-            lambda s: self.handle_change("is_play_ringtone", s)
+            lambda s: self.handle_change(SettingsKey.IS_PLAY_RINGTONE, s)
         )
         self.is_monitor_checkbox.stateChanged.connect(
-            lambda s: self.handle_change("is_monitor_clipboard", s)
+            lambda s: self.handle_change(SettingsKey.IS_MONITOR_CLIPBOARD, s)
         )
 
     def setCheckboxState(self, checkbox: QCheckBox, checked: bool):
@@ -90,7 +91,7 @@ class SettingsDialog(QMainWindow):
     def get_checked(self, state: Qt.CheckState) -> bool:
         return state == Qt.Checked
 
-    def handle_change(self, prop: str, state: Qt.CheckState):
+    def handle_change(self, prop: str | SettingsKey, state: Qt.CheckState):
         self.settings.set(prop, self.get_checked(state))
 
     def get_dir(self):
@@ -101,7 +102,7 @@ class SettingsDialog(QMainWindow):
             QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks
         )
 
-        if not ret or ret == self.settings["download_path"]:
+        if not ret or ret == self.settings.get(SettingsKey.DOWNLOAD_PATH):
             return
 
         self.set_path(ret, True)
@@ -119,7 +120,7 @@ class SettingsDialog(QMainWindow):
         self.used_label.setText(f"已使用: {size}")
 
         if save:
-            self.settings.set("download_path", path)
+            self.settings.set(SettingsKey.DOWNLOAD_PATH, path)
 
     def open_download_path(self):
         platform = sys.platform

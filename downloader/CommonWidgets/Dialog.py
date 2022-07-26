@@ -1,6 +1,7 @@
+from typing import Callable
+
 from PySide6.QtCore import QSize, Qt, Signal
 from PySide6.QtGui import QShowEvent, QGuiApplication
-
 from PySide6.QtWidgets import (
     QDialog,
     QWidget,
@@ -23,7 +24,9 @@ class Dialog(QDialog):
             is_modal: bool = True,
             content: QWidget = None,
             show_cancel: bool = False,
-            show_footer: bool = True
+            show_footer: bool = True,
+            close_on_ok: bool = True,
+            ok_callback: Callable = None
     ):
         super().__init__(parent)
         self._parent = parent
@@ -31,6 +34,8 @@ class Dialog(QDialog):
         self.content = content
         self.show_cancel = show_cancel
         self.show_footer = show_footer
+        self.close_on_ok = close_on_ok
+        self.ok_callback = ok_callback
         self.body = self._get_body()
         self.setWindowTitle(title)
         self.setModal(is_modal)
@@ -105,10 +110,15 @@ class Dialog(QDialog):
             self.content.deleteLater()
 
         self.content = content
+        content.setParent(self)
         layout.addWidget(content)
 
     def _ok(self):
-        self.accept()
+        if self.close_on_ok:
+            self.accept()
+
+        if self.ok_callback:
+            self.ok_callback()
 
     def _cancel(self):
         self.reject()

@@ -1,4 +1,6 @@
 import os
+from urllib.parse import urlparse
+import re
 import shutil
 
 from PySide6.QtGui import QIcon
@@ -65,3 +67,32 @@ def format_size(size: float) -> str:
         i += 1
 
     return f"{round(ret, 2)}{size_units[i]}"
+
+
+def parse_url(url: str) -> str | None:
+    if not url.strip():
+        return
+
+    pattern = r"^(BV|AV)[\da-zA-z]+$"  # bv no pattern
+
+    def fullmatch(s):
+        return re.fullmatch(pattern, s, re.IGNORECASE)
+
+    matched = fullmatch(url)
+
+    if matched:
+        return matched.string
+
+    # like: https://www.bilibili.com/video/BVxxxx
+    parsed = urlparse(url)
+
+    if not parsed.hostname or "bilibili" not in parsed.hostname:
+        return None
+
+    base = os.path.basename(parsed.path)
+    matched = fullmatch(base)
+
+    if matched:
+        return matched.string
+
+    return None

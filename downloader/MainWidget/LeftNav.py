@@ -6,7 +6,6 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, Signal
 from typing import Any
 
-from ..Enums import Color
 from ..utils import utils
 
 
@@ -58,10 +57,7 @@ class LeftNav(QWidget):
             self.current.setStyleSheet("")
 
         self.current = btn
-        btn.setStyleSheet(f"""
-            {Color.BUTTON_PRESSED.value};
-            color: #fff; 
-        """)
+        btn.setStyleSheet(utils.get_style("active"))
         self.changed.emit(btn)
 
     def downloading_btn_press(self):

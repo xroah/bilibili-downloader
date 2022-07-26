@@ -1,7 +1,6 @@
 from PySide6.QtWidgets import QPushButton, QWidget
 from PySide6.QtCore import Qt
 
-from ..Enums import Color
 from ..utils import utils
 
 

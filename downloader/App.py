@@ -62,10 +62,12 @@ class App(QApplication):
             else:
                 win.showNormal()
         else:
-            if win.isMinimized() and win.isMaximized():
-                win.showMaximized()
-            else:
-                win.showNormal()
+            # The window is minimized is also visible
+            if win.isMinimized():
+                if win.isMaximized():
+                    win.showMaximized()
+                else:
+                    win.showNormal()
 
         win.activateWindow()
         win.raise_()

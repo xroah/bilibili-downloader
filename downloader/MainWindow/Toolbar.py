@@ -1,4 +1,4 @@
-from PySide6.QtCore import Qt, __version__
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QToolBar,
     QToolButton,
@@ -38,5 +38,4 @@ class Toolbar(QToolBar):
         self.setStyleSheet(utils.get_style("toolbar"))
 
     def show_new_dialog(self):
-        dialog = NewDialog(self._window)
-        dialog.open()
+        NewDialog(self._window)

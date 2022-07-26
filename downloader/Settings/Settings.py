@@ -3,16 +3,16 @@ import json
 from typing import cast
 
 from ..utils.decorators import singleton
-
 from ..utils import utils
+from ..Enums import SettingsKey
 
 _settings_dir = os.path.join(os.getcwd(), "data")
 _settings_file = os.path.join(_settings_dir, "settings.json")
 _default_settings = {
-    "download_path": utils.get_default_download_path(),
-    "is_show_message": True,
-    "is_play_ringtone": True,
-    "is_monitor_clipboard": True
+    SettingsKey.DOWNLOAD_PATH.value: utils.get_default_download_path(),
+    SettingsKey.IS_SHOW_MESSAGE.value: True,
+    SettingsKey.IS_PLAY_RINGTONE.value: True,
+    SettingsKey.IS_MONITOR_CLIPBOARD.value: True
 }
 
 
@@ -28,7 +28,7 @@ class Settings:
             os.mkdir(_settings_dir)
 
         if not os.path.exists(_settings_file):
-            self.save_settings(settings)
+            self.save_settings()
             return settings
 
         try:
@@ -51,15 +51,19 @@ class Settings:
         except Exception as e:
             print("Save error:", e)
 
-    def get(self, name: str) -> any:
-        if not name in self._dict:
+    def get(self, name: str | SettingsKey) -> any:
+        key = str(name)
+
+        if key not in self._dict:
             return None
 
-        return self._dict[name]
+        return self._dict[key]
 
-    def set(self, name: str, value: any):
-        if not name in self._dict and self._dict[name] != value:
+    def set(self, name: str | SettingsKey, value: any):
+        key = str(name)
+
+        if key not in self._dict and self._dict[key] != value:
             return
-            
-        self._dict[name] = value
+
+        self._dict[key] = value
         self.save_settings()
