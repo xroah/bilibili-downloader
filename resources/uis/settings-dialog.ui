@@ -20,9 +20,6 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_2"/>
-     </item>
-     <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <widget class="QPushButton" name="showFileDialogBtn">
@@ -62,7 +59,7 @@
        <item>
         <widget class="QLabel" name="usedText">
          <property name="text">
-          <string>1023.99GB</string>
+          <string/>
          </property>
          <property name="class" stdset="0">
           <string>used-text</string>
@@ -70,6 +67,27 @@
         </widget>
        </item>
       </layout>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="isShowMessage">
+       <property name="text">
+        <string>下载完成后弹出提示框</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="isPlayRingtone">
+       <property name="text">
+        <string>下载完成后播放提示音</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="isMonitorClipboard">
+       <property name="text">
+        <string>监控剪贴板</string>
+       </property>
+      </widget>
      </item>
      <item>
       <spacer name="verticalSpacer">

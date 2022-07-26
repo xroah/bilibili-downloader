@@ -12,15 +12,15 @@ PushButton:focus {
 }
 
 PushButton.primary {
-    %s;
     color: #fff;
     border-radius: 3px;
+    background-color: rgba(13, 110, 253, .6)
 }
 
 PushButton.primary:hover {
-    %s;
+    background-color: rgba(13, 110, 253, .8)
 }
 
 PushButton.primary:pressed {
-    %s;
+    background-color: rgba(13, 110, 253, 1)
 }

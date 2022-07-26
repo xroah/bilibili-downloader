@@ -23,10 +23,5 @@ class PushButton(QPushButton):
         if primary:
             self.setProperty("class", "primary")
 
-        text = utils.get_style("pushbutton")
-        ss = text % (
-            Color.BUTTON_PRIMARY.value,
-            Color.BUTTON_HOVER.value,
-            Color.BUTTON_PRESSED.value
-        )
+        ss = utils.get_style("pushbutton")
         self.setStyleSheet(ss)

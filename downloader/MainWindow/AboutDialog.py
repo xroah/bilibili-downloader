@@ -25,14 +25,30 @@ def create_about_dialog(window: QMainWindow) -> None:
         QSize(260, 200),
         "关于"
     )
-    filename = utils.get_resource_path("about.html")
+    template = """
+        <div style="font-size: 16px; line-height: 1.5;">
+            <div><strong>Bilibili下载器</strong></div>
+            <div>版本: {ver}</div>
+            <div>
+                <a style="text-decoration: none;" href="https://www.qt.io/">
+                    PySide6:
+                </a>
+                {pyside_ver}
+            </div>
+            <div>
+                <a style="text-decoration: none;" href="https://www.python.org">
+                    Python:
+                </a>
+                {python_ver}
+            </div>
+        </div>
+    """
 
-    with open(filename, "r", encoding="utf-8") as f:
-        text = f.read().format(
-            ver=__main__.__version__,
-            pyside_ver=__version__,
-            python_ver=get_python_ver()
-        )
+    text = template.format(
+        ver=__main__.__version__,
+        pyside_ver=__version__,
+        python_ver=get_python_ver()
+    )
 
     w = QWidget(dialog.body)
     about = QLabel()
