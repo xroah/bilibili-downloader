@@ -1,26 +1,26 @@
-PushButton {
+PushButton, QPushButton {
     border-radius: 3px;
     background-color: #fff;
 }
 
-PushButton:hover {
+PushButton:hover, QPushButton:hover {
     background-color: #ddd;
 }
 
-PushButton:focus {
+PushButton:focus, QPushButton:focus {
     border: 3px solid #9bc2fd;
 }
 
-PushButton.primary {
+PushButton.primary, QPushButton.primary {
     color: #fff;
     border-radius: 3px;
     background-color: rgba(13, 110, 253, .6)
 }
 
-PushButton.primary:hover {
+PushButton.primary:hover, QPushButton.primary {
     background-color: rgba(13, 110, 253, .8)
 }
 
-PushButton.primary:pressed {
+PushButton.primary:pressed, QPushButton.primary {
     background-color: rgba(13, 110, 253, 1)
 }

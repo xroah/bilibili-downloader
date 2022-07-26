@@ -1,5 +1,5 @@
 .settings-dialog {
-    background-color: #fff;
+    background-color: #eee;
 }
 
 .settings-dialog .show-file-dialog-btn {

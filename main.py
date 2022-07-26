@@ -1,6 +1,8 @@
 import sys
 from threading import Thread
 
+from PySide6.QtCore import QCoreApplication, Qt
+
 import downloader.QRC.Icons
 from downloader.App import App
 from downloader.BingImage import download_img
@@ -24,6 +26,7 @@ def update_bg() -> None:
 
 
 if __name__ == "__main__":
+    QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts, True)
     app = App()
 
     t = Thread(target=update_bg)
