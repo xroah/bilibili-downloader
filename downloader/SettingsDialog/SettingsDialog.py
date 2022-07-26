@@ -10,7 +10,6 @@ from PySide6.QtCore import Qt
 
 import sys
 import os
-import json
 from typing import cast
 
 from ..utils import utils
@@ -52,6 +51,7 @@ class SettingsDialog(QMainWindow):
         widget.setStyleSheet(utils.get_style("settings-dialog"))
 
         self.init_signal()
+        self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.setCentralWidget(widget)
         self.setFixedSize(600, 300)
         self.show()

@@ -22,9 +22,11 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.hide_to_tray = hide_to_tray
         self.bg = utils.get_resource_path("default-bg.png")
+        self._size = QSize(800, 480)
         self.setCentralWidget(MainWidget())
         self.setWindowTitle("Bilibili下载器")
-        self.setMinimumSize(QSize(800, 480))
+        self.setMinimumSize(self._size)
+        self.resize(self._size)
         self.setWindowIcon(utils.get_icon("logo", "png"))
         self.addToolBar(Toolbar(self))
         self.set_bg_img()
@@ -44,6 +46,10 @@ class MainWindow(QMainWindow):
         palette.setBrush(QPalette.Window, brush)
         self.setPalette(palette)
 
+    def show(self) -> None:
+        self.resize(self._size)
+        super().show()
+
     def closeEvent(self, e: QCloseEvent) -> None:
         if self.hide_to_tray:
             self.hide()
@@ -62,4 +68,5 @@ class MainWindow(QMainWindow):
             self.hide()
 
     def resizeEvent(self, e: QResizeEvent) -> None:
+        self._size = e.size()
         self.set_bg_img()

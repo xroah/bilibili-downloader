@@ -7,7 +7,8 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
-from .MainWindow import MainWindow, SettingsDialog
+from .MainWindow import MainWindow
+from .SettingsDialog import SettingsDialog
 from .utils import utils
 
 
@@ -34,7 +35,7 @@ class App(QApplication):
 
         if tray_avail:
             self.init_tray()
-            
+
     def init_tray(self):
         tray = self.tray
         tray.setIcon(utils.get_icon("logo", "png"))
@@ -45,6 +46,7 @@ class App(QApplication):
 
     def tray_activated(self, reason):
         if (
+            # click
             reason == QSystemTrayIcon.Trigger and
             # mac os will show contextmenu on click
             sys.platform != "darwin"
@@ -55,9 +57,15 @@ class App(QApplication):
         win = self.main_win
 
         if not win.isVisible():
-            win.show()
-        elif win.isMinimized():
-            win.showNormal()
+            if win.isMaximized():
+                win.showMaximized()
+            else:
+                win.showNormal()
+        else:
+            if win.isMinimized() and win.isMaximized():
+                win.showMaximized()
+            else:
+                win.showNormal()
 
         win.activateWindow()
         win.raise_()
@@ -69,7 +77,7 @@ class App(QApplication):
         exit_action = menu.addAction("退出")
         show_main_action.triggered.connect(self.show_win)
         settings_action.triggered.connect(
-            lambda: SettingsDialog.create_settings_dialog(self.main_win)
+            lambda: SettingsDialog(self.main_win)
         )
         exit_action.triggered.connect(lambda: sys.exit(0))
         menu.setProperty("class", "contextmenu")
@@ -81,7 +89,7 @@ class App(QApplication):
 
     def menu_show(self):
         self.menu_visible = True
-        
+
     def menu_hide(self):
         self.menu_visible = False
 
