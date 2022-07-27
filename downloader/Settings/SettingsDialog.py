@@ -47,6 +47,10 @@ class SettingsDialog(QMainWindow):
             QCheckBox,
             widget.findChild(QCheckBox, "isMonitorClipboard")
         )
+        self.is_auto_download_checkbox = cast(
+            QCheckBox,
+            widget.findChild(QCheckBox, "isAutoDownload")
+        )
         self.settings = Settings()
         self.show_btn.setStyleSheet(utils.get_style("pushbutton"))
         widget.setStyleSheet(utils.get_style("settings-dialog"))
@@ -64,9 +68,11 @@ class SettingsDialog(QMainWindow):
         is_show_msg = s.get(SettingsKey.IS_SHOW_MESSAGE)
         is_play = s.get(SettingsKey.IS_PLAY_RINGTONE)
         is_monitor = s.get(SettingsKey.IS_MONITOR_CLIPBOARD)
+        is_auto_download = s.get(SettingsKey.IS_AUTO_DOWNLOAD)
         self.setCheckboxState(self.is_show_msg_checkbox, is_show_msg)
         self.setCheckboxState(self.is_play_checkbox, is_play)
         self.setCheckboxState(self.is_monitor_checkbox, is_monitor)
+        self.setCheckboxState(self.is_auto_download_checkbox, is_auto_download)
 
         if not os.path.exists(path):
             os.makedirs(path)
@@ -83,6 +89,9 @@ class SettingsDialog(QMainWindow):
         )
         self.is_monitor_checkbox.stateChanged.connect(
             lambda s: self.handle_change(SettingsKey.IS_MONITOR_CLIPBOARD, s)
+        )
+        self.is_auto_download_checkbox.stateChanged.connect(
+            lambda s: self.handle_change(SettingsKey.IS_AUTO_DOWNLOAD, s)
         )
 
     def setCheckboxState(self, checkbox: QCheckBox, checked: bool):

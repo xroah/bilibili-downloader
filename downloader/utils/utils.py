@@ -13,7 +13,7 @@ def get_resource_path(resource: str):
     return os.path.normpath(file_path)
 
 
-def get_icon(name: str, ext: str = "svg") -> QIcon | None:
+def get_icon(name: str, ext="svg", string=False) -> QIcon | None:
     if not name:
         return None
 

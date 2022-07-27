@@ -1,0 +1,31 @@
+.downloading-item {
+    max-height: 60px;
+    border-bottom: 1px solid #eee;;
+    background-color: rgba(255, 255, 255, .2);
+    color: #333;
+}
+
+.downloading-item .icon {
+    padding: 0;
+    border: none;
+    background-color: transparent;
+}
+
+.downloading-item .size-info {
+    color: #666;
+}
+
+.downloading-item .toggle {
+    border: none;
+    padding: 0;
+    background-color: transparent;
+}
+
+.downloading-item .toggle:hover {
+    background-color: rgba(255, 255, 255, .3)
+}
+
+.downloading-item::chunk {
+    border: none;
+    background-color: rgba(13, 110, 253, .3);
+}
