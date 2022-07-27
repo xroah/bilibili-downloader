@@ -18,7 +18,8 @@ import os.path
 
 
 class MainWindow(QMainWindow):
-    hide_window = Signal()
+    #  bvid, resolution, resolution list, page list
+    download = Signal(str, int, list, list)
 
     def __init__(self, hide_to_tray=True):
         super().__init__()
@@ -31,7 +32,7 @@ class MainWindow(QMainWindow):
         self.resize(self._size)
         self.setWindowIcon(utils.get_icon("logo", "png"))
         self.addToolBar(Toolbar(self))
-        self.hide_window.connect(self.hide)
+        self.download.connect(self.handle_download)
         self.set_bg_img()
         self.show()
 
@@ -52,6 +53,9 @@ class MainWindow(QMainWindow):
     def show(self) -> None:
         self.resize(self._size)
         super().show()
+
+    def handle_download(self, bv: str, r: int, all_r: list, pages: list):
+        print(bv, r, all_r, pages)
 
     def closeEvent(self, e: QCloseEvent) -> None:
         if self.hide_to_tray:

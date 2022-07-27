@@ -13,7 +13,6 @@ import httpx
 from PySide6.QtCore import QSize, Signal
 from PySide6.QtWidgets import (
     QLabel,
-    QMainWindow,
     QWidget,
     QVBoxLayout
 )
@@ -22,9 +21,10 @@ from PySide6.QtWidgets import (
 class NewDialog(Dialog):
     hide_loading = Signal()
     req_error = Signal(str)
-    req_success = Signal(dict)
+    # pages, resolution, dict
+    req_success = Signal(list, dict)
 
-    def __init__(self, window: QMainWindow):
+    def __init__(self, window):
         super().__init__(
             parent=window,
             title="新建下载",
@@ -37,10 +37,13 @@ class NewDialog(Dialog):
         self._window = window
         self.loading: Loading | None = None
         self._input = Input()
-        
+        self.pages = []
+        self.bv = ""
+
         self.req_error.connect(self.handle_error)
         self.hide_loading.connect(self.handle_loading)
         self.req_success.connect(self.handle_success)
+        self.shown.connect(lambda: self._input.setFocus())
         self.init()
         self.open_()
 
@@ -51,7 +54,6 @@ class NewDialog(Dialog):
         input_.setParent(content)
         input_.setFrame(False)
         input_.setProperty("class", "input")
-        self.shown.connect(lambda: input_.setFocus())
 
         layout.addWidget(QLabel("输入BV号/视频地址"))
         layout.addWidget(input_)
@@ -76,7 +78,7 @@ class NewDialog(Dialog):
         self.loading.accept()
         self.loading = None
 
-    def request(self, path: str, params) -> dict | None:
+    def request(self, path, params) -> dict | None:
         headers = {
             "referer": Req.REFERER.value,
             "user-agent": Req.USER_AGENT.value
@@ -111,17 +113,26 @@ class NewDialog(Dialog):
             "bvid": bv,
             "otype": "json"
         }
+        pages = d
         d = self.request(Req.URL_PATH, urlencode(query))
         self.hide_loading.emit()
         
         if d:
             keys = d["accept_description"]
             values = d["accept_quality"]
-            self.req_success.emit(dict(zip(keys, values)))
+            self.req_success.emit(pages, dict(zip(keys, values)))
 
-    def handle_success(self, d: list[str, int]):
+    def handle_success(self, pages: list, d: dict[str, int]):
+        self.pages = pages
+        SelectDialog(
+            parent=self,
+            data=d,
+            on_ok=self.on_select_resolution
+        )
+
+    def on_select_resolution(self, sel: int, all_: list):
         self.accept()
-        SelectDialog(self._window, d)
+        self._window.download.emit(self.bv, sel, all_, self.pages)
 
     def on_ok(self):
         text = self._input.text().strip()
@@ -136,6 +147,7 @@ class NewDialog(Dialog):
             return
 
         self.loading = Loading(self)
+        self.bv = bv
 
         t = Thread(target=self.fet_video_info, args=(bv, ))
         t.start()
