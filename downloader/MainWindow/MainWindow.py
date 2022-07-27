@@ -15,7 +15,6 @@ from ..utils import utils
 
 import sys
 import os.path
-from threading import Timer
 
 
 class MainWindow(QMainWindow):

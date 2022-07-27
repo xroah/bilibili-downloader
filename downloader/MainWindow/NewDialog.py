@@ -1,14 +1,15 @@
 import json
-import re
-from urllib.parse import urlparse
+from urllib.parse import urlencode
+from threading import Thread
 
 from ..CommonWidgets import Dialog
 from ..utils import utils
 from ..CommonWidgets import Input, MessageBox
 from .Loading import Loading
+from ..Enums import Req
 
 import httpx
-from PySide6.QtCore import QSize, Qt
+from PySide6.QtCore import QSize, Signal, QObject
 from PySide6.QtWidgets import (
     QLabel,
     QMainWindow,
@@ -17,8 +18,12 @@ from PySide6.QtWidgets import (
 )
 
 
-class NewDialog:
+class NewDialog(QObject):
+    hide_loading = Signal()
+    req_error = Signal(str)
+
     def __init__(self, window: QMainWindow):
+        super().__init__()
         self.dialog = Dialog(
             title="新建下载",
             parent=window,
@@ -27,7 +32,11 @@ class NewDialog:
             close_on_ok=False,
             ok_callback=self.on_ok
         )
+        self.loading: Loading | None = None
         self._input = Input()
+        
+        self.req_error.connect(self.handle_error)
+        self.hide_loading.connect(self.handle_loading)
         self.init()
         self.dialog.open_()
 
@@ -51,6 +60,63 @@ class NewDialog:
 
     def show_msg(self, t: str):
         MessageBox.alert(t, parent=self.dialog)
+        
+
+    def handle_error(self, msg: str):
+        self.handle_loading()
+        self.show_msg(msg)
+
+    def handle_loading(self):
+        if self.loading is None:
+            return
+
+        self.loading.accept()
+        self.loading = None
+
+    def request(self, path: str, params) -> dict | None:
+        headers = {
+            "referer": Req.REFERER.value,
+            "user-agent": Req.USER_AGENT.value
+        }
+
+        try:
+            res = httpx.get(
+                f"{Req.API_ADDR}{path}?{params}",
+                headers=headers
+            )
+            j = json.loads(res.text)
+        except Exception as e:
+            print("Request error:", e)
+            self.req_error.emit(str(e))
+            return None
+        else:
+            if j["code"] != 0:
+                self.req_error.emit(
+                    j["message"] if "message" in j else "请求错误"
+                )
+                return None
+
+            return j["data"]
+
+    def fet_video_info(self, bv: str):
+        d = self.request(Req.LIST_PATH, f"bvid={bv}&jsonp=jsonp")
+
+        print(d)
+
+        if not d:
+            self.hide_loading.emit()
+            return
+        
+        query = {
+            "cid": d[0]["cid"],
+            "bvid": bv,
+            "otype": "json"
+        }
+        
+        d = self.request(Req.URL_PATH, urlencode(query))
+
+        print(d)
+        self.hide_loading.emit()
 
     def on_ok(self):
         text = self._input.text().strip()
@@ -64,24 +130,7 @@ class NewDialog:
             self.show_msg("没有找到视频")
             return
 
-        # loading = Loading(self.dialog)
-        headers = {
-            "referer": "https://www.bilibili.com",
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"
-        }
-        res = httpx.get(
-            f"https://api.bilibili.com/x/player/pagelist?bvid={bv}&jsonp=jsonp",
-            headers=headers
-        )
+        self.loading = Loading(self.dialog)
 
-        try:
-            j = json.loads(res.text)
-        except Exception as e:
-            print("====>", e)
-            self.show_msg("未知错误")
-            return
-
-        if j["code"] != 0:
-            self.show_msg(j["message"] if "message" in j else "请求错误")
-
-        print(j)
+        t = Thread(target=self.fet_video_info, args=(bv, ))
+        t.start()
