@@ -7,9 +7,10 @@ from ..utils import utils
 from ..CommonWidgets import Input, MessageBox
 from .Loading import Loading
 from ..Enums import Req
+from .SelectDialog import SelectDialog
 
 import httpx
-from PySide6.QtCore import QSize, Signal, QObject
+from PySide6.QtCore import QSize, Signal
 from PySide6.QtWidgets import (
     QLabel,
     QMainWindow,
@@ -18,27 +19,30 @@ from PySide6.QtWidgets import (
 )
 
 
-class NewDialog(QObject):
+class NewDialog(Dialog):
     hide_loading = Signal()
     req_error = Signal(str)
+    req_success = Signal(dict)
 
     def __init__(self, window: QMainWindow):
-        super().__init__()
-        self.dialog = Dialog(
-            title="新建下载",
+        super().__init__(
             parent=window,
+            title="新建下载",
             show_cancel=True,
             size=QSize(420, 150),
+            is_modal=True,
             close_on_ok=False,
             ok_callback=self.on_ok
         )
+        self._window = window
         self.loading: Loading | None = None
         self._input = Input()
         
         self.req_error.connect(self.handle_error)
         self.hide_loading.connect(self.handle_loading)
+        self.req_success.connect(self.handle_success)
         self.init()
-        self.dialog.open_()
+        self.open_()
 
     def init(self):
         content = QWidget()
@@ -47,21 +51,20 @@ class NewDialog(QObject):
         input_.setParent(content)
         input_.setFrame(False)
         input_.setProperty("class", "input")
+        self.shown.connect(lambda: input_.setFocus())
 
         layout.addWidget(QLabel("输入BV号/视频地址"))
         layout.addWidget(input_)
+        layout.setContentsMargins(5, 5, 5, 5)
+
         content.setProperty("class", "new-dialog")
         content.setLayout(layout)
         content.setStyleSheet(utils.get_style("new-dialog"))
-        layout.setContentsMargins(5, 5, 5, 5)
-
-        self.dialog.shown.connect(lambda: input_.setFocus())
-        self.dialog.set_content(content)
+        self.set_content(content)
 
     def show_msg(self, t: str):
-        MessageBox.alert(t, parent=self.dialog)
+        MessageBox.alert(t, parent=self)
         
-
     def handle_error(self, msg: str):
         self.handle_loading()
         self.show_msg(msg)
@@ -100,23 +103,25 @@ class NewDialog(QObject):
 
     def fet_video_info(self, bv: str):
         d = self.request(Req.LIST_PATH, f"bvid={bv}&jsonp=jsonp")
-
-        print(d)
-
         if not d:
             self.hide_loading.emit()
             return
-        
         query = {
             "cid": d[0]["cid"],
             "bvid": bv,
             "otype": "json"
         }
-        
         d = self.request(Req.URL_PATH, urlencode(query))
-
-        print(d)
         self.hide_loading.emit()
+        
+        if d:
+            keys = d["accept_description"]
+            values = d["accept_quality"]
+            self.req_success.emit(dict(zip(keys, values)))
+
+    def handle_success(self, d: list[str, int]):
+        self.accept()
+        SelectDialog(self._window, d)
 
     def on_ok(self):
         text = self._input.text().strip()
@@ -130,7 +135,7 @@ class NewDialog(QObject):
             self.show_msg("没有找到视频")
             return
 
-        self.loading = Loading(self.dialog)
+        self.loading = Loading(self)
 
         t = Thread(target=self.fet_video_info, args=(bv, ))
         t.start()
