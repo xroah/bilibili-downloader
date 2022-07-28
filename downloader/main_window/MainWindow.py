@@ -18,8 +18,7 @@ import os.path
 
 
 class MainWindow(QMainWindow):
-    #  bvid, resolution, resolution list, page list
-    download = Signal(str, int, list, list)
+    download = Signal(dict)
 
     def __init__(self, hide_to_tray=True):
         super().__init__()
@@ -53,8 +52,8 @@ class MainWindow(QMainWindow):
         self.resize(self._size)
         super().show()
 
-    def handle_download(self, bv: str, r: int, all_r: list, pages: list):
-        print(bv, r, all_r, pages)
+    def handle_download(self, data: dict):
+        print(data)
 
     def closeEvent(self, e: QCloseEvent) -> None:
         if self.hide_to_tray:

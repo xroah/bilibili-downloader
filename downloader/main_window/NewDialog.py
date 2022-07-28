@@ -17,12 +17,13 @@ from PySide6.QtWidgets import (
     QVBoxLayout
 )
 
+from ..utils.parse_video_page import parse
+
 
 class NewDialog(Dialog):
     hide_loading = Signal()
     req_error = Signal(str)
-    # pages, resolution, dict
-    req_success = Signal(list, dict)
+    req_success = Signal(dict)
 
     def __init__(self, window):
         super().__init__(
@@ -34,14 +35,13 @@ class NewDialog(Dialog):
             close_on_ok=False,
             ok_callback=self.on_ok
         )
+        self.data = dict()
         self._window = window
         self.loading: Loading | None = None
         self._input = Input()
-        self.pages = []
-        self.bv = ""
 
         self.req_error.connect(self.handle_error)
-        self.hide_loading.connect(self.handle_loading)
+        self.hide_loading.connect(self.close)
         self.req_success.connect(self.handle_success)
         self.shown.connect(lambda: self._input.setFocus())
         self.init()
@@ -68,71 +68,47 @@ class NewDialog(Dialog):
         MessageBox.alert(t, parent=self)
         
     def handle_error(self, msg: str):
-        self.handle_loading()
+        self.close_loading()
         self.show_msg(msg)
 
-    def handle_loading(self):
+    def close_loading(self):
         if self.loading is None:
             return
 
-        self.loading.accept()
+        self.loading.close()
         self.loading = None
 
-    def request(self, path, params) -> dict | None:
-        headers = {
-            "referer": Req.REFERER.value,
-            "user-agent": Req.USER_AGENT.value
-        }
+    def handle_success(self, d: dict[str, any]):
+        self.data = d
+        self.close_loading()
+        self.show_select_dialog()
 
-        try:
-            res = httpx.get(
-                f"{Req.API_ADDR}{path}?{params}",
-                headers=headers
-            )
-            j = json.loads(res.text)
-        except Exception as e:
-            print("Request error:", e)
-            self.req_error.emit(str(e))
-            return None
-        else:
-            if j["code"] != 0:
-                self.req_error.emit(
-                    j["message"] if "message" in j else "请求错误"
-                )
-                return None
-
-            return j["data"]
-
-    def fet_video_info(self, bv: str):
-        d = self.request(Req.LIST_PATH, f"bvid={bv}&jsonp=jsonp")
-        if not d:
-            self.hide_loading.emit()
-            return
-        query = {
-            "cid": d[0]["cid"],
-            "bvid": bv,
-            "otype": "json"
-        }
-        pages = d
-        d = self.request(Req.URL_PATH, urlencode(query))
-        self.hide_loading.emit()
-        
-        if d:
-            keys = d["accept_description"]
-            values = d["accept_quality"]
-            self.req_success.emit(pages, dict(zip(keys, values)))
-
-    def handle_success(self, pages: list, d: dict[str, int]):
-        self.pages = pages
+    def show_select_dialog(self):
         SelectDialog(
             parent=self,
-            data=d,
+            data=self.data["quality"],
             on_ok=self.on_select_resolution
         )
 
-    def on_select_resolution(self, sel: int, all_: list):
+    def on_select_resolution(self, sel: int):
         self.accept()
-        self._window.download.emit(self.bv, sel, all_, self.pages)
+        self.data["download_quality"] = sel
+        self._window.download.emit(self.data)
+
+    def fet_video_info(self, bv: str):
+        try:
+            res = httpx.get(f"{Req.VIDEO_PAGE.value}{bv}")
+        except Exception as e:
+            print("Request error", e)
+            self.req_error.emit(str(e))
+        else:
+            try:
+                ret = parse(res.text)
+            except Exception as e:
+                print("Parse error", e)
+                self.req_error.emit("解析错误")
+            else:
+                self.req_success.emit(ret)
 
     def on_ok(self):
         text = self._input.text().strip()
@@ -141,13 +117,13 @@ class NewDialog(Dialog):
         if not text:
             self.show_msg("内容不能为空")
             return
-
         if not bv:
             self.show_msg("没有找到视频")
             return
+        if "bvid" in self.data and self.data["bvid"] == bv:
+            self.show_select_dialog()
+            return
 
         self.loading = Loading(self)
-        self.bv = bv
-
         t = Thread(target=self.fet_video_info, args=(bv, ))
         t.start()

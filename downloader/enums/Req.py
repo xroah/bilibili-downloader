@@ -7,7 +7,7 @@ class Req(Enum):
     API_ADDR = "https://api.bilibili.com/x/player/"
     LIST_PATH = "pagelist"
     URL_PATH = "playurl"
-    
+    VIDEO_PAGE = "https://www.bilibili.com/video/"
 
     def __str__(self) -> str:
         return self.value

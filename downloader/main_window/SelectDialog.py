@@ -50,7 +50,4 @@ class SelectDialog(Dialog):
 
     def on_ok(self):
         if self.on_ok:
-            self.on_ok(
-                self.select.currentData(),
-                list(self.data.values())
-            )
+            self.on_ok(self.select.currentData())
