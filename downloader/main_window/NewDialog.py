@@ -2,11 +2,11 @@ import json
 from urllib.parse import urlencode
 from threading import Thread
 
-from ..CommonWidgets import Dialog
+from ..common_widgets import Dialog
 from ..utils import utils
-from ..CommonWidgets import Input, MessageBox
+from ..common_widgets import Input, MessageBox
 from .Loading import Loading
-from ..Enums import Req
+from ..enums import Req
 from .SelectDialog import SelectDialog
 
 import httpx

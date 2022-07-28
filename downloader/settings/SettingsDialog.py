@@ -14,7 +14,7 @@ from typing import cast
 
 from ..utils import utils
 from .Settings import Settings
-from ..Enums import SettingsKey
+from ..enums import SettingsKey
 
 
 class SettingsDialog(QMainWindow):

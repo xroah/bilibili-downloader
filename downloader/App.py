@@ -7,8 +7,8 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
-from .MainWindow import MainWindow
-from .Settings import SettingsDialog
+from .main_window import MainWindow
+from .settings import SettingsDialog
 from .utils import utils
 
 

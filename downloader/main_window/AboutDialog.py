@@ -1,4 +1,4 @@
-from ..CommonWidgets import Dialog
+from ..common_widgets import Dialog
 from ..utils import utils
 
 import __main__

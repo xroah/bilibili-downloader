@@ -8,7 +8,7 @@ from PySide6.QtWidgets import (
 )
 
 from ..utils import utils
-from ..CommonWidgets import ToolButton
+from ..common_widgets import ToolButton
 from .NewDialog import NewDialog
 from .MainMenu import MainMenu
 

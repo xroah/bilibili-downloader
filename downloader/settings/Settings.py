@@ -4,7 +4,7 @@ from typing import cast
 
 from ..utils.decorators import singleton
 from ..utils import utils
-from ..Enums import SettingsKey
+from ..enums import SettingsKey
 
 _settings_dir = os.path.join(os.getcwd(), "data")
 _settings_file = os.path.join(_settings_dir, "settings.json")

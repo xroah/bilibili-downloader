@@ -8,10 +8,10 @@ from PySide6.QtWidgets import (
     QToolButton
 )
 
-from ..CommonWidgets import Menu
+from ..common_widgets import Menu
 from ..utils import utils
 from .AboutDialog import create_about_dialog
-from ..Settings import SettingsDialog
+from ..settings import SettingsDialog
 
 
 class MainMenu(Menu):

@@ -3,9 +3,9 @@ from threading import Thread
 
 from PySide6.QtCore import QCoreApplication, Qt
 
-import downloader.QRC.Icons
+import downloader.qrc.Icons
 from downloader.App import App
-from downloader.BingImage import download_img
+from downloader.bing_image import download_img
 
 
 app: App | None = None

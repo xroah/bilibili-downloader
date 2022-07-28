@@ -9,7 +9,7 @@ from PySide6.QtGui import (
 )
 from PySide6.QtWidgets import QMainWindow
 
-from ..MainWidget import MainWidget
+from ..main_widget import MainWidget
 from .Toolbar import Toolbar
 from ..utils import utils
 
