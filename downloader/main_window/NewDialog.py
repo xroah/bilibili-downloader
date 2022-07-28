@@ -1,6 +1,6 @@
-import json
-from urllib.parse import urlencode
+from inspect import trace
 from threading import Thread
+import traceback
 
 from ..common_widgets import Dialog
 from ..utils import utils
@@ -105,7 +105,7 @@ class NewDialog(Dialog):
             try:
                 ret = parse(res.text)
             except Exception as e:
-                print("Parse error", e)
+                traceback.print_exc()
                 self.req_error.emit("解析错误")
             else:
                 self.req_success.emit(ret)
