@@ -9,18 +9,7 @@ class PushButton(QPushButton):
             self,
             parent: QWidget = None,
             text: str = "",
-            primary: bool = True,
-            classname: str = ""
     ):
         super().__init__(parent=parent, text=text)
         self.setCursor(Qt.PointingHandCursor)
         self.setFocusPolicy(Qt.StrongFocus)
-
-        if classname:
-            self.setProperty("class", classname)
-
-        if primary:
-            self.setProperty("class", "primary")
-
-        ss = utils.get_style("pushbutton")
-        self.setStyleSheet(ss)

@@ -6,7 +6,7 @@ from PySide6.QtWidgets import (
     QWidget,
     QToolButton
 )
-from PySide6.QtCore import Qt, QSize
+from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
 from PySide6.QtUiTools import QUiLoader
 

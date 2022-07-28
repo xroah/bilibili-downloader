@@ -8,10 +8,33 @@ Toolbar#toolbar {
     background-color: transparent;
 }
 
+.login-btn {
+    margin-right: 15px;
+    padding: 3px 8px;
+    border: none;
+    border-radius: 3px;
+    background-color: #00aeec;
+    color: #fff;
+}
+
+.login-btn:hover {
+    background-color:#00b8f6;
+}
+
 QToolButton {
     width: 24px;
     height: 24px;
+    padding: 0;
 }
+
+QToolButton:hover {
+    background-color: rgba(255, 255, 255, .1);
+}
+
+QToolButton:pressed {
+    background-color: rgba(255, 255, 255, .3);
+}
+
 QToolButton::menu-indicator {
     width: 0;
 }

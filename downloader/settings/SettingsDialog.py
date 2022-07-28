@@ -52,7 +52,6 @@ class SettingsDialog(QMainWindow):
             widget.findChild(QCheckBox, "isAutoDownload")
         )
         self.settings = Settings()
-        self.show_btn.setStyleSheet(utils.get_style("pushbutton"))
         widget.setStyleSheet(utils.get_style("settings-dialog"))
 
         self.init_signal()

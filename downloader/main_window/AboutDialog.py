@@ -59,4 +59,4 @@ def create_about_dialog(window: QMainWindow) -> None:
     w.setLayout(layout)
     dialog.set_content(w)
 
-    dialog.open_()
+    dialog.open()

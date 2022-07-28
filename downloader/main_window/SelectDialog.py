@@ -23,7 +23,6 @@ class SelectDialog(Dialog):
         super().__init__(
             parent=cast(QMainWindow, parent),
             size=QSize(260, 150),
-            is_modal=True,
             ok_callback=self.on_ok
         )
         select = QComboBox(self)
@@ -46,7 +45,7 @@ class SelectDialog(Dialog):
 
         content.setLayout(layout)
         self.set_content(content)
-        self.open_()
+        self.open()
 
     def on_ok(self):
         if self.on_ok:

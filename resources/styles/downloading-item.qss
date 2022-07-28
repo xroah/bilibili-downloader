@@ -21,11 +21,7 @@
     background-color: transparent;
 }
 
-.downloading-item .toggle:hover {
-    background-color: rgba(255, 255, 255, .3)
-}
-
 .downloading-item::chunk {
     border: none;
-    background-color: rgba(13, 110, 253, .3);
+    background-color: rgba(255, 255, 255, .5);
 }

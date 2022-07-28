@@ -31,7 +31,6 @@ class NewDialog(Dialog):
             title="新建下载",
             show_cancel=True,
             size=QSize(420, 150),
-            is_modal=True,
             close_on_ok=False,
             ok_callback=self.on_ok
         )
@@ -45,7 +44,7 @@ class NewDialog(Dialog):
         self.req_success.connect(self.handle_success)
         self.shown.connect(lambda: self._input.setFocus())
         self.init()
-        self.open_()
+        self.open()
 
     def init(self):
         content = QWidget()

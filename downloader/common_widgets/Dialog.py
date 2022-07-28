@@ -21,7 +21,6 @@ class Dialog(QDialog):
             parent: QMainWindow,
             size: QSize,
             title: str = "",
-            is_modal: bool = True,
             content: QWidget = None,
             show_cancel: bool = False,
             show_footer: bool = True,
@@ -38,17 +37,9 @@ class Dialog(QDialog):
         self.ok_callback = ok_callback
         self.body = self._get_body()
         self.setWindowTitle(title)
-        self.setModal(is_modal)
         self.setFixedSize(size)
         self._set_layout()
         self.setAttribute(Qt.WA_DeleteOnClose, True)
-
-    def open_(self):
-        if self.isModal():
-            self.open()
-        else:
-            self.show()
-            self.raise_()
 
     def _set_layout(self):
         layout = QVBoxLayout()
@@ -80,15 +71,11 @@ class Dialog(QDialog):
 
         footer.setProperty("class", "footer")
         ok_btn.clicked.connect(self._ok)
+        ok_btn.setProperty("class", "primary")
         layout.addStretch()
 
         if self.show_cancel:
-            cancel_btn = PushButton(
-                parent=footer,
-                text="取消",
-                primary=False
-            )
-            cancel_btn.setProperty("class", "cancel")
+            cancel_btn = PushButton(parent=footer, text="取消")
             cancel_btn.clicked.connect(self._cancel)
             layout.addWidget(cancel_btn)
 
@@ -137,6 +124,6 @@ class Dialog(QDialog):
             top = (p_geometry.height() - size.height()) / 2
             left += p_geometry.x()
             top += p_geometry.y()
-        
+
         self.move(left, top)
         self.shown.emit()
