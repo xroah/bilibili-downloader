@@ -24,7 +24,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.hide_to_tray = hide_to_tray
         self.bg = utils.get_resource_path("default-bg.png")
-        self._size = QSize(900, 550)
+        self._size = QSize(900, 580)
         self.setCentralWidget(MainWidget())
         self.setWindowTitle("Bilibili下载器")
         self.setMinimumSize(self._size)

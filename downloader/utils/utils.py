@@ -6,6 +6,10 @@ import shutil
 from PySide6.QtGui import QIcon
 
 
+def get_data_dir():
+    return os.path.join(os.getcwd(), "data")
+
+
 def get_resource_path(resource: str):
     dir_name = os.getcwd()
     file_path = os.path.join(dir_name, "resources", resource)

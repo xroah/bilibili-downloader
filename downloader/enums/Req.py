@@ -8,6 +8,8 @@ class Req(Enum):
     LIST_PATH = "pagelist"
     URL_PATH = "playurl"
     VIDEO_PAGE = "https://www.bilibili.com/video/"
+    CHECK_LOGIN = "https://api.bilibili.com/x/web-interface/nav"
+    LOGIN_PAGE = "https://passport.bilibili.com/ajax/miniLogin/minilogin"
 
     def __str__(self) -> str:
         return self.value

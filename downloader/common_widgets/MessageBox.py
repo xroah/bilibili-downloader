@@ -12,11 +12,6 @@ class MessageBox:
         msg_box = QMessageBox(text=text, parent=parent)
         msg_box.setWindowTitle(title)
         msg_box.addButton("确定", QMessageBox.AcceptRole)
-        msg_box.setStyleSheet("""
-            QLabel {
-                padding: 5px 0;
-            }
-        """)
         if show_icon:
             msg_box.setIcon(QMessageBox.Information)
         msg_box.exec()

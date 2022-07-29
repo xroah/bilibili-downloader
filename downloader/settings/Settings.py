@@ -6,7 +6,7 @@ from ..utils.decorators import singleton
 from ..utils import utils
 from ..enums import SettingsKey
 
-_settings_dir = os.path.join(os.getcwd(), "data")
+_settings_dir = utils.get_data_dir()
 _settings_file = os.path.join(_settings_dir, "settings.json")
 _default_settings = {
     SettingsKey.DOWNLOAD_PATH.value: utils.get_default_download_path(),
@@ -24,9 +24,6 @@ class Settings:
 
     def get_settings(self) -> dict:
         settings = _default_settings.copy()
-
-        if not os.path.exists(_settings_dir):
-            os.mkdir(_settings_dir)
 
         if not os.path.exists(_settings_file):
             self.save_settings()

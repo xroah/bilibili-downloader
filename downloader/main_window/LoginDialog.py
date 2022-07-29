@@ -4,45 +4,96 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QVBoxLayout,
     QHBoxLayout,
-    QPushButton
+    QStackedWidget,
+    QProgressBar
 )
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QUrl, Signal
+from PySide6.QtNetwork import QNetworkCookie
+
+from ..common_widgets import PushButton, MessageBox
+from ..enums import Req
+from ..utils import utils
 
 import sys
+import os
+from typing import cast
 
 
 class LoginDialog(QDialog):
+    login_success = Signal()
+
     def __init__(self, parent=QMainWindow):
         super().__init__(parent)
+        self.stacked = QStackedWidget(self)
+        self.progress_bar = QProgressBar(self)
+        self.cookies = dict()
         layout = QVBoxLayout()
         view = QWebEngineView(self)
         self.view = view
         self.page = view.page()
-        view.load("https://passport.bilibili.com/ajax/miniLogin/minilogin")
-        layout.addWidget(view)
+        cookie_store = self.page.profile().cookieStore()
+        view.load(cast(str, Req.LOGIN_PAGE.value))
+        layout.addWidget(self.stacked, 1)
         layout.setContentsMargins(0, 0, 0, 0)
-        self.page.windowCloseRequested.connect(self.close_window)
-        self.setLayout(layout)
+        self.progress_bar.setTextVisible(False)
+        self.progress_bar.setValue(0)
+        self.page.loadProgress.connect(self.progress_update)
+        self.page.loadFinished.connect(self.load_finished)
+        self.page.urlChanged.connect(self.url_changed)
+        cookie_store.cookieAdded.connect(self.cookie_added)
+        self.stacked.addWidget(view)
+        self.stacked.addWidget(self.progress_bar)
+        self.stacked.setCurrentIndex(1)
+
+        self.setAttribute(Qt.WA_DeleteOnClose)
         self.setFixedSize(450, 500)
         self.setContextMenuPolicy(Qt.NoContextMenu)
         self.setWindowTitle("登录")
         self.setAttribute(Qt.WA_DeleteOnClose, True)
+        self.setLayout(layout)
 
         # The modal dialog has no close button on macos
         if sys.platform == "darwin":
             footer_layout = QHBoxLayout()
-            close_btn = QPush
-            footer_layout.addStretch()
-            footer_layout.addWidget()
+            close_btn = PushButton(self, "关闭")
+            footer_layout.setAlignment(Qt.AlignCenter)
+            footer_layout.addWidget(close_btn)
+            footer_layout.setContentsMargins(0, 0, 0, 0)
+            close_btn.clicked.connect(lambda: self.reject())
             layout.addLayout(footer_layout)
 
         self.open()
 
-    def close_window(self):
-        self.close()
-        print("1111")
+    def cookie_added(self, cookie: QNetworkCookie):
+        name = cookie.name().toStdString()
+        value = cookie.name().toStdString()
+        self.cookies[name] = value
 
-    def title_changed(self, _: str):
+    def url_changed(self, url: QUrl):
+        print("changed", url.url())
+        if "redirect" in url.url():
+            cookie_text = []
+            data_dir = utils.get_data_dir()
+            cookie_file = os.path.join(data_dir, "cookie.txt")
+            for k, v in self.cookies.items():
+                cookie_text.append(f"{k}={v}")
+            with open(cookie_file, "w") as f:
+                f.write("; ".join(cookie_text))
+
+            self.accept()
+            self.login_success.emit()
+
+    def progress_update(self, progress: int):
+        self.progress_bar.setValue(progress)
+
+    def load_finished(self, ok):
+        self.stacked.setCurrentIndex(0)
+        if not ok:
+            MessageBox.alert("加载失败")
+        else:
+            self.update_style()
+
+    def update_style(self):
         self.view.page().runJavaScript(
             """
                 (function() {
@@ -50,6 +101,13 @@ class LoginDialog(QDialog):
                     style.innerHTML = `
                         #tab-nav .t {
                             opacity: 0;
+                        }
+                        
+                        #tab-nav .register,
+                        #keep-me-in,
+                        .login-explain,
+                        .qr-text {
+                           display: none; 
                         }
                         #close {
                             display: none;

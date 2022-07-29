@@ -21,6 +21,11 @@ Toolbar#toolbar {
     background-color:#00b8f6;
 }
 
+.login-btn:disabled {
+    background-color: #f0f0f0;
+    color: #999;
+}
+
 QToolButton {
     width: 24px;
     height: 24px;
