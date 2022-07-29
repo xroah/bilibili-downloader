@@ -6,13 +6,18 @@
     min-width: 120px;
     max-width: 120px;
     padding: 8px 0;
+    border: none;
+    border-radius: 3px;
+    background-color: #fff;
 }
 
 .settings-dialog .download-path {
-    border: none;
-    margin: 0 10px;
-    text-align: left;
     background-color: transparent;
+    border: none;
+}
+
+.settings-dialog .show-file-dialog-btn:hover {
+    background-color: #f8f8f8;
 }
 
 .settings-dialog .used-text {

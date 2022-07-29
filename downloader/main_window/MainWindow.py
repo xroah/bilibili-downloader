@@ -24,12 +24,18 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.hide_to_tray = hide_to_tray
         self.bg = utils.get_resource_path("default-bg.png")
-        self._size = QSize(800, 480)
+        self._size = QSize(900, 550)
         self.setCentralWidget(MainWidget())
         self.setWindowTitle("Bilibili下载器")
         self.setMinimumSize(self._size)
         self.setWindowIcon(utils.get_icon("logo", "png"))
         self.addToolBar(Toolbar(self))
+        self.setWindowFlags(
+            Qt.CustomizeWindowHint |
+            Qt.WindowCloseButtonHint |
+            Qt.WindowMaximizeButtonHint |
+            Qt.WindowMinimizeButtonHint
+        )
         self.download.connect(self.handle_download)
         self.set_bg_img()
         self.show()
