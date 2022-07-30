@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (
 from ..common_widgets import Menu
 from ..utils import utils
 from .AboutDialog import create_about_dialog
-from ..settings import SettingsDialog
+from ..actions import get_settings_action, get_quit_action
 
 
 class MainMenu(Menu):
@@ -28,9 +28,9 @@ class MainMenu(Menu):
 
     def init(self):
         self.add_action("历史记录", "history", self.history_action)
-        self.add_action("设置", "settings", self.settings_action)
+        get_settings_action(self, self._window, "settings")
         self.add_action("关于", "about", self.about_action)
-        self.add_action("退出", "exit", lambda: sys.exit(0))
+        get_quit_action(self, "exit")
 
     def history_action(self):
         print("history")
@@ -48,9 +48,6 @@ class MainMenu(Menu):
             action.triggered.connect(cb)
 
         return action
-
-    def settings_action(self):
-        SettingsDialog(self._window)
 
     def about_action(self):
         create_about_dialog(self._window)

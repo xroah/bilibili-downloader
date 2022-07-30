@@ -8,8 +8,8 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 
 from .main_window import MainWindow
-from .settings import SettingsDialog
 from .utils import utils
+from .actions import get_settings_action, get_quit_action
 
 
 class App(QApplication):
@@ -46,10 +46,10 @@ class App(QApplication):
 
     def tray_activated(self, reason):
         if (
-            # click
-            reason == QSystemTrayIcon.Trigger and
-            # mac os will show contextmenu on click
-            sys.platform != "darwin"
+                # click
+                reason == QSystemTrayIcon.Trigger and
+                # macos will show contextmenu on click
+                sys.platform != "darwin"
         ):
             self.show_win()
 
@@ -75,13 +75,9 @@ class App(QApplication):
     def get_ctx_menu(self) -> QMenu:
         menu = QMenu(self.main_win)
         show_main_action = menu.addAction("显示主界面")
-        settings_action = menu.addAction("设置")
-        exit_action = menu.addAction("退出")
+        get_settings_action(menu, self.main_win)
+        get_quit_action(menu)
         show_main_action.triggered.connect(self.show_win)
-        settings_action.triggered.connect(
-            lambda: SettingsDialog(self.main_win)
-        )
-        exit_action.triggered.connect(lambda: sys.exit(0))
         menu.setProperty("class", "contextmenu")
         menu.setStyleSheet(utils.get_style("menu"))
         menu.aboutToShow.connect(self.menu_show)
@@ -97,12 +93,12 @@ class App(QApplication):
 
     def state_change(self, state):
         if (
-            state == Qt.ApplicationActive and
-            not self.main_win.isVisible() and
-            # macos: if the window is hidden,
-            # it will not show when click dock icon,
-            # but the app state will be active
-            # windows: tray right click will activate the app
-            not self.menu_visible
+                state == Qt.ApplicationActive and
+                not self.main_win.isVisible() and
+                # macos: if the window is hidden,
+                # it will not show when click dock icon,
+                # but the app state will be active
+                # windows: tray right click will activate the app
+                not self.menu_visible
         ):
             self.show_win()

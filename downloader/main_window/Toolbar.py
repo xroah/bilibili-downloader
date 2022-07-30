@@ -14,7 +14,7 @@ from PySide6.QtWidgets import (
 
 from ..utils import utils
 from ..utils import request
-from ..cookie import Cookie
+from ..Cookie import Cookie
 from ..enums import Req
 from ..common_widgets import ToolButton, MessageBox
 from .NewDialog import NewDialog

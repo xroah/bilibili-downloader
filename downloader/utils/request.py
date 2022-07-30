@@ -1,6 +1,6 @@
 import httpx
 
-from ..cookie import Cookie
+from ..Cookie import Cookie
 from ..enums import Req
 
 

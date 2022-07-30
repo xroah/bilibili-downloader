@@ -1,7 +1,8 @@
 import sys
 import os
-from typing import cast
+from typing import cast, Callable
 
+from PySide6.QtGui import QCloseEvent
 from PySide6.QtWidgets import (
     QFileDialog,
     QMainWindow,
@@ -18,11 +19,12 @@ from ..enums import SettingsKey
 
 
 class SettingsDialog(QMainWindow):
-    def __init__(self, parent: QMainWindow):
+    def __init__(self, parent: QMainWindow, on_close: Callable = None):
         super().__init__(parent)
         loader = QUiLoader()
         ui_file = utils.get_resource_path("uis/settings-dialog.ui")
         widget = loader.load(ui_file)
+        self.on_close = on_close
         self.show_btn = cast(
             QPushButton,
             widget.findChild(QPushButton, "showFileDialogBtn")
@@ -135,3 +137,8 @@ class SettingsDialog(QMainWindow):
         path = os.path.normpath(self.get_path())
         cmd = "start" if platform == "win32" else "open"
         os.system(f"{cmd} {path}")
+
+    def closeEvent(self, e: QCloseEvent) -> None:
+        super().closeEvent(e)
+        if self.on_close:
+            self.on_close()

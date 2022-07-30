@@ -1,7 +1,7 @@
 import os
 
-from ..utils import utils
-from ..utils.decorators import singleton
+from downloader.utils import utils
+from downloader.utils.decorators import singleton
 
 
 @singleton

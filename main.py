@@ -8,14 +8,14 @@ import downloader.qrc.Icons
 from downloader.App import App
 from downloader.bing_image import download_img
 from downloader.utils import utils
+from downloader import get_app
 
-
-app: App | None = None
 
 __version__ = "1.0.0"
 
 
 def update_bg() -> None:
+    app = get_app()
     if not app:
         return
 
@@ -29,7 +29,7 @@ def update_bg() -> None:
 
 if __name__ == "__main__":
     QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts, True)
-    app = App()
+    app = get_app()
     data_dir = utils.get_data_dir()
 
     if not os.path.exists(data_dir):

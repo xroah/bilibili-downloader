@@ -12,7 +12,7 @@ from PySide6.QtNetwork import QNetworkCookie
 
 from ..common_widgets import PushButton, MessageBox
 from ..enums import Req
-from ..cookie import Cookie
+from ..Cookie import Cookie
 
 import sys
 from typing import cast

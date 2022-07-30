@@ -70,13 +70,16 @@ class MainWindow(QMainWindow):
 
     def keyPressEvent(self, e: QKeyEvent) -> None:
         combination = e.keyCombination()
-        # mac os meta + w
+        # mac os hot key
         if (
-            sys.platform == "darwin" and
-            e.key() == Qt.Key_W and
-            combination.keyboardModifiers() == Qt.MetaModifier
+                sys.platform == "darwin" and
+                combination.keyboardModifiers() == Qt.MetaModifier
         ):
-            self.hide()
+            match e.key():
+                case Qt.Key_W:
+                    self.close()
+                case Qt.Key_M:
+                    self.showMinimized()
 
     def resizeEvent(self, e: QResizeEvent) -> None:
         self._size = e.size()
