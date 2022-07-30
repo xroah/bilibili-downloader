@@ -1,3 +1,7 @@
+import sys
+import os
+from typing import cast
+
 from PySide6.QtWidgets import (
     QFileDialog,
     QMainWindow,
@@ -7,10 +11,6 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import Qt
-
-import sys
-import os
-from typing import cast
 
 from ..utils import utils
 from .Settings import Settings

@@ -1,3 +1,6 @@
+import sys
+import os.path
+
 from PySide6.QtCore import QSize, Qt, Signal
 from PySide6.QtGui import (
     QCloseEvent,
@@ -12,9 +15,6 @@ from PySide6.QtWidgets import QMainWindow
 from ..main_widget import MainWidget
 from .Toolbar import Toolbar
 from ..utils import utils
-
-import sys
-import os.path
 
 
 class MainWindow(QMainWindow):

@@ -1,4 +1,4 @@
-from ..common_widgets import Dialog
+from typing import Callable, cast
 
 from PySide6.QtWidgets import (
     QComboBox,
@@ -9,7 +9,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import QSize
 
-from typing import Callable, cast
+from ..common_widgets import Dialog
 
 
 class SelectDialog(Dialog):
@@ -39,8 +39,6 @@ class SelectDialog(Dialog):
         """)
 
         for k, v in data.items():
-            if v > 80:  # 大会员 pass
-                continue
             select.addItem(k, v)
 
         content.setLayout(layout)

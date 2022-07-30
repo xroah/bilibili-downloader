@@ -1,4 +1,3 @@
-from inspect import trace
 from threading import Thread
 import traceback
 
@@ -8,16 +7,15 @@ from ..common_widgets import Input, MessageBox
 from .Loading import Loading
 from ..enums import Req
 from .SelectDialog import SelectDialog
+from ..utils.parse_video_page import parse
+from ..utils import request
 
-import httpx
 from PySide6.QtCore import QSize, Signal
 from PySide6.QtWidgets import (
     QLabel,
     QWidget,
     QVBoxLayout
 )
-
-from ..utils.parse_video_page import parse
 
 
 class NewDialog(Dialog):
@@ -96,14 +94,13 @@ class NewDialog(Dialog):
 
     def fet_video_info(self, bv: str):
         try:
-            res = httpx.get(f"{Req.VIDEO_PAGE.value}{bv}")
+            res = request.get(f"{Req.VIDEO_PAGE.value}{bv}")
         except Exception as e:
-            print("Request error", e)
             self.req_error.emit(str(e))
         else:
             try:
                 ret = parse(res.text)
-            except Exception as e:
+            except Exception:
                 traceback.print_exc()
                 self.req_error.emit("解析错误")
             else:

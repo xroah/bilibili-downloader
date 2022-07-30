@@ -1,5 +1,5 @@
 .downloading-item {
-    max-height: 68px;
+    max-height: 72px;
     border-bottom: 1px solid #eee;;
     background-color: rgba(255, 255, 255, .2);
     color: #333;

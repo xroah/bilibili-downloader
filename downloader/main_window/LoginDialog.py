@@ -12,10 +12,9 @@ from PySide6.QtNetwork import QNetworkCookie
 
 from ..common_widgets import PushButton, MessageBox
 from ..enums import Req
-from ..utils import utils
+from ..cookie import Cookie
 
 import sys
-import os
 from typing import cast
 
 
@@ -27,6 +26,7 @@ class LoginDialog(QDialog):
         self.stacked = QStackedWidget(self)
         self.progress_bar = QProgressBar(self)
         self.cookies = dict()
+        self.cookie = Cookie()
         layout = QVBoxLayout()
         view = QWebEngineView(self)
         self.view = view
@@ -41,6 +41,7 @@ class LoginDialog(QDialog):
         self.page.loadFinished.connect(self.load_finished)
         self.page.urlChanged.connect(self.url_changed)
         cookie_store.cookieAdded.connect(self.cookie_added)
+        cookie_store.cookieRemoved.connect(self.cookie_removed)
         self.stacked.addWidget(view)
         self.stacked.addWidget(self.progress_bar)
         self.stacked.setCurrentIndex(1)
@@ -69,17 +70,19 @@ class LoginDialog(QDialog):
         value = cookie.name().toStdString()
         self.cookies[name] = value
 
+    def cookie_removed(self, cookie: QNetworkCookie):
+        name = cookie.name().toStdString()
+        if name in self.cookies:
+            del self.cookies[name]
+
     def url_changed(self, url: QUrl):
         print("changed", url.url())
         if "redirect" in url.url():
             cookie_text = []
-            data_dir = utils.get_data_dir()
-            cookie_file = os.path.join(data_dir, "cookie.txt")
             for k, v in self.cookies.items():
                 cookie_text.append(f"{k}={v}")
-            with open(cookie_file, "w") as f:
-                f.write("; ".join(cookie_text))
-
+            cookie_text = "; ".join(cookie_text)
+            self.cookie.set(cookie_text)
             self.accept()
             self.login_success.emit()
 

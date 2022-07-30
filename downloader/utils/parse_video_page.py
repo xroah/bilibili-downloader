@@ -37,7 +37,7 @@ def parse(html_text: str) -> dict:
         elif text.startswith(_state_prefix):
             text = text.replace(_state_prefix, "")
             # remove js code
-            text = re.sub(r";[\()]function.*", "", text)
+            text = re.sub(r";[\(\)]function.*", "", text)
             state = json.loads(text)
             video_data = state["videoData"]
             title = video_data["title"]
