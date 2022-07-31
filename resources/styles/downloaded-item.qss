@@ -1,0 +1,37 @@
+.downloaded-item, .downloaded-item-deleted {
+    max-height: 72px;
+    min-height: 72px;
+    background-color: rgba(255, 255, 255, .5);
+}
+
+.video-name {
+    color: #333;
+}
+
+.video-path {
+    margin: 3px 0;
+}
+
+.downloaded-item .video-size,
+.downloaded-item .video-date,
+.downloaded-item .video-path {
+    color: #555;
+}
+
+.downloaded-item-deleted .video-name {
+    color: #999;
+}
+
+.downloaded-item-deleted .video-size,
+.downloaded-item-deleted .video-date,
+.downloaded-item-deleted .video-path {
+    color: #aaa;
+}
+
+.download-item-deleted .video-name {
+    color: #666;
+}
+
+.deleted-text {
+    color: rgba(255, 0, 0, .6);
+}

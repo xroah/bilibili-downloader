@@ -1,4 +1,3 @@
-from inspect import stack
 from PySide6.QtWidgets import (
     QWidget,
     QHBoxLayout,
@@ -7,7 +6,8 @@ from PySide6.QtWidgets import (
 )
 
 from .LeftNav import LeftNav
-from .Panel import Panel
+from .DownloadedPanel import DownloadedPanel
+from .DownloadingPanel import DownloadingPanel
 from ..utils import utils
 
 
@@ -41,8 +41,8 @@ class MainWidget(QWidget):
         qss = utils.get_style("main-widget")
         stacked.setProperty("class", "right-panel")
         stacked.setStyleSheet(qss)
-        stacked.addWidget(Panel(self))
-        stacked.addWidget(Panel(self))
+        stacked.addWidget(DownloadingPanel(self))
+        stacked.addWidget(DownloadedPanel(self))
 
         return stacked
 

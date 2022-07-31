@@ -1,29 +1,30 @@
 .downloading-item {
-    max-height: 72px;
-    border-bottom: 1px solid #eee;;
-    background-color: rgba(255, 255, 255, .2);
+    max-height: 60px;
+    min-height: 60px;
+}
+
+.progress-bar {
+    padding: 0;
+    background-color: rgba(255, 255, 255, .15);
+}
+
+.progress-bar .video-name {
     color: #333;
 }
 
-.downloading-item .icon {
-    padding: 0;
-    border: none;
-    background-color: transparent;
-}
-
-.downloading-item .size-info {
+.progress-bar .size-info {
     color: #666;
 }
 
-.downloading-item .toggle {
+.progress-bar .toggle {
     border: none;
     padding: 0;
     background-color: transparent;
 }
 
-.downloading-item::chunk {
+.progress-bar::chunk {
     border: none;
-    background-color: rgba(255, 255, 255, .5);
+    background-color: rgba(255, 255, 255, .36);
 }
 
 .downloading-item #background {

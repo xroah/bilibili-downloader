@@ -3,23 +3,41 @@ from PySide6.QtWidgets import (
     QLabel,
     QVBoxLayout,
     QStackedLayout,
-    QProgressBar
+    QScrollArea
 )
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtCore import Qt
 
-from .DownloadingItem import DownloadingItem
-
 
 class Panel(QWidget):
-    def __init__(self, parent: QWidget = None):
+    def __init__(
+            self,
+            *,
+            parent: QWidget = None,
+            widget: QWidget
+    ):
         super().__init__(parent)
-        layout = QStackedLayout(self)
+        stacked = QStackedLayout(self)
+        scroll_area = QScrollArea(self)
+        w_layout = QVBoxLayout()
+        self._layout = stacked
+        self._widget = widget
+        self._scroll_area = scroll_area
         self.no_content_widget = self.gen_no_content_widget()
-        layout.addWidget(self.no_content_widget)
-        layout.addWidget(DownloadingItem(self))
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setCurrentIndex(1)
+        widget.setParent(self)
+        w_layout.setAlignment(Qt.AlignTop)
+        w_layout.setContentsMargins(0, 0, 0, 0)
+        w_layout.setSpacing(8)
+        widget.setLayout(w_layout)
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setWidget(widget)
+        stacked.addWidget(self.no_content_widget)
+        stacked.addWidget(scroll_area)
+        stacked.setContentsMargins(0, 0, 0, 0)
+        scroll_area.setStyleSheet("""
+            background-color: transparent;
+            border: none;
+        """)
 
     def gen_no_content_widget(self) -> QWidget:
         widget = QWidget()
@@ -34,27 +52,5 @@ class Panel(QWidget):
         layout.addWidget(hint)
         layout.setAlignment(Qt.AlignCenter)
         widget.setLayout(layout)
-
-        return widget
-
-    def get_list(self) -> QWidget:
-        widget = QWidget()
-        layout = QVBoxLayout()
-        pb = QProgressBar()
-        pb.setTextVisible(False)
-        pb.setStyleSheet("""
-            QProgressBar {
-                border: 2px solid grey;
-                border-radius: 5px;
-            }
-
-            QProgressBar::chunk {
-                background-color: #05B8CC;
-                width: 20px;
-            }
-        """)
-        pb.setValue(60)
-        widget.setLayout(layout)
-        layout.addWidget(pb)
 
         return widget
