@@ -1,6 +1,6 @@
 QScrollBar {
     width: 8px;
-    background-color: transparent;
+    background-color: #fff;
 }
 
 QScrollBar::add-line {

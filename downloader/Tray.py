@@ -39,11 +39,12 @@ class _Tray(QSystemTrayIcon):
         show_main_action = menu.addAction("显示主界面")
         get_settings_action(menu, self._window)
         get_quit_action(menu)
-        show_main_action.triggered.connect(self.show_win)
         menu.setProperty("class", "contextmenu")
         menu.setStyleSheet(utils.get_style("menu"))
         menu.aboutToShow.connect(self._menu_show)
         menu.aboutToHide.connect(self._menu_hide)
+        show_main_action.triggered.connect(self.show_win)
+        self.activated.connect(self._tray_activated)
 
         return menu
 

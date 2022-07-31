@@ -3,14 +3,12 @@ from PySide6.QtWidgets import (
     QLabel,
     QVBoxLayout,
     QStackedLayout,
-    QScrollArea,
-    QScrollBar
+    QScrollArea
 )
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtCore import Qt
 
 from ..utils import utils
-from ..common_widgets import Scrollbar
 
 
 class Panel(QWidget):
@@ -23,7 +21,7 @@ class Panel(QWidget):
         super().__init__(parent)
         stacked = QStackedLayout(self)
         scroll_area = QScrollArea(self)
-        scroll_bar = Scrollbar()
+        scroll_bar = scroll_area.verticalScrollBar()
         w_layout = QVBoxLayout()
         self._layout = stacked
         self._widget = widget
@@ -34,13 +32,14 @@ class Panel(QWidget):
         w_layout.setContentsMargins(0, 0, 0, 0)
         w_layout.setSpacing(8)
         widget.setLayout(w_layout)
+        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         scroll_area.setWidgetResizable(True)
         scroll_area.setWidget(widget)
-        scroll_area.setVerticalScrollBar(scroll_bar)
         scroll_area.setStyleSheet("""
             background-color: transparent;
             border: none;
         """)
+        scroll_bar.setStyleSheet(utils.get_style("scrollbar"))
         stacked.addWidget(self.no_content_widget)
         stacked.addWidget(scroll_area)
         stacked.setContentsMargins(0, 0, 0, 0)
