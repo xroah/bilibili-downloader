@@ -6,8 +6,7 @@ from PySide6.QtWidgets import (
     QDialog,
     QWidget,
     QVBoxLayout,
-    QHBoxLayout,
-    QMainWindow
+    QHBoxLayout
 )
 from . import PushButton
 from ..utils import utils
@@ -18,9 +17,10 @@ class Dialog(QDialog):
 
     def __init__(
             self,
-            parent: QMainWindow,
+            parent: QWidget,
             size: QSize,
             title: str = "",
+            is_modal: bool = True,
             content: QWidget = None,
             show_cancel: bool = False,
             show_footer: bool = True,
@@ -36,6 +36,7 @@ class Dialog(QDialog):
         self.close_on_ok = close_on_ok
         self.ok_callback = ok_callback
         self.body = self._get_body()
+        self.setModal(bool(is_modal))
         self.setWindowTitle(title)
         self.setFixedSize(size)
         self._set_layout()
@@ -70,13 +71,13 @@ class Dialog(QDialog):
         ok_btn = PushButton(parent=footer, text="确定")
 
         footer.setProperty("class", "footer")
-        ok_btn.clicked.connect(self._ok)
+        ok_btn.clicked.connect(self.ok)
         ok_btn.setProperty("class", "primary")
         layout.addStretch()
 
         if self.show_cancel:
             cancel_btn = PushButton(parent=footer, text="取消")
-            cancel_btn.clicked.connect(self._cancel)
+            cancel_btn.clicked.connect(self.cancel)
             layout.addWidget(cancel_btn)
 
         layout.setSpacing(0)
@@ -100,14 +101,14 @@ class Dialog(QDialog):
         content.setParent(self)
         layout.addWidget(content)
 
-    def _ok(self):
+    def ok(self):
         if self.close_on_ok:
             self.accept()
 
         if self.ok_callback:
             self.ok_callback()
 
-    def _cancel(self):
+    def cancel(self):
         self.reject()
 
     def showEvent(self, e: QShowEvent) -> None:

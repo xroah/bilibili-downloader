@@ -3,6 +3,7 @@ import sys
 
 from PySide6.QtWidgets import QMenu, QMainWindow
 from PySide6.QtGui import QAction
+from PySide6.QtCore import Qt
 
 from .settings import SettingsDialog
 from .utils import utils
@@ -21,12 +22,12 @@ class Action:
 
     @classmethod
     def show_settings(cls, win: QMainWindow):
-        if cls._settings_dialog is not None:
-            cls._settings_dialog.activateWindow()
-            cls._settings_dialog.raise_()
-            return
+        if cls._settings_dialog is None:
+            cls._settings_dialog = SettingsDialog(win, cls._dialog_close)
 
-        cls._settings_dialog = SettingsDialog(win, cls._dialog_close)
+        cls._settings_dialog.showNormal()
+        cls._settings_dialog.setWindowState(Qt.WindowActive)
+        cls._settings_dialog.raise_()
 
 
 def add_menu_action(

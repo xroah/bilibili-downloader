@@ -1,5 +1,3 @@
-import os
-import json
 from threading import Thread
 
 from PySide6.QtCore import Qt, Signal
@@ -53,7 +51,7 @@ class Toolbar(QToolBar):
 
         try:
             res = request.get(str(Req.CHECK_LOGIN))
-            res = json.loads(res.text)
+            res = res.json()
         except:
             emit_false()
         else:
@@ -78,8 +76,8 @@ class Toolbar(QToolBar):
             self.login_btn.setText(uname)
             self.login_btn.setToolTip("点击退出")
         elif self.cookie.cookie:
-            MessageBox.alert("登录已过期, 请重新登录")
-            self.cookie.delete()
+            MessageBox.alert("登录已过期, 请重新登录", parent=self._window)
+            self.logout()
 
     def init(self):
         placeholder = QWidget()
@@ -104,14 +102,14 @@ class Toolbar(QToolBar):
         dialog.login_success.connect(lambda: self.start_check_login)
 
     def logout(self):
-        data_dir = utils.get_data_dir()
-        cookie_file = os.path.join(data_dir, "cookie")
+        self.cookie.delete()
 
     def login_out(self):
         if self.is_login:
             MessageBox.confirm(
                 "确定要退出登录吗?",
-                on_ok=self.logout
+                on_ok=self.logout,
+                parent=self._window
             )
             return
 

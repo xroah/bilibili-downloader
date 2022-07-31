@@ -16,7 +16,7 @@ class App(QApplication):
     def __init__(self):
         super().__init__()
         tray_avail = QSystemTrayIcon.isSystemTrayAvailable()
-        self.tray = QSystemTrayIcon()
+        self.tray = QSystemTrayIcon(self)
         self.main_win = MainWindow(tray_avail)
         self.menu_visible = False
         # Keyboard shortcuts on macOS are typically based on the Command
@@ -39,10 +39,10 @@ class App(QApplication):
     def init_tray(self):
         tray = self.tray
         tray.setIcon(utils.get_icon("logo", "png"))
-        tray.show()
         tray.setToolTip("Bilibli下载器")
         tray.setContextMenu(self.get_ctx_menu())
         tray.activated.connect(self.tray_activated)
+        tray.show()
 
     def tray_activated(self, reason):
         if (

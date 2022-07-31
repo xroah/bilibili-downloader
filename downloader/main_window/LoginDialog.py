@@ -92,7 +92,7 @@ class LoginDialog(QDialog):
     def load_finished(self, ok):
         self.stacked.setCurrentIndex(0)
         if not ok:
-            MessageBox.alert("加载失败")
+            MessageBox.alert("加载失败", parent=self)
         else:
             self.update_style()
 

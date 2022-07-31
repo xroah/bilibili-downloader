@@ -28,9 +28,7 @@ class NewDialog(Dialog):
             parent=window,
             title="新建下载",
             show_cancel=True,
-            size=QSize(420, 150),
-            close_on_ok=False,
-            ok_callback=self.on_ok
+            size=QSize(420, 150)
         )
         self.data = dict()
         self._window = window
@@ -84,7 +82,7 @@ class NewDialog(Dialog):
         SelectDialog(
             parent=self,
             data=self.data["quality"],
-            on_ok=self.on_select_resolution
+            ok_callback=self.on_select_resolution
         )
 
     def on_select_resolution(self, sel: int):
@@ -106,7 +104,7 @@ class NewDialog(Dialog):
             else:
                 self.req_success.emit(ret)
 
-    def on_ok(self):
+    def ok(self):
         text = self._input.text().strip()
         bv = utils.parse_url(text)
 

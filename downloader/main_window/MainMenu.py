@@ -1,4 +1,3 @@
-import sys
 from typing import Callable
 
 from PySide6.QtGui import QAction, QShowEvent, QCursor
@@ -27,7 +26,7 @@ class MainMenu(Menu):
         self.init()
 
     def init(self):
-        self.add_action("历史记录", "history", self.history_action)
+        # self.add_action("历史记录", "history", self.history_action)
         get_settings_action(self, self._window, "settings")
         self.add_action("关于", "about", self.about_action)
         get_quit_action(self, "exit")

@@ -18,17 +18,16 @@ class SelectDialog(Dialog):
             *,
             parent: QWidget,
             data: dict[str, int],
-            on_ok: Callable[[int, list], None] = None
+            ok_callback: Callable[[int], None]
     ):
         super().__init__(
             parent=cast(QMainWindow, parent),
             size=QSize(260, 150),
-            ok_callback=self.on_ok
+            ok_callback=ok_callback
         )
         select = QComboBox(self)
         self.data = data
         self.select = select
-        self.on_ok = on_ok
         content = QWidget()
         layout = QVBoxLayout()
         layout.addWidget(QLabel("选择分辨率"))
@@ -45,6 +44,7 @@ class SelectDialog(Dialog):
         self.set_content(content)
         self.open()
 
-    def on_ok(self):
-        if self.on_ok:
-            self.on_ok(self.select.currentData())
+    def ok(self):
+        self.accept()
+        if self.ok_callback:
+            self.ok_callback(self.select.currentData())
