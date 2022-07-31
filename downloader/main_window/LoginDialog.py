@@ -1,3 +1,6 @@
+import sys
+from typing import cast
+
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import (
     QDialog,
@@ -5,7 +8,8 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QStackedWidget,
-    QProgressBar
+    QProgressBar,
+    QWidget
 )
 from PySide6.QtCore import Qt, QUrl, Signal
 from PySide6.QtNetwork import QNetworkCookie
@@ -13,9 +17,6 @@ from PySide6.QtNetwork import QNetworkCookie
 from ..common_widgets import PushButton, MessageBox
 from ..enums import Req
 from ..Cookie import Cookie
-
-import sys
-from typing import cast
 
 
 class LoginDialog(QDialog):
@@ -29,32 +30,48 @@ class LoginDialog(QDialog):
         self.cookie = Cookie()
         layout = QVBoxLayout()
         view = QWebEngineView(self)
+        # for center the progress bar
+        widget = QWidget(self)
+        w_layout = QVBoxLayout()
         self.view = view
         self.page = view.page()
-        cookie_store = self.page.profile().cookieStore()
         view.load(cast(str, Req.LOGIN_PAGE.value))
         layout.addWidget(self.stacked, 1)
         layout.setContentsMargins(0, 0, 0, 0)
+        w_layout.addWidget(self.progress_bar)
+        widget.setLayout(w_layout)
         self.progress_bar.setTextVisible(False)
         self.progress_bar.setValue(0)
+        self.stacked.addWidget(view)
+        self.stacked.addWidget(widget)
+        self.stacked.setCurrentIndex(1)
+
+        self.setAttribute(Qt.WA_DeleteOnClose)
+        self.setFixedSize(450, 480)
+        self.setWindowTitle("登录")
+        self.setAttribute(Qt.WA_DeleteOnClose, True)
+        self.setLayout(layout)
+        self.set_footer()
+        self.setStyleSheet("""
+            QProgressBar {
+                max-height: 30px;
+            }
+        """)
+        self.init_event()
+        self.open()
+
+    def init_event(self):
+        cookie_store = self.page.profile().cookieStore()
         self.page.loadProgress.connect(self.progress_update)
         self.page.loadFinished.connect(self.load_finished)
         self.page.urlChanged.connect(self.url_changed)
         cookie_store.cookieAdded.connect(self.cookie_added)
         cookie_store.cookieRemoved.connect(self.cookie_removed)
-        self.stacked.addWidget(view)
-        self.stacked.addWidget(self.progress_bar)
-        self.stacked.setCurrentIndex(1)
 
-        self.setAttribute(Qt.WA_DeleteOnClose)
-        self.setFixedSize(450, 500)
-        self.setContextMenuPolicy(Qt.NoContextMenu)
-        self.setWindowTitle("登录")
-        self.setAttribute(Qt.WA_DeleteOnClose, True)
-        self.setLayout(layout)
-
+    def set_footer(self):
         # The modal dialog has no close button on macos
         if sys.platform == "darwin":
+            layout = self.layout()
             footer_layout = QHBoxLayout()
             close_btn = PushButton(self, "关闭")
             footer_layout.setAlignment(Qt.AlignCenter)
@@ -63,11 +80,9 @@ class LoginDialog(QDialog):
             close_btn.clicked.connect(lambda: self.reject())
             layout.addLayout(footer_layout)
 
-        self.open()
-
     def cookie_added(self, cookie: QNetworkCookie):
         name = cookie.name().toStdString()
-        value = cookie.name().toStdString()
+        value = cookie.value().toStdString()
         self.cookies[name] = value
 
     def cookie_removed(self, cookie: QNetworkCookie):
@@ -90,6 +105,7 @@ class LoginDialog(QDialog):
         self.progress_bar.setValue(progress)
 
     def load_finished(self, ok):
+        print("Load finished")
         self.stacked.setCurrentIndex(0)
         if not ok:
             MessageBox.alert("加载失败", parent=self)

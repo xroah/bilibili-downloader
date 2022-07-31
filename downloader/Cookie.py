@@ -8,8 +8,10 @@ from downloader.utils.decorators import singleton
 class Cookie:
     def __init__(self):
         self.cookie = self._get_all()
+        print(self.get_cookie_file())
 
-    def get_cookie_file(self):
+    @staticmethod
+    def get_cookie_file():
         filename = "cookie.txt"
         data_dir = utils.get_data_dir()
         full_path = os.path.join(data_dir, filename)

@@ -61,7 +61,7 @@ class NewDialog(Dialog):
 
     def show_msg(self, t: str):
         MessageBox.alert(t, parent=self)
-        
+
     def handle_error(self, msg: str):
         self.close_loading()
         self.show_msg(msg)
@@ -119,5 +119,5 @@ class NewDialog(Dialog):
             return
 
         self.loading = Loading(self)
-        t = Thread(target=self.fet_video_info, args=(bv, ))
+        t = Thread(target=self.fet_video_info, args=(bv,))
         t.start()

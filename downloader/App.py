@@ -1,24 +1,15 @@
-import sys
-
-from PySide6.QtWidgets import (
-    QApplication,
-    QSystemTrayIcon,
-    QMenu
-)
+from PySide6.QtWidgets import QApplication, QSystemTrayIcon
 from PySide6.QtCore import Qt
 
 from .main_window import MainWindow
-from .utils import utils
-from .actions import get_settings_action, get_quit_action
+from .Tray import create_tray
 
 
 class App(QApplication):
     def __init__(self):
         super().__init__()
         tray_avail = QSystemTrayIcon.isSystemTrayAvailable()
-        self.tray = QSystemTrayIcon(self)
         self.main_win = MainWindow(tray_avail)
-        self.menu_visible = False
         # Keyboard shortcuts on macOS are typically based on the Command
         # (or Cmd) keyboard modifier, represented by the ⌘ symbol.
         # For example, the ‘Copy’ action is Command+C (⌘+C).
@@ -34,71 +25,17 @@ class App(QApplication):
         self.applicationStateChanged.connect(self.state_change)
 
         if tray_avail:
-            self.init_tray()
-
-    def init_tray(self):
-        tray = self.tray
-        tray.setIcon(utils.get_icon("logo", "png"))
-        tray.setToolTip("Bilibli下载器")
-        tray.setContextMenu(self.get_ctx_menu())
-        tray.activated.connect(self.tray_activated)
-        tray.show()
-
-    def tray_activated(self, reason):
-        if (
-                # click
-                reason == QSystemTrayIcon.Trigger and
-                # macos will show contextmenu on click
-                sys.platform != "darwin"
-        ):
-            self.show_win()
-
-    def show_win(self):
-        win = self.main_win
-
-        if not win.isVisible():
-            if win.isMaximized():
-                win.showMaximized()
-            else:
-                win.showNormal()
-        else:
-            # The window is minimized is also visible
-            if win.isMinimized():
-                if win.isMaximized():
-                    win.showMaximized()
-                else:
-                    win.showNormal()
-
-        win.activateWindow()
-        win.raise_()
-
-    def get_ctx_menu(self) -> QMenu:
-        menu = QMenu(self.main_win)
-        show_main_action = menu.addAction("显示主界面")
-        get_settings_action(menu, self.main_win)
-        get_quit_action(menu)
-        show_main_action.triggered.connect(self.show_win)
-        menu.setProperty("class", "contextmenu")
-        menu.setStyleSheet(utils.get_style("menu"))
-        menu.aboutToShow.connect(self.menu_show)
-        menu.aboutToHide.connect(self.menu_hide)
-
-        return menu
-
-    def menu_show(self):
-        self.menu_visible = True
-
-    def menu_hide(self):
-        self.menu_visible = False
+            self.tray = create_tray(self, self.main_win)
 
     def state_change(self, state):
         if (
                 state == Qt.ApplicationActive and
                 not self.main_win.isVisible() and
+                self.tray is not None and
                 # macos: if the window is hidden,
                 # it will not show when click dock icon,
                 # but the app state will be active
                 # windows: tray right click will activate the app
-                not self.menu_visible
+                not self.tray.menu_visible
         ):
-            self.show_win()
+            self.tray.show_win()

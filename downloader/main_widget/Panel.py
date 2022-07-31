@@ -3,10 +3,13 @@ from PySide6.QtWidgets import (
     QLabel,
     QVBoxLayout,
     QStackedLayout,
-    QScrollArea
+    QScrollArea,
+    QScrollBar
 )
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtCore import Qt
+
+from ..utils import utils
 
 
 class Panel(QWidget):
@@ -24,6 +27,9 @@ class Panel(QWidget):
         self._widget = widget
         self._scroll_area = scroll_area
         self.no_content_widget = self.gen_no_content_widget()
+        scroll_bar = QScrollBar(scroll_area)
+        scroll_bar.setStyleSheet("""background-color: red;""")
+        scroll_area.setVerticalScrollBar(scroll_bar)
         widget.setParent(self)
         w_layout.setAlignment(Qt.AlignTop)
         w_layout.setContentsMargins(0, 0, 0, 0)
@@ -31,15 +37,17 @@ class Panel(QWidget):
         widget.setLayout(w_layout)
         scroll_area.setWidgetResizable(True)
         scroll_area.setWidget(widget)
-        stacked.addWidget(self.no_content_widget)
-        stacked.addWidget(scroll_area)
-        stacked.setContentsMargins(0, 0, 0, 0)
         scroll_area.setStyleSheet("""
             background-color: transparent;
             border: none;
         """)
+        scroll_bar.setStyleSheet(utils.get_style("scrollbar"))
+        stacked.addWidget(self.no_content_widget)
+        stacked.addWidget(scroll_area)
+        stacked.setContentsMargins(0, 0, 0, 0)
 
-    def gen_no_content_widget(self) -> QWidget:
+    @staticmethod
+    def gen_no_content_widget() -> QWidget:
         widget = QWidget()
         layout = QVBoxLayout()
         label = QLabel()

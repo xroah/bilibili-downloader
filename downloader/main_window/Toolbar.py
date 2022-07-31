@@ -29,7 +29,8 @@ class Toolbar(QToolBar):
         self.is_login = False
         self.cookie = Cookie()
         self.add_btn = ToolButton(self, "plus")
-        self.login_btn = QPushButton(parent=self, text="登录Bilibili账号")
+        self.login_text = "登录Bilibili账号"
+        self.login_btn = QPushButton(parent=self, text=self.login_text)
         self.menu_btn = ToolButton(self, "menu")
         self.menu = MainMenu(parent, self, self.menu_btn)
         self.add_btn.clicked.connect(self.show_new_dialog)
@@ -99,10 +100,11 @@ class Toolbar(QToolBar):
 
     def show_login_dialog(self):
         dialog = LoginDialog(self._window)
-        dialog.login_success.connect(lambda: self.start_check_login)
+        dialog.login_success.connect(self.start_check_login)
 
     def logout(self):
         self.cookie.delete()
+        self.login_btn.setText(self.login_text)
 
     def login_out(self):
         if self.is_login:
