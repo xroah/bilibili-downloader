@@ -1,15 +1,6 @@
 from threading import Thread
 import traceback
 
-from ..common_widgets import Dialog
-from ..utils import utils
-from ..common_widgets import Input, MessageBox
-from .Loading import Loading
-from ..enums import Req
-from .SelectDialog import SelectDialog
-from ..utils.parse_video_page import parse
-from ..utils import request
-
 from PySide6.QtCore import QSize, Signal
 from PySide6.QtWidgets import (
     QLabel,
@@ -17,13 +8,24 @@ from PySide6.QtWidgets import (
     QVBoxLayout
 )
 
+from ..common_widgets import Dialog
+from ..utils import utils
+from ..common_widgets import Input, MessageBox
+from .Loading import Loading
+from ..enums import Req, EventName
+from .SelectDialog import SelectDialog
+from ..utils.parse_video_page import parse
+from ..utils import request
+from ..main_window import MainWindow
+from ..utils import event_bus
+
 
 class NewDialog(Dialog):
     hide_loading = Signal()
     req_error = Signal(str)
     req_success = Signal(dict)
 
-    def __init__(self, window):
+    def __init__(self, window: MainWindow):
         super().__init__(
             parent=window,
             title="新建下载",
@@ -88,7 +90,7 @@ class NewDialog(Dialog):
     def on_select_resolution(self, sel: int):
         self.accept()
         self.data["download_quality"] = sel
-        self._window.download.emit(self.data)
+        event_bus.emit(EventName.NEW_DOWNLOAD, self.data)
 
     def fet_video_info(self, bv: str):
         try:

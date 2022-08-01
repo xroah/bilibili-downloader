@@ -14,12 +14,11 @@ from PySide6.QtWidgets import QMainWindow
 
 from ..main_widget import MainWidget
 from .Toolbar import Toolbar
-from ..utils import utils
+from ..utils import utils, event_bus
+from ..enums import EventName
 
 
 class MainWindow(QMainWindow):
-    download = Signal(dict)
-
     def __init__(self, hide_to_tray=True):
         super().__init__()
         self.hide_to_tray = hide_to_tray
@@ -36,9 +35,9 @@ class MainWindow(QMainWindow):
             Qt.WindowMaximizeButtonHint |
             Qt.WindowMinimizeButtonHint
         )
-        self.download.connect(self.handle_download)
         self.set_bg_img()
         self.show()
+        event_bus.on(EventName.NEW_DOWNLOAD, self.handle_download)
 
     def set_bg_img(self, bg: str = ""):
         if bg:

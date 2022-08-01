@@ -8,3 +8,4 @@ def get_app() -> App:
     if _app is None:
         _app = App()
     return _app
+

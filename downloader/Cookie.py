@@ -1,11 +1,10 @@
 import os
 
-from downloader.utils import utils
-from downloader.utils.decorators import singleton
+from .utils import utils
+from .utils.Singleton import Singleton
 
 
-@singleton
-class Cookie:
+class Cookie(Singleton):
     def __init__(self):
         self.cookie = self._get_all()
         print(self.get_cookie_file())

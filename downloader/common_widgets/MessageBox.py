@@ -6,6 +6,13 @@ from PySide6.QtCore import QSize
 from .Dialog import Dialog
 
 
+def get_label(text: str):
+    label = QLabel(text)
+    label.setWordWrap(True)
+
+    return label
+
+
 class MessageBox:
     size = QSize(260, 150)
 
@@ -18,7 +25,7 @@ class MessageBox:
         msg_box = Dialog(
             parent=parent,
             size=MessageBox.size,
-            content=QLabel(text),
+            content=get_label(text),
             title=title,
             show_cancel=False
         )
@@ -36,7 +43,7 @@ class MessageBox:
         msg_box = Dialog(
             parent=parent,
             size=MessageBox.size,
-            content=QLabel(text),
+            content=get_label(text),
             title=title,
             show_cancel=True,
             ok_callback=on_ok
