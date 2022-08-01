@@ -86,13 +86,6 @@
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="isMonitorClipboard">
-       <property name="text">
-        <string>监控剪贴板</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QCheckBox" name="isAutoDownload">
        <property name="text">
         <string>启动时自动下载</string>

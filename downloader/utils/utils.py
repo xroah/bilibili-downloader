@@ -16,7 +16,7 @@ def get_resource_path(resource: str):
     return os.path.normpath(file_path)
 
 
-def get_icon(name: str, ext="svg", string=False) -> QIcon | None:
+def get_icon(name: str, ext="svg") -> QIcon | None:
     if not name:
         return None
 
@@ -54,30 +54,37 @@ def format_size(size: float) -> str:
     return f"{round(ret, 2)}{size_units[i]}"
 
 
+def match_video_id(vid: str) -> bool:
+    av_pattern = r"^av\d+$"
+    bv_pattern = r"^bv[\da-zA-Z]{10}$"
+
+    if (
+            re.fullmatch(av_pattern, vid, re.IGNORECASE) or
+            re.fullmatch(bv_pattern, vid, re.IGNORECASE)
+    ):
+        return True
+
+    return False
+
+
 def parse_url(url: str) -> str | None:
     if not url.strip():
         return
 
-    pattern = r"^(BV|AV)[\da-zA-z]+$"  # bv no pattern
-
-    def fullmatch(s):
-        return re.fullmatch(pattern, s, re.IGNORECASE)
-
-    matched = fullmatch(url)
+    matched = match_video_id(url)
 
     if matched:
-        return matched.string
+        return url
+
+    if "bilibili.com" not in url:
+        return None
 
     # like: https://www.bilibili.com/video/BVxxxx
     parsed = urlparse(url)
-
-    if not parsed.hostname or "bilibili" not in parsed.hostname:
-        return None
-
     base = os.path.basename(parsed.path)
-    matched = fullmatch(base)
+    matched = match_video_id(base)
 
     if matched:
-        return matched.string
+        return base
 
     return None

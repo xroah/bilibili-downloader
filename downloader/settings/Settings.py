@@ -12,7 +12,6 @@ _default_settings = {
     SettingsKey.DOWNLOAD_PATH.value: utils.get_default_download_path(),
     SettingsKey.IS_SHOW_MESSAGE.value: True,
     SettingsKey.IS_PLAY_RINGTONE.value: True,
-    SettingsKey.IS_MONITOR_CLIPBOARD.value: True,
     SettingsKey.IS_AUTO_DOWNLOAD.value: True
 }
 

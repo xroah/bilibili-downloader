@@ -63,10 +63,6 @@ class SettingsDialog(QMainWindow):
             QCheckBox,
             widget.findChild(QCheckBox, "isPlayRingtone")
         )
-        self.is_monitor_checkbox = cast(
-            QCheckBox,
-            widget.findChild(QCheckBox, "isMonitorClipboard")
-        )
         self.is_auto_download_checkbox = cast(
             QCheckBox,
             widget.findChild(QCheckBox, "isAutoDownload")
@@ -82,7 +78,7 @@ class SettingsDialog(QMainWindow):
         self.init_settings()
         self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.setCentralWidget(widget)
-        self.setFixedSize(650, 380)
+        self.setFixedSize(620, 360)
         self.show()
 
     def init_settings(self):
@@ -90,11 +86,9 @@ class SettingsDialog(QMainWindow):
         path = s.get(SettingsKey.DOWNLOAD_PATH)
         is_show_msg = s.get(SettingsKey.IS_SHOW_MESSAGE)
         is_play = s.get(SettingsKey.IS_PLAY_RINGTONE)
-        is_monitor = s.get(SettingsKey.IS_MONITOR_CLIPBOARD)
         is_auto_download = s.get(SettingsKey.IS_AUTO_DOWNLOAD)
         self.set_checkbox_state(self.is_show_msg_checkbox, is_show_msg)
         self.set_checkbox_state(self.is_play_checkbox, is_play)
-        self.set_checkbox_state(self.is_monitor_checkbox, is_monitor)
         self.set_checkbox_state(
             self.is_auto_download_checkbox,
             is_auto_download
@@ -113,9 +107,6 @@ class SettingsDialog(QMainWindow):
         )
         self.is_play_checkbox.stateChanged.connect(
             lambda s: self.handle_change(SettingsKey.IS_PLAY_RINGTONE, s)
-        )
-        self.is_monitor_checkbox.stateChanged.connect(
-            lambda s: self.handle_change(SettingsKey.IS_MONITOR_CLIPBOARD, s)
         )
         self.is_auto_download_checkbox.stateChanged.connect(
             lambda s: self.handle_change(SettingsKey.IS_AUTO_DOWNLOAD, s)

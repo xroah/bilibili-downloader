@@ -2,6 +2,7 @@ from threading import Thread
 import traceback
 
 from PySide6.QtCore import QSize, Signal
+from PySide6.QtGui import QShowEvent, QClipboard
 from PySide6.QtWidgets import (
     QLabel,
     QWidget,
@@ -76,13 +77,14 @@ class NewDialog(Dialog):
     def handle_success(self, d: dict[str, any]):
         self.data = d
         self.close_loading()
-        self.show_select_dialog()
+        self.show_select_dialog(d["title"])
 
-    def show_select_dialog(self):
+    def show_select_dialog(self, title: str):
         SelectDialog(
             parent=self,
             data=self.data["quality"],
-            ok_callback=self.on_select_resolution
+            ok_callback=self.on_select_resolution,
+            title=title
         )
 
     def on_select_resolution(self, sel: int):
@@ -102,6 +104,9 @@ class NewDialog(Dialog):
                 traceback.print_exc()
                 self.req_error.emit("解析错误")
             else:
+                if not ret["bvid"]:
+                    self.req_error.emit("视频不存在")
+                    return
                 self.req_success.emit(ret)
 
     def ok(self):
@@ -112,13 +117,23 @@ class NewDialog(Dialog):
             self.show_msg("内容不能为空")
             return
         if not bv:
-            self.show_msg("没有找到视频")
+            self.show_msg("视频ID错误")
             return
         if "bvid" in self.data and self.data["bvid"] == bv:
-            self.show_select_dialog()
+            self.show_select_dialog(self.data["title"])
             return
 
         self.loading = Loading(self)
         t = Thread(target=self.fet_video_info, args=(bv,))
         t.daemon = True
         t.start()
+
+    def showEvent(self, e: QShowEvent) -> None:
+        clipboard = QClipboard()
+        text = clipboard.text(QClipboard.Clipboard)
+
+        if text:
+            bv = utils.parse_url(text)
+
+            if bv:
+                self._input.setText(bv)

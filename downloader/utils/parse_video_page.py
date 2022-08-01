@@ -16,8 +16,6 @@ def parse(html_text: str) -> dict:
     pic = ""
     pages = []
     scripts = soup.select("script")
-    has_info = False
-    has_state = False
 
     for s in scripts:
         text = s.string
@@ -33,27 +31,27 @@ def parse(html_text: str) -> dict:
             info = json.loads(text)
             data = info["data"]
             quality = dict(zip(data["accept_description"], data["accept_quality"]))
-            has_info = True
         elif text.startswith(_state_prefix):
             text = text.replace(_state_prefix, "")
             # remove js code
             text = re.sub(r";[\(\)]function.*", "", text)
             state = json.loads(text)
+            if "videoData" not in state:
+                continue
             video_data = state["videoData"]
+            if "bvid" not in video_data:
+                continue
             title = video_data["title"]
             pages = video_data["pages"]
             bvid = video_data["bvid"]
             pic = video_data["pic"]
-            has_state = True
 
     ret = {
         "quality": quality,
         "title": title,
         "pages": pages,
         "bvid": bvid,
-        "pic": pic,
-        "has_info": has_info,
-        "has_state": has_state
+        "pic": pic
     }
 
     return ret

@@ -9,6 +9,7 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QLabel
 )
+from PySide6.QtGui import QClipboard
 
 from ..utils import utils, request, event_bus
 from ..Cookie import Cookie
@@ -37,6 +38,9 @@ class Toolbar(QToolBar):
         self.init()
         self.start_check_login()
         event_bus.on(EventName.COOKIE_CHANGE, self.check_login_state)
+
+    def clipboard_change(self, mode):
+        print(self.clipboard.text(QClipboard.Clipboard))
 
     def check_login_state(self):
         def emit_false():
