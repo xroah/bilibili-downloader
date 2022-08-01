@@ -1,13 +1,13 @@
 import os
 
-from .utils import utils
+from .utils import utils, event_bus
 from .utils.Singleton import Singleton
+from .enums import EventName
 
 
 class Cookie(Singleton):
     def __init__(self):
         self.cookie = self._get_all()
-        print(self.get_cookie_file())
 
     @staticmethod
     def get_cookie_file():
@@ -27,10 +27,14 @@ class Cookie(Singleton):
             return f.read()
 
     def set(self, v: str):
+        if self.cookie == v:
+            return
+
         cookie_file = self.get_cookie_file()
         self.cookie = v
         with open(cookie_file, "w") as f:
             f.write(v)
+        event_bus.emit(EventName.COOKIE_CHANGE)
 
     def delete(self):
         cookie_file = self.get_cookie_file()

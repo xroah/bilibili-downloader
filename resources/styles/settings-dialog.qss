@@ -23,3 +23,12 @@
 .settings-dialog .used-text {
     min-width: 80px;
 }
+
+.settings-dialog .cookie-input {
+    border: 1px solid #eee;
+    color: #666;
+}
+
+.settings-dialog .cookie-input:focus {
+    border-color: rgba(13, 110, 253, .8);
+}

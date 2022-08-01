@@ -1,4 +1,5 @@
 from .App import App
+from .Cookie import Cookie
 
 _app: App | None = None
 
@@ -8,4 +9,3 @@ def get_app() -> App:
     if _app is None:
         _app = App()
     return _app
-

@@ -69,6 +69,9 @@
       </layout>
      </item>
      <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_2"/>
+     </item>
+     <item>
       <widget class="QCheckBox" name="isShowMessage">
        <property name="text">
         <string>下载完成后弹出提示框</string>
@@ -93,6 +96,27 @@
       <widget class="QCheckBox" name="isAutoDownload">
        <property name="text">
         <string>启动时自动下载</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>cookie:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="cookieInput">
+       <property name="class" stdset="0">
+        <string>cookie-input</string>
        </property>
       </widget>
      </item>

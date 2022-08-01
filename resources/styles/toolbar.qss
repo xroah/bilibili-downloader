@@ -13,24 +13,6 @@ Toolbar#toolbar {
     margin-right: 10px;
 }
 
-.login-btn {
-    margin-right: 15px;
-    padding: 3px 8px;
-    border: none;
-    border-radius: 3px;
-    background-color: #00aeec;
-    color: #fff;
-}
-
-.login-btn:hover {
-    background-color:#00b8f6;
-}
-
-.login-btn:disabled {
-    background-color: #f0f0f0;
-    color: #999;
-}
-
 QToolButton {
     width: 24px;
     height: 24px;

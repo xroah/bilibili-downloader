@@ -10,14 +10,12 @@ from PySide6.QtWidgets import (
 )
 
 from ..common_widgets import Dialog
-from ..utils import utils
+from ..utils import utils, request, event_bus
 from ..common_widgets import Input, MessageBox
 from .Loading import Loading
 from ..enums import Req, EventName
 from .SelectDialog import SelectDialog
 from ..utils.parse_video_page import parse
-from ..utils import request
-from ..utils import event_bus
 
 
 class NewDialog(Dialog):
@@ -122,4 +120,5 @@ class NewDialog(Dialog):
 
         self.loading = Loading(self)
         t = Thread(target=self.fet_video_info, args=(bv,))
+        t.daemon = True
         t.start()

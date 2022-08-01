@@ -1,7 +1,6 @@
 import os
 from urllib.parse import urlparse
 import re
-import shutil
 
 from PySide6.QtGui import QIcon
 
@@ -41,24 +40,6 @@ def get_default_download_path() -> str:
         os.makedirs(download_path)
 
     return download_path
-
-
-def get_size(path: str) -> float:
-    size = os.path.getsize(path)
-    files = os.scandir(path)
-
-    if os.path.ismount(path):
-        usage = shutil.disk_usage(path)
-
-        return usage.used
-
-    for f in files:
-        f_path = os.path.join(path, f.name)
-        size += os.path.getsize(f_path)
-        if f.is_dir():
-            size += get_size(f)
-
-    return size
 
 
 def format_size(size: float) -> str:

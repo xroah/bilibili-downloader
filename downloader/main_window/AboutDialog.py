@@ -1,8 +1,5 @@
-from ..common_widgets import Dialog
-
-import __main__
-
 import sys
+
 from PySide6 import __version__
 from PySide6.QtCore import QSize
 from PySide6.QtWidgets import (
@@ -11,6 +8,9 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QMainWindow,
 )
+
+from ..common_widgets import Dialog
+import __main__
 
 
 def get_python_ver():

@@ -7,18 +7,15 @@ from PySide6.QtWidgets import (
     QWidget,
     QSizePolicy,
     QMainWindow,
-    QPushButton,
     QLabel
 )
 
-from ..utils import utils
-from ..utils import request
+from ..utils import utils, request, event_bus
 from ..Cookie import Cookie
-from ..enums import Req
 from ..common_widgets import ToolButton, MessageBox
 from .NewDialog import NewDialog
 from .MainMenu import MainMenu
-# from .LoginDialog import LoginDialog
+from ..enums import Req, EventName
 
 
 class Toolbar(QToolBar):
@@ -27,21 +24,19 @@ class Toolbar(QToolBar):
     def __init__(self, parent: QMainWindow):
         super().__init__(parent)
         self._window = parent
-        self.is_login = False
         self.cookie = Cookie()
         self.add_btn = ToolButton(self, "plus")
-        self.user_name = QLabel("Bilibili账号未登录")
-        # self.login_btn = QPushButton(parent=self, text=self.login_text)
+        self.default_login_text = "Bilibili账号未登录"
+        self.user_name = QLabel(self.default_login_text)
         self.menu_btn = ToolButton(self, "menu")
         self.menu = MainMenu(parent, self, self.menu_btn)
         self.add_btn.clicked.connect(self.show_new_dialog)
-        # self.login_btn.clicked.connect(self.login_out)
         self.login_check_finished.connect(self.login_checked)
-        # self.login_btn.setEnabled(False)
         self.menu_btn.setPopupMode(QToolButton.InstantPopup)
         self.menu_btn.setMenu(self.menu)
         self.init()
         self.start_check_login()
+        event_bus.on(EventName.COOKIE_CHANGE, self.check_login_state)
 
     def check_login_state(self):
         def emit_false():
@@ -72,26 +67,20 @@ class Toolbar(QToolBar):
         t.start()
 
     def login_checked(self, is_login: bool, uname: str):
-        self.is_login = is_login
-        # self.login_btn.setEnabled(True)
         if is_login:
             self.user_name.setText(uname)
-            # self.login_btn.setText(uname)
-            # self.login_btn.setToolTip("点击退出")
         elif self.cookie.cookie:
             MessageBox.alert("登录已过期, 请重新登录", parent=self._window)
-            self.logout()
+        else:
+            self.user_name.setText(self.default_login_text)
 
     def init(self):
         placeholder = QWidget()
         placeholder.setProperty("class", "placeholder")
         placeholder.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        # self.login_btn.setProperty("class", "login-btn")
-        # self.login_btn.setCursor(Qt.PointingHandCursor)
         self.user_name.setProperty("class", "user-name")
         self.addWidget(self.add_btn)
         self.addWidget(placeholder)
-        # self.addWidget(self.login_btn)
         self.addWidget(self.user_name)
         self.addWidget(self.menu_btn)
         self.setContextMenuPolicy(Qt.PreventContextMenu)
@@ -101,23 +90,3 @@ class Toolbar(QToolBar):
 
     def show_new_dialog(self):
         NewDialog(self._window)
-
-    def show_login_dialog(self):
-        pass
-        # dialog = LoginDialog(self._window)
-        # dialog.login_success.connect(self.start_check_login)
-
-    def logout(self):
-        self.cookie.delete()
-        # self.login_btn.setText(self.login_text)
-
-    def login_out(self):
-        if self.is_login:
-            MessageBox.confirm(
-                "确定要退出登录吗?",
-                on_ok=self.logout,
-                parent=self._window
-            )
-            return
-
-        self.show_login_dialog()

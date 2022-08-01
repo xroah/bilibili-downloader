@@ -1,8 +1,7 @@
 from typing import cast
 
 from PySide6.QtWidgets import QWidget, QLabel
-from PySide6.QtCore import QSize, Qt
-from PySide6.QtGui import QIcon
+from PySide6.QtCore import Qt
 from PySide6.QtUiTools import QUiLoader
 
 from ..utils import utils

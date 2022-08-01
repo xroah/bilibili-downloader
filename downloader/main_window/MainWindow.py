@@ -1,7 +1,7 @@
 import sys
 import os.path
 
-from PySide6.QtCore import QSize, Qt, Signal
+from PySide6.QtCore import QSize, Qt
 from PySide6.QtGui import (
     QCloseEvent,
     QKeyEvent,
