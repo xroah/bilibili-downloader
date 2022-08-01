@@ -5,7 +5,8 @@ from PySide6.QtCore import QSize, Signal
 from PySide6.QtWidgets import (
     QLabel,
     QWidget,
-    QVBoxLayout
+    QVBoxLayout,
+    QMainWindow
 )
 
 from ..common_widgets import Dialog
@@ -16,7 +17,6 @@ from ..enums import Req, EventName
 from .SelectDialog import SelectDialog
 from ..utils.parse_video_page import parse
 from ..utils import request
-from ..main_window import MainWindow
 from ..utils import event_bus
 
 
@@ -25,7 +25,7 @@ class NewDialog(Dialog):
     req_error = Signal(str)
     req_success = Signal(dict)
 
-    def __init__(self, window: MainWindow):
+    def __init__(self, window: QMainWindow):
         super().__init__(
             parent=window,
             title="新建下载",

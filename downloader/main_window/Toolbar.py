@@ -7,7 +7,8 @@ from PySide6.QtWidgets import (
     QWidget,
     QSizePolicy,
     QMainWindow,
-    QPushButton
+    QPushButton,
+    QLabel
 )
 
 from ..utils import utils
@@ -17,7 +18,7 @@ from ..enums import Req
 from ..common_widgets import ToolButton, MessageBox
 from .NewDialog import NewDialog
 from .MainMenu import MainMenu
-from .LoginDialog import LoginDialog
+# from .LoginDialog import LoginDialog
 
 
 class Toolbar(QToolBar):
@@ -29,14 +30,14 @@ class Toolbar(QToolBar):
         self.is_login = False
         self.cookie = Cookie()
         self.add_btn = ToolButton(self, "plus")
-        self.login_text = "登录Bilibili账号"
-        self.login_btn = QPushButton(parent=self, text=self.login_text)
+        self.user_name = QLabel("Bilibili账号未登录")
+        # self.login_btn = QPushButton(parent=self, text=self.login_text)
         self.menu_btn = ToolButton(self, "menu")
         self.menu = MainMenu(parent, self, self.menu_btn)
         self.add_btn.clicked.connect(self.show_new_dialog)
-        self.login_btn.clicked.connect(self.login_out)
+        # self.login_btn.clicked.connect(self.login_out)
         self.login_check_finished.connect(self.login_checked)
-        self.login_btn.setEnabled(False)
+        # self.login_btn.setEnabled(False)
         self.menu_btn.setPopupMode(QToolButton.InstantPopup)
         self.menu_btn.setMenu(self.menu)
         self.init()
@@ -72,10 +73,11 @@ class Toolbar(QToolBar):
 
     def login_checked(self, is_login: bool, uname: str):
         self.is_login = is_login
-        self.login_btn.setEnabled(True)
+        # self.login_btn.setEnabled(True)
         if is_login:
-            self.login_btn.setText(uname)
-            self.login_btn.setToolTip("点击退出")
+            self.user_name.setText(uname)
+            # self.login_btn.setText(uname)
+            # self.login_btn.setToolTip("点击退出")
         elif self.cookie.cookie:
             MessageBox.alert("登录已过期, 请重新登录", parent=self._window)
             self.logout()
@@ -84,11 +86,13 @@ class Toolbar(QToolBar):
         placeholder = QWidget()
         placeholder.setProperty("class", "placeholder")
         placeholder.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.login_btn.setProperty("class", "login-btn")
-        self.login_btn.setCursor(Qt.PointingHandCursor)
+        # self.login_btn.setProperty("class", "login-btn")
+        # self.login_btn.setCursor(Qt.PointingHandCursor)
+        self.user_name.setProperty("class", "user-name")
         self.addWidget(self.add_btn)
         self.addWidget(placeholder)
-        self.addWidget(self.login_btn)
+        # self.addWidget(self.login_btn)
+        self.addWidget(self.user_name)
         self.addWidget(self.menu_btn)
         self.setContextMenuPolicy(Qt.PreventContextMenu)
         self.setObjectName("toolbar")
@@ -99,12 +103,13 @@ class Toolbar(QToolBar):
         NewDialog(self._window)
 
     def show_login_dialog(self):
-        dialog = LoginDialog(self._window)
-        dialog.login_success.connect(self.start_check_login)
+        pass
+        # dialog = LoginDialog(self._window)
+        # dialog.login_success.connect(self.start_check_login)
 
     def logout(self):
         self.cookie.delete()
-        self.login_btn.setText(self.login_text)
+        # self.login_btn.setText(self.login_text)
 
     def login_out(self):
         if self.is_login:

@@ -8,6 +8,11 @@ Toolbar#toolbar {
     background-color: transparent;
 }
 
+.user-name {
+    color: #333;
+    margin-right: 10px;
+}
+
 .login-btn {
     margin-right: 15px;
     padding: 3px 8px;
