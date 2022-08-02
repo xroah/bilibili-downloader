@@ -13,20 +13,6 @@ Toolbar#toolbar {
     margin-right: 10px;
 }
 
-QToolButton {
-    width: 24px;
-    height: 24px;
-    padding: 0;
-}
-
-QToolButton:hover {
-    background-color: rgba(255, 255, 255, .1);
-}
-
-QToolButton:pressed {
-    background-color: rgba(255, 255, 255, .3);
-}
-
 QToolButton::menu-indicator {
     width: 0;
 }

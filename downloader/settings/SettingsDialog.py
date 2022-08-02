@@ -173,7 +173,8 @@ class SettingsDialog(QMainWindow):
         except CancelException:
             print("Calculation canceled")
             return
-        except:
+        except Exception as e:
+            print("Calculation error", e)
             size = "未知"
 
         self.size_calculated.emit(size)

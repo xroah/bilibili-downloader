@@ -39,7 +39,6 @@ class NewDialog(Dialog):
         self.req_error.connect(self.handle_error)
         self.hide_loading.connect(self.close)
         self.req_success.connect(self.handle_success)
-        self.shown.connect(lambda: self._input.setFocus())
         self.init()
         self.open()
 
@@ -137,3 +136,5 @@ class NewDialog(Dialog):
 
             if bv:
                 self._input.setText(bv)
+
+        self._input.setFocus()
