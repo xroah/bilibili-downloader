@@ -5,7 +5,11 @@ import os
 from PySide6.QtCore import QCoreApplication, Qt
 
 import downloader.qrc.Icons
-from downloader.bing_image import download_img
+from downloader.bing_image import (
+    download_img,
+    check,
+    get_img_path
+)
 from downloader.utils import utils
 from downloader import get_app
 
@@ -34,8 +38,13 @@ if __name__ == "__main__":
     if not os.path.exists(data_dir):
         os.mkdir(data_dir)
 
-    t = Thread(target=update_bg)
-    t.daemon = True
-    t.start()
+    img_name, img_path = get_img_path()
+
+    if check(img_name):
+        app.main_win.set_bg_img(img_path)
+    else:
+        t = Thread(target=update_bg)
+        t.daemon = True
+        t.start()
 
     sys.exit(app.exec())

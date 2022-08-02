@@ -77,7 +77,10 @@ class Toolbar(QToolBar):
         if is_login:
             self.user_name.setText(uname)
         elif self.cookie.cookie:
-            MessageBox.alert("登录已过期, 请重新登录", parent=self._window)
+            MessageBox.alert(
+                "登录已过期或者cookie设置错误",
+                parent=self._window
+            )
         else:
             self.user_name.setText(self.default_login_text)
 

@@ -26,6 +26,9 @@
          <property name="cursor">
           <cursorShape>PointingHandCursor</cursorShape>
          </property>
+         <property name="focusPolicy">
+          <enum>Qt::StrongFocus</enum>
+         </property>
          <property name="text">
           <string>设置下载文件夹</string>
          </property>
@@ -44,6 +47,9 @@
          </property>
          <property name="cursor">
           <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
          </property>
          <property name="toolTip">
           <string>打开文件夹</string>
@@ -73,6 +79,9 @@
      </item>
      <item>
       <widget class="QCheckBox" name="isShowMessage">
+       <property name="focusPolicy">
+        <enum>Qt::StrongFocus</enum>
+       </property>
        <property name="text">
         <string>下载完成后弹出提示框</string>
        </property>
@@ -80,6 +89,9 @@
      </item>
      <item>
       <widget class="QCheckBox" name="isPlayRingtone">
+       <property name="focusPolicy">
+        <enum>Qt::StrongFocus</enum>
+       </property>
        <property name="text">
         <string>下载完成后播放提示音</string>
        </property>
@@ -87,6 +99,9 @@
      </item>
      <item>
       <widget class="QCheckBox" name="isAutoDownload">
+       <property name="focusPolicy">
+        <enum>Qt::StrongFocus</enum>
+       </property>
        <property name="text">
         <string>启动时自动下载</string>
        </property>

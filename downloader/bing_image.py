@@ -39,9 +39,15 @@ def check(name: str) -> bool:
     return downloaded
 
 
-def download_img() -> str:
+def get_img_path():
     name = time.strftime("%Y%m%d") + ".png"
-    full_name = os.path.join(bg_dir, name)
+    path = os.path.join(bg_dir, name)
+
+    return name, path
+
+
+def download_img() -> str:
+    name, full_name = get_img_path()
 
     if check(name):
         return full_name

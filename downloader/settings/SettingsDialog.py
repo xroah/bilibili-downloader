@@ -74,6 +74,7 @@ class SettingsDialog(QMainWindow):
         self.settings = Settings()
         widget.setStyleSheet(utils.get_style("settings-dialog"))
 
+        self.setWindowTitle("设置")
         self.init_signal()
         self.init_settings()
         self.setAttribute(Qt.WA_DeleteOnClose, True)
