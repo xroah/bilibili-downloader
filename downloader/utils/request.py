@@ -1,4 +1,4 @@
-import httpx
+import requests
 
 from ..Cookie import Cookie
 from ..enums import Req
@@ -17,7 +17,7 @@ def get(url: str, **kwargs):
         del kwargs["headers"]
 
     try:
-        res = httpx.get(url, headers=headers, **kwargs)
+        res = requests.get(url, headers=headers, **kwargs)
     except Exception as E:
         print(f"Request {url} error: ", E.args)
         raise E

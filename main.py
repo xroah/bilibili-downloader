@@ -21,7 +21,7 @@ def update_bg() -> None:
     try:
         img_name = download_img()
         if img_name:
-            _app.main_win.set_bg_img(img_name)
+            _app.main_win.bg_sig.emit(img_name)
     except Exception as e:
         print("======>", e)
 

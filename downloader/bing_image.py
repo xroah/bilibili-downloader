@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-import httpx
+import requests
 
 import os
 import os.path
@@ -11,7 +11,7 @@ bg_dir = os.path.join(cwd, "bg")
 
 
 def get_img_url() -> str:
-    res = httpx.get(bing_host)
+    res = requests.get(bing_host)
     soup = BeautifulSoup(res.text, "html.parser")
     ret = soup.select("#preloadBg")
 
@@ -49,7 +49,7 @@ def download_img() -> str:
     img_url = get_img_url()
 
     if img_url:
-        res = httpx.get(img_url)
+        res = requests.get(img_url)
         with open(full_name, "wb") as f:
             f.write(res.content)
 

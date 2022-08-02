@@ -1,7 +1,7 @@
 import sys
 import os.path
 
-from PySide6.QtCore import QSize, Qt
+from PySide6.QtCore import QSize, Qt, Signal
 from PySide6.QtGui import (
     QCloseEvent,
     QKeyEvent,
@@ -19,6 +19,8 @@ from ..enums import EventName
 
 
 class MainWindow(QMainWindow):
+    bg_sig = Signal(str)
+
     def __init__(self, hide_to_tray=True):
         super().__init__()
         self.hide_to_tray = hide_to_tray
@@ -38,6 +40,7 @@ class MainWindow(QMainWindow):
         self.set_bg_img()
         self.show()
         event_bus.on(EventName.NEW_DOWNLOAD, self.handle_download)
+        self.bg_sig.connect(self.set_bg_img)
 
     def set_bg_img(self, bg: str = ""):
         if bg:
