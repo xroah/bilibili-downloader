@@ -2,7 +2,8 @@ import os
 from urllib.parse import urlparse
 import re
 
-from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import QWidget
+from PySide6.QtGui import QIcon, QGuiApplication
 
 
 def get_data_dir():
@@ -88,3 +89,24 @@ def parse_url(url: str) -> str | None:
         return base
 
     return None
+
+
+def center(widget: QWidget, parent: QWidget | bool) -> (float, float):
+    size = widget.size()
+
+    # center in screen
+    if isinstance(parent, bool):
+        screen = QGuiApplication.primaryScreen()
+        avail_size = screen.availableSize()
+        left = (avail_size.width() - size.width()) / 2
+        top = (avail_size.height() - size.height()) / 2
+    else:
+        p_geometry = parent.frameGeometry()
+        left = (p_geometry.width() - size.width()) / 2
+        top = (p_geometry.height() - size.height()) / 2
+        left += p_geometry.x()
+        top += p_geometry.y()
+
+    widget.move(left, top)
+
+    return left, top

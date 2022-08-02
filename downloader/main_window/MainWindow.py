@@ -10,20 +10,21 @@ from PySide6.QtGui import (
     QBrush,
     QPalette
 )
-from PySide6.QtWidgets import QMainWindow
+from PySide6.QtWidgets import QMainWindow, QSystemTrayIcon
 
 from ..main_widget import MainWidget
 from .Toolbar import Toolbar
-from ..utils import utils, event_bus
+from ..utils import utils, event_bus, decorators
 from ..enums import EventName
 
 
+@decorators.singleton
 class MainWindow(QMainWindow):
     bg_sig = Signal(str)
 
-    def __init__(self, hide_to_tray=True):
+    def __init__(self):
         super().__init__()
-        self.hide_to_tray = hide_to_tray
+        self.hide_to_tray = QSystemTrayIcon.isSystemTrayAvailable()
         self.bg = utils.get_resource_path("default-bg.png")
         self._size = QSize(900, 580)
         self.setCentralWidget(MainWidget())

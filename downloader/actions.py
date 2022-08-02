@@ -1,16 +1,16 @@
 from typing import Callable
 import sys
 
-from PySide6.QtWidgets import QMenu, QMainWindow
+from PySide6.QtWidgets import QMenu
 from PySide6.QtGui import QAction
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QTimer
 
 from .settings import SettingsDialog
 from .utils import utils
 
 
 class Action:
-    _settings_dialog: SettingsDialog | None = None
+    _settings_dialog = None
 
     @staticmethod
     def quit_app():
@@ -21,9 +21,9 @@ class Action:
         cls._settings_dialog = None
 
     @classmethod
-    def show_settings(cls, win: QMainWindow):
+    def show_settings(cls):
         if cls._settings_dialog is None:
-            cls._settings_dialog = SettingsDialog(win, cls._dialog_close)
+            cls._settings_dialog = SettingsDialog()
 
         cls._settings_dialog.showNormal()
         cls._settings_dialog.setWindowState(Qt.WindowActive)
@@ -46,14 +46,13 @@ def add_menu_action(
 
 def get_settings_action(
         menu,
-        window: QMainWindow,
         icon: str = None
 ) -> QAction:
     action = add_menu_action(
         menu=menu,
         icon=icon,
         text="设置",
-        cb=lambda: Action.show_settings(window)
+        cb=lambda: Action.show_settings()
     )
 
     return action

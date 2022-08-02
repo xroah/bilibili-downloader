@@ -5,19 +5,21 @@ from threading import Thread
 import subprocess
 import shutil
 
-from PySide6.QtGui import QCloseEvent
+from PySide6.QtGui import QCloseEvent, QShowEvent
 from PySide6.QtWidgets import (
     QFileDialog,
     QMainWindow,
     QPushButton,
     QCheckBox,
     QLabel,
-    QPlainTextEdit
+    QPlainTextEdit,
+    QWidget,
+    QVBoxLayout
 )
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import Qt, Signal
 
-from ..utils import utils
+from ..utils import utils, decorators
 from .Settings import Settings
 from ..enums import SettingsKey
 from ..Cookie import Cookie
@@ -27,12 +29,21 @@ class CancelException(Exception):
     pass
 
 
+@decorators.singleton
 class SettingsDialog(QMainWindow):
     size_calculated = Signal(str)
 
-    def __init__(self, parent: QMainWindow, on_close: Callable = None):
-        super().__init__(parent)
-        loader = QUiLoader()
+    def __init__(self, top_win: QMainWindow = None):
+        super().__init__()
+        self.top_win = top_win
+        self.settings = Settings()
+        self.cookie_input: QPlainTextEdit | None = None
+        self.is_auto_download_checkbox: QCheckBox | None = None
+        self.is_play_checkbox: QCheckBox | None = None
+        self.is_show_msg_checkbox: QCheckBox | None = None
+        self.used_label: QLabel | None = None
+        self.p_btn: QPushButton | None = None
+        self.show_btn: QPushButton | None = None
         # calc download directory usage thread
         self.calc_thread: Thread | None = None
         # callback when terminate the calculation thread
@@ -40,9 +51,22 @@ class SettingsDialog(QMainWindow):
         # should the calculation be terminated
         self.is_calc_canceled = False
         self.cookie = Cookie()
+
+        self.setFixedSize(620, 360)
+        self.setWindowTitle("设置")
+        self.setAttribute(Qt.WA_DeleteOnClose, True)
+        self.setWindowFlags(
+            Qt.WindowTitleHint |
+            Qt.CustomizeWindowHint |
+            Qt.WindowCloseButtonHint
+        )
+        self.setWindowIcon(utils.get_icon("logo", "png"))
+        self.init_ui()
+
+    def init_ui(self):
+        loader = QUiLoader()
         ui_file = utils.get_resource_path("uis/settings-dialog.ui")
         widget = loader.load(ui_file)
-        self.on_close = on_close
         self.show_btn = cast(
             QPushButton,
             widget.findChild(QPushButton, "showFileDialogBtn")
@@ -74,13 +98,9 @@ class SettingsDialog(QMainWindow):
         self.settings = Settings()
         widget.setStyleSheet(utils.get_style("settings-dialog"))
 
-        self.setWindowTitle("设置")
         self.init_signal()
         self.init_settings()
-        self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.setCentralWidget(widget)
-        self.setFixedSize(620, 360)
-        self.show()
 
     def init_settings(self):
         s = self.settings
@@ -142,6 +162,7 @@ class SettingsDialog(QMainWindow):
         return self.settings.get(SettingsKey.DOWNLOAD_PATH)
 
     def get_size(self, path: str) -> float:
+        path = os.path.normpath(path)
         size = os.path.getsize(path)
         files = os.scandir(path)
 
@@ -170,13 +191,15 @@ class SettingsDialog(QMainWindow):
         try:
             size = self.get_size(path)
             size = utils.format_size(size)
-            self.calc_thread = None
         except CancelException:
             print("Calculation canceled")
             return
         except Exception as e:
             print("Calculation error", e)
             size = "未知"
+        finally:
+            self.calc_thread = None
+            self.is_calc_canceled = False
 
         self.size_calculated.emit(size)
 
@@ -189,6 +212,7 @@ class SettingsDialog(QMainWindow):
             self.after_calc_cancel = lambda: self.start_calc(path)
             return
 
+        self.is_calc_canceled = False
         t = Thread(target=self.calc_size, args=(path,))
         t.daemon = True
         t.start()
@@ -209,10 +233,16 @@ class SettingsDialog(QMainWindow):
         else:
             subprocess.call(("open", path))
 
+    def showEvent(self, e: QShowEvent) -> None:
+        if (
+                self.top_win and
+                self.top_win.isVisible() and
+                not self.top_win.isMinimized()
+        ):
+            utils.center(self, self.top_win)
+        else:
+            utils.center(self, True)
+
     def closeEvent(self, e: QCloseEvent) -> None:
-        super().closeEvent(e)
-        self.is_calc_canceled = True
-        cookie = self.cookie_input.toPlainText()
-        self.cookie.set(cookie)
-        if self.on_close:
-            self.on_close()
+        e.ignore()
+        self.hide()

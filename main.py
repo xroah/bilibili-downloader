@@ -11,28 +11,26 @@ from downloader.bing_image import (
     get_img_path
 )
 from downloader.utils import utils
-from downloader import get_app
+from downloader.App import App
 
 
 __version__ = "1.0.0"
 
 
 def update_bg() -> None:
-    _app = get_app()
-    if not _app:
-        return
+    _app = App()
 
     try:
-        img_name = download_img()
-        if img_name:
-            _app.main_win.bg_sig.emit(img_name)
+        name = download_img()
+        if name:
+            _app.main_win.bg_sig.emit(name)
     except Exception as e:
         print("======>", e)
 
 
 if __name__ == "__main__":
     QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts, True)
-    app = get_app()
+    app = App()
     data_dir = utils.get_data_dir()
 
     if not os.path.exists(data_dir):

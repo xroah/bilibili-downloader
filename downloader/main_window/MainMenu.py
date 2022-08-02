@@ -26,13 +26,9 @@ class MainMenu(Menu):
         self.init()
 
     def init(self):
-        # self.add_action("历史记录", "history", self.history_action)
-        get_settings_action(self, self._window, "settings")
+        get_settings_action(self, "settings")
         self.add_action("关于", "about", self.about_action)
         get_quit_action(self, "exit")
-
-    def history_action(self):
-        print("history")
 
     def add_action(
             self,

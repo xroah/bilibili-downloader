@@ -37,7 +37,7 @@ class _Tray(QSystemTrayIcon):
     def get_ctx_menu(self) -> QMenu:
         menu = QMenu(self._window)
         show_main_action = menu.addAction("显示主界面")
-        get_settings_action(menu, self._window)
+        get_settings_action(menu)
         get_quit_action(menu)
         menu.setProperty("class", "contextmenu")
         menu.setStyleSheet(utils.get_style("menu"))

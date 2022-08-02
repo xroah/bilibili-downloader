@@ -3,13 +3,17 @@ from PySide6.QtCore import Qt
 
 from .main_window import MainWindow
 from .Tray import create_tray
+from .utils.decorators import singleton
+from .settings import SettingsDialog
 
 
+@singleton
 class App(QApplication):
     def __init__(self):
         super().__init__()
         tray_avail = QSystemTrayIcon.isSystemTrayAvailable()
-        self.main_win = MainWindow(tray_avail)
+        self.main_win = MainWindow()
+        self.settings_dialog = SettingsDialog(self.main_win)
         # Keyboard shortcuts on macOS are typically based on the Command
         # (or Cmd) keyboard modifier, represented by the ⌘ symbol.
         # For example, the ‘Copy’ action is Command+C (⌘+C).

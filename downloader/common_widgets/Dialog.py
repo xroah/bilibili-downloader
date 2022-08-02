@@ -112,19 +112,9 @@ class Dialog(QDialog):
         self.reject()
 
     def showEvent(self, e: QShowEvent) -> None:
-        size = self.size()
-
         if not self.isModal() and not self._parent.isVisible():
-            screen = QGuiApplication.primaryScreen()
-            avail_size = screen.availableSize()
-            left = (avail_size.width() - size.width()) / 2
-            top = (avail_size.height() - size.height()) / 2
+            utils.center(self, True)
         else:
-            p_geometry = self._parent.frameGeometry()
-            left = (p_geometry.width() - size.width()) / 2
-            top = (p_geometry.height() - size.height()) / 2
-            left += p_geometry.x()
-            top += p_geometry.y()
+            utils.center(self, self._parent)
 
-        self.move(left, top)
         self.shown.emit()
