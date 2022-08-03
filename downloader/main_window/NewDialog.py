@@ -93,7 +93,7 @@ class NewDialog(Dialog):
 
     def fet_video_info(self, bv: str):
         try:
-            res = request.get(f"{Req.VIDEO_PAGE.value}{bv}")
+            res = request.get(f"{Req.VIDEO_PAGE.value}{bv}", timeout=30)
         except Exception as e:
             self.req_error.emit(str(e))
         else:

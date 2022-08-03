@@ -7,10 +7,17 @@ from PySide6.QtGui import (
     QKeyEvent,
     QResizeEvent,
     QImage,
-    QBrush,
-    QPalette
+    QPixmap,
+
 )
-from PySide6.QtWidgets import QMainWindow, QSystemTrayIcon
+from PySide6.QtWidgets import (
+    QMainWindow,
+    QSystemTrayIcon,
+    QWidget,
+    QStackedLayout,
+    QLabel,
+    QGraphicsBlurEffect
+)
 
 from ..main_widget import MainWidget
 from .Toolbar import Toolbar
@@ -27,7 +34,16 @@ class MainWindow(QMainWindow):
         self.hide_to_tray = QSystemTrayIcon.isSystemTrayAvailable()
         self.bg = utils.get_resource_path("default-bg.png")
         self._size = QSize(900, 580)
-        self.setCentralWidget(MainWidget())
+        central_widget = QWidget(self)
+        self.bg_label = QLabel(central_widget)
+        central_layout = QStackedLayout(self)
+        central_layout.setStackingMode(QStackedLayout.StackAll)
+        central_layout.addWidget(self.bg_label)
+        central_layout.addWidget(MainWidget(central_widget))
+        central_layout.setCurrentIndex(1)
+        central_widget.setLayout(central_layout)
+
+        self.setCentralWidget(central_widget)
         self.setWindowTitle("Bilibili下载器")
         self.setMinimumSize(self._size)
         self.setWindowIcon(utils.get_icon("logo", "png"))
@@ -50,12 +66,12 @@ class MainWindow(QMainWindow):
         if not self.bg or not os.path.exists(self.bg):
             return
 
-        palette = self.palette()
         img = QImage(self.bg)
         img = img.scaled(self.size())
-        brush = QBrush(img)
-        palette.setBrush(QPalette.Window, brush)
-        self.setPalette(palette)
+        blur_effect = QGraphicsBlurEffect(self.bg_label)
+        blur_effect.setBlurRadius(10)
+        self.bg_label.setPixmap(QPixmap.fromImage(img))
+        self.bg_label.setGraphicsEffect(blur_effect)
 
     def show(self) -> None:
         self.resize(self._size)

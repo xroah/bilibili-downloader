@@ -40,6 +40,7 @@ class Panel(QWidget):
             border: none;
         """)
         scroll_bar.setStyleSheet(utils.get_style("scrollbar"))
+        scroll_bar.setContextMenuPolicy(Qt.NoContextMenu)
         stacked.addWidget(self.no_content_widget)
         stacked.addWidget(scroll_area)
         stacked.setContentsMargins(0, 0, 0, 0)
