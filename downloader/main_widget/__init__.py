@@ -1,1 +1,2 @@
-from .MainWidget import MainWidget
+from .DownloadedPanel import DownloadedPanel
+from .DownloadingPanel import DownloadingPanel

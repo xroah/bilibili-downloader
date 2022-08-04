@@ -2,34 +2,6 @@
     background-color: #fff;
 }
 
-PushButton {
-    min-height: 20px;
-    border-radius: 3px;
-    background-color: #fff;
-}
-
-PushButton:hover {
-    background-color: #ddd;
-}
-
-PushButton:focus {
-    border: 3px solid #9bc2fd;
-}
-
-.primary {
-    color: #fff;
-    border-radius: 3px;
-    background-color: rgba(13, 110, 253, .8);
-}
-
-.primary:hover {
-    background-color: rgba(13, 110, 253, .9);
-}
-
-.primary:pressed {
-    background-color: rgba(13, 110, 253, 1);
-}
-
 .footer {
     background-color: #f0f0f0;
 }

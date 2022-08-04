@@ -24,11 +24,16 @@ def get_icon(name: str, ext="svg") -> QIcon | None:
     return QIcon(f":/icons/{name}.{ext}")
 
 
-def get_style(name: str) -> str:
-    file = get_resource_path(f"styles/{name}.qss")
+def get_style(*names: str) -> str:
+    ss = ""
+    for name in names:
+        file = get_resource_path(f"styles/{name}.qss")
 
-    with open(file, "r") as f:
-        ss = f.read()
+        try:
+            with open(file, "r") as f:
+                ss += f.read()
+        except FileNotFoundError:
+            pass
 
     return ss
 

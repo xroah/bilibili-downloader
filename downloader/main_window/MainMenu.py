@@ -17,10 +17,9 @@ class MainMenu(Menu):
     def __init__(
         self,
         window: QMainWindow,
-        parent: QWidget = None,
         related_btn: QToolButton = None
     ):
-        super().__init__(parent)
+        super().__init__(window)
         self.related_btn = related_btn
         self._window = window
         self.init()

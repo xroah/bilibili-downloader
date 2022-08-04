@@ -22,5 +22,4 @@ class DownloadingPanel(Panel):
         layout.addWidget(DownloadingItem(self))
         layout.addWidget(DownloadingItem(self))
         layout.addWidget(DownloadingItem(self))
-        widget.setLayout(layout)
         self._layout.setCurrentIndex(1)
