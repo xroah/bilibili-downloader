@@ -151,6 +151,11 @@ class MainWindow(QMainWindow):
         tab = btn.property("tab")
         self.right_panel.setCurrentIndex(tab)
         btn.setStyleSheet(utils.get_style("active"))
+        
+        # 已下载tab
+        self.pause_all.setEnabled(tab != 1)
+        self.start_all.setEnabled(tab != 1)
+
 
     def show(self) -> None:
         self.resize(self._size)

@@ -1,17 +1,38 @@
-from bs4 import BeautifulSoup
-import requests
-
 import os
 import os.path
 import time
+
+from bs4 import BeautifulSoup
+import requests
+
+from .enums import Req
 
 bing_host = "https://cn.bing.com"
 cwd = os.getcwd()
 bg_dir = os.path.join(cwd, "bg")
 
 
+def request(url, i=0):
+    try:
+        res = requests.get(
+            url,
+            timeout=15,
+            headers={
+                "referer": "https://cn.bing.com",
+                "user-agent": Req.USER_AGENT.value
+            }
+        )
+    except:
+        i += 1
+
+        if i < 10:
+            return request(url, i)
+    else:
+        return res
+
+
 def get_img_url() -> str:
-    res = requests.get(bing_host)
+    res = request(bing_host)
     soup = BeautifulSoup(res.text, "html.parser")
     ret = soup.select("#preloadBg")
 
@@ -40,7 +61,7 @@ def check(name: str) -> bool:
 
 
 def get_img_path():
-    name = time.strftime("%Y%m%d") + ".png"
+    name = time.strftime("%Y-%m-%d") + ".png"
     path = os.path.join(bg_dir, name)
 
     return name, path
@@ -55,7 +76,7 @@ def download_img() -> str:
     img_url = get_img_url()
 
     if img_url:
-        res = requests.get(img_url)
+        res = request(img_url)
         with open(full_name, "wb") as f:
             f.write(res.content)
 
