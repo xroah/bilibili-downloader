@@ -4,3 +4,4 @@ from .Input import Input
 from .Menu import Menu
 from .MessageBox import MessageBox
 from .CheckableItem import CheckableItem
+from .ClickableWidget import ClickableWidget

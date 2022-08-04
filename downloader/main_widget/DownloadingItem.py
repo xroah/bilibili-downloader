@@ -17,12 +17,10 @@ class DownloadingItem(CheckableItem):
             self.findChild(QToolButton, "toggle")
         )
         self._progress_bar = self._widget
-        self._widget.setParent(self)
         self.toggle_btn.setStyleSheet(utils.get_style("toolbutton"))
         self._ctx_menu.addAction("开始/暂停")
         self._ctx_menu.addAction("打开文件夹")
         self._ctx_menu.addAction("删除")
-        self._ctx_menu.addAction("属性")
         self.setProperty("class", "downloading-item")
         self.setStyleSheet(utils.get_style("downloading-item"))
 

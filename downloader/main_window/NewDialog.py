@@ -106,6 +106,7 @@ class NewDialog(Dialog):
                 if not ret["bvid"]:
                     self.req_error.emit("视频不存在")
                     return
+
                 self.req_success.emit(ret)
 
     def ok(self):

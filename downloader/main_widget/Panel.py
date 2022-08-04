@@ -1,3 +1,5 @@
+from typing import cast
+
 from PySide6.QtWidgets import (
     QWidget,
     QLabel,
@@ -8,10 +10,12 @@ from PySide6.QtWidgets import (
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtCore import Qt
 
+
+from ..common_widgets import ClickableWidget, CheckableItem
 from ..utils import utils
 
 
-class Panel(QWidget):
+class Panel(ClickableWidget):
     def __init__(
             self,
             *,
@@ -30,7 +34,7 @@ class Panel(QWidget):
         widget.setParent(self)
         w_layout.setAlignment(Qt.AlignTop)
         w_layout.setContentsMargins(0, 0, 0, 0)
-        w_layout.setSpacing(8)
+        w_layout.setSpacing(10)
         widget.setLayout(w_layout)
         scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         scroll_area.setWidgetResizable(True)
@@ -61,3 +65,12 @@ class Panel(QWidget):
         widget.setLayout(layout)
 
         return widget
+    
+    def clickEvent(self):
+        items = self._widget.findChildren(ClickableWidget)
+        
+        for item in items:
+            widget = cast(CheckableItem, item)
+
+            if widget._checked:
+                widget.uncheck()
