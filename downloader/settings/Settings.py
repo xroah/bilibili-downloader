@@ -18,9 +18,9 @@ _default_settings = {
 
 class Settings(Singleton):
     def __init__(self) -> None:
-        self._dict = self.get_settings()
+        self._dict = self.get_all()
 
-    def get_settings(self) -> dict:
+    def get_all(self) -> dict:
         settings = _default_settings.copy()
 
         if not os.path.exists(_settings_file):
@@ -40,7 +40,7 @@ class Settings(Singleton):
 
         return settings
 
-    def save_settings(self) -> None:
+    def save(self) -> None:
         try:
             with open(_settings_file, "w") as f:
                 json.dump(self._dict, f, indent=4)
@@ -62,4 +62,3 @@ class Settings(Singleton):
             return
 
         self._dict[key] = value
-        self.save_settings()

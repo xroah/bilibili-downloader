@@ -9,8 +9,7 @@ from PySide6.QtGui import (
     QKeyEvent,
     QResizeEvent,
     QImage,
-    QPixmap,
-
+    QPixmap
 )
 from PySide6.QtWidgets import (
     QMainWindow,
@@ -38,7 +37,7 @@ from ..main_widget import DownloadingPanel, DownloadedPanel
 from ..common_widgets import MessageBox
 from ..cookie import cookie
 
-T = TypeVar("T", QToolButton, QLabel, QPushButton)
+T = TypeVar("T", bound='QWidget')
 
 
 @decorators.singleton
@@ -55,19 +54,27 @@ class MainWindow(QMainWindow):
         self.hide_to_tray = QSystemTrayIcon.isSystemTrayAvailable()
         self.bg = utils.get_resource_path("default-bg.png")
         self._size = QSize(900, 580)
-        self.menu_btn = self.get_child(QToolButton, widget, "menu")
-        self.new_btn = self.get_child(QToolButton, widget, "newDownload")
-        self.start_all_btn = self.get_child(QToolButton, widget, "startAll")
-        self.pause_all_btn = self.get_child(QToolButton, widget, "pauseAll")
-        self.menu_btn.setIcon(utils.get_icon("menu"))
+        self.menu_btn = utils.get_child(widget, QToolButton, "menu")
+        self.new_btn = utils.get_child(widget, QToolButton, "newDownload")
+        self.start_all = utils.get_child(widget, QToolButton, "startAll")
+        self.pause_all = utils.get_child(widget, QToolButton, "pauseAll")
         self.new_btn.setIcon(utils.get_icon("plus"))
-        self.start_all_btn.setIcon(utils.get_icon("play"))
-        self.pause_all_btn.setIcon(utils.get_icon("pause"))
+        self.menu_btn.setIcon(utils.get_icon("menu"))
+        self.start_all.setIcon(utils.get_icon("play"))
+        self.pause_all.setIcon(utils.get_icon("pause"))
         self.bg_label = QLabel(central_widget)
-        self.username = self.get_child(QLabel, widget, "username")
+        self.username = utils.get_child(widget, QLabel, "username")
         self.menu = MainMenu(self, self.menu_btn)
-        self.downloading_tab_btn = self.get_child(QPushButton, widget, "downloading")
-        self.downloaded_tab_btn = self.get_child(QPushButton, widget, "downloaded")
+        self.downloading_tab = utils.get_child(
+            widget,
+            QPushButton,
+            "downloading"
+        )
+        self.downloaded_tab = utils.get_child(
+            widget,
+            QPushButton,
+            "downloaded"
+        )
         self.current_tab: QPushButton | None = None
         self.right_panel = cast(
             QStackedWidget,
@@ -76,7 +83,7 @@ class MainWindow(QMainWindow):
         self.right_panel.addWidget(DownloadingPanel(self))
         self.right_panel.addWidget(DownloadedPanel(self))
         widget.setParent(central_widget)
-        central_layout = QStackedLayout(self)
+        central_layout = QStackedLayout(central_widget)
         central_layout.setStackingMode(QStackedLayout.StackAll)
         central_layout.addWidget(self.bg_label)
         central_layout.addWidget(widget)
@@ -102,7 +109,7 @@ class MainWindow(QMainWindow):
             Qt.WindowMinimizeButtonHint
         )
         self.set_bg_img()
-        self.switch_tab(self.downloading_tab_btn)
+        self.switch_tab(self.downloading_tab)
         self.start_check_login()
         self.show()
 
@@ -111,20 +118,13 @@ class MainWindow(QMainWindow):
         event_bus.on(EventName.COOKIE_CHANGE, self.start_check_login)
         self.bg_sig.connect(self.set_bg_img)
         self.new_btn.clicked.connect(lambda: NewDialog(self))
-        self.downloading_tab_btn.clicked.connect(
-            lambda: self.switch_tab(self.downloading_tab_btn)
+        self.downloading_tab.clicked.connect(
+            lambda: self.switch_tab(self.downloading_tab)
         )
-        self.downloaded_tab_btn.clicked.connect(
-            lambda: self.switch_tab(self.downloaded_tab_btn)
+        self.downloaded_tab.clicked.connect(
+            lambda: self.switch_tab(self.downloaded_tab)
         )
         self.login_sig.connect(self.login_checked)
-
-    @staticmethod
-    def get_child(t: Generic[T], parent: QWidget, name: str) -> T:
-        return cast(
-            t,
-            parent.findChild(t, name)
-        )
 
     def set_bg_img(self, bg: str = ""):
         if bg:
@@ -190,7 +190,7 @@ class MainWindow(QMainWindow):
         elif cookie.cookie:
             MessageBox.alert(
                 "登录已过期或者cookie设置错误",
-                parent=self._window
+                parent=self
             )
         else:
             self.username.setText(self.default_login_state)

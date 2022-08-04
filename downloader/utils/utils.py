@@ -1,8 +1,14 @@
 import os
 from urllib.parse import urlparse
 import re
+from typing import (
+    cast,
+    TypeVar,
+    Type,
+    Tuple
+)
 
-from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QWidget, QToolButton
 from PySide6.QtGui import QIcon, QGuiApplication
 
 
@@ -96,7 +102,10 @@ def parse_url(url: str) -> str | None:
     return None
 
 
-def center(widget: QWidget, parent: QWidget | bool) -> (float, float):
+def center(
+    widget: QWidget,
+    parent: QWidget | bool
+) -> Tuple[float, float]:
     size = widget.size()
 
     # center in screen
@@ -115,3 +124,13 @@ def center(widget: QWidget, parent: QWidget | bool) -> (float, float):
     widget.move(left, top)
 
     return left, top
+
+
+T = TypeVar("T", bound=QWidget)
+
+
+def get_child(p: QWidget, t: Type[T], name: str) -> T:
+    return cast(
+        t,
+        p.findChild(t, name)
+    )

@@ -17,10 +17,10 @@ from PySide6.QtWidgets import (
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import Qt, Signal
 
-from downloader.utils import utils, decorators
-from downloader.settings import settings
-from downloader.enums import SettingsKey
-from downloader.cookie import cookie
+from .utils import utils, decorators
+from .settings import settings
+from .enums import SettingsKey
+from .cookie import cookie
 
 
 class CancelException(Exception):
@@ -62,40 +62,19 @@ class SettingsDialog(QMainWindow):
     def init_ui(self):
         loader = QUiLoader()
         ui_file = utils.get_resource_path("uis/settings-dialog.ui")
-        widget = loader.load(ui_file)
-        self.show_btn = cast(
-            QPushButton,
-            widget.findChild(QPushButton, "showFileDialogBtn")
-        )
-        self.p_btn = cast(
-            QPushButton,
-            widget.findChild(QPushButton, "downloadPathBtn")
-        )
-        self.used_label = cast(
-            QLabel,
-            widget.findChild(QLabel, "usedText")
-        )
-        self.is_show_msg_checkbox = cast(
-            QCheckBox,
-            widget.findChild(QCheckBox, "isShowMessage")
-        )
-        self.is_play_checkbox = cast(
-            QCheckBox,
-            widget.findChild(QCheckBox, "isPlayRingtone")
-        )
-        self.is_auto_download_checkbox = cast(
-            QCheckBox,
-            widget.findChild(QCheckBox, "isAutoDownload")
-        )
-        self.cookie_input = cast(
-            QPlainTextEdit,
-            widget.findChild(QPlainTextEdit, "cookieInput")
-        )
-        widget.setStyleSheet(utils.get_style("settings-dialog"))
+        w = loader.load(ui_file)
+        self.show_btn = utils.get_child(w, QPushButton, "showFileDialog")
+        self.p_btn = utils.get_child(w, QPushButton, "downloadPath")
+        self.used_label = utils.get_child(w, QLabel, "usedText")
+        self.is_show_msg = utils.get_child(w, QCheckBox, "isShowMessage")
+        self.is_play = utils.get_child(w, QCheckBox, "isPlayRingtone")
+        self.is_auto_download = utils.get_child(w, QCheckBox, "isAutoDownload")
+        self.cookie_input = utils.get_child(w, QPlainTextEdit, "cookieInput")
+        w.setStyleSheet(utils.get_style("settings-dialog"))
 
         self.init_signal()
         self.init_settings()
-        self.setCentralWidget(widget)
+        self.setCentralWidget(w)
 
     def init_settings(self):
         s = settings
@@ -103,10 +82,10 @@ class SettingsDialog(QMainWindow):
         is_show_msg = s.get(SettingsKey.IS_SHOW_MESSAGE)
         is_play = s.get(SettingsKey.IS_PLAY_RINGTONE)
         is_auto_download = s.get(SettingsKey.IS_AUTO_DOWNLOAD)
-        self.set_checkbox_state(self.is_show_msg_checkbox, is_show_msg)
-        self.set_checkbox_state(self.is_play_checkbox, is_play)
+        self.set_checkbox_state(self.is_show_msg, is_show_msg)
+        self.set_checkbox_state(self.is_play, is_play)
         self.set_checkbox_state(
-            self.is_auto_download_checkbox,
+            self.is_auto_download,
             is_auto_download
         )
         self.cookie_input.setPlainText(cookie.cookie)
@@ -118,13 +97,13 @@ class SettingsDialog(QMainWindow):
     def init_signal(self):
         self.show_btn.clicked.connect(self.get_dir)
         self.p_btn.clicked.connect(lambda: self.open_path(self.get_path()))
-        self.is_show_msg_checkbox.stateChanged.connect(
+        self.is_show_msg.stateChanged.connect(
             lambda s: self.handle_change(SettingsKey.IS_SHOW_MESSAGE, s)
         )
-        self.is_play_checkbox.stateChanged.connect(
+        self.is_play.stateChanged.connect(
             lambda s: self.handle_change(SettingsKey.IS_PLAY_RINGTONE, s)
         )
-        self.is_auto_download_checkbox.stateChanged.connect(
+        self.is_auto_download.stateChanged.connect(
             lambda s: self.handle_change(SettingsKey.IS_AUTO_DOWNLOAD, s)
         )
         self.size_calculated.connect(self.update_size_info)
@@ -239,5 +218,7 @@ class SettingsDialog(QMainWindow):
             utils.center(self, True)
 
     def closeEvent(self, e: QCloseEvent) -> None:
+        cookie.set(self.cookie_input.toPlainText())
+        settings.save()
         e.ignore()
         self.hide()

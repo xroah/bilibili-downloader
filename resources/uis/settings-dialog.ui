@@ -22,7 +22,7 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QPushButton" name="showFileDialogBtn">
+        <widget class="QPushButton" name="showFileDialog">
          <property name="cursor">
           <cursorShape>PointingHandCursor</cursorShape>
          </property>
@@ -38,7 +38,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="downloadPathBtn">
+        <widget class="QPushButton" name="downloadPath">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
            <horstretch>0</horstretch>
