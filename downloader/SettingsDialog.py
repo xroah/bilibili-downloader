@@ -12,17 +12,15 @@ from PySide6.QtWidgets import (
     QPushButton,
     QCheckBox,
     QLabel,
-    QPlainTextEdit,
-    QWidget,
-    QVBoxLayout
+    QPlainTextEdit
 )
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import Qt, Signal
 
-from ..utils import utils, decorators
-from .Settings import Settings
-from ..enums import SettingsKey
-from ..Cookie import Cookie
+from downloader.utils import utils, decorators
+from downloader.settings import settings
+from downloader.enums import SettingsKey
+from downloader.cookie import cookie
 
 
 class CancelException(Exception):
@@ -36,7 +34,6 @@ class SettingsDialog(QMainWindow):
     def __init__(self, top_win: QMainWindow = None):
         super().__init__()
         self.top_win = top_win
-        self.settings = Settings()
         self.cookie_input: QPlainTextEdit | None = None
         self.is_auto_download_checkbox: QCheckBox | None = None
         self.is_play_checkbox: QCheckBox | None = None
@@ -50,7 +47,6 @@ class SettingsDialog(QMainWindow):
         self.after_calc_cancel: Union[Callable, None] = None
         # should the calculation be terminated
         self.is_calc_canceled = False
-        self.cookie = Cookie()
 
         self.setFixedSize(620, 360)
         self.setWindowTitle("设置")
@@ -95,7 +91,6 @@ class SettingsDialog(QMainWindow):
             QPlainTextEdit,
             widget.findChild(QPlainTextEdit, "cookieInput")
         )
-        self.settings = Settings()
         widget.setStyleSheet(utils.get_style("settings-dialog"))
 
         self.init_signal()
@@ -103,7 +98,7 @@ class SettingsDialog(QMainWindow):
         self.setCentralWidget(widget)
 
     def init_settings(self):
-        s = self.settings
+        s = settings
         path = s.get(SettingsKey.DOWNLOAD_PATH)
         is_show_msg = s.get(SettingsKey.IS_SHOW_MESSAGE)
         is_play = s.get(SettingsKey.IS_PLAY_RINGTONE)
@@ -114,7 +109,7 @@ class SettingsDialog(QMainWindow):
             self.is_auto_download_checkbox,
             is_auto_download
         )
-        self.cookie_input.setPlainText(self.cookie.cookie)
+        self.cookie_input.setPlainText(cookie.cookie)
 
         if not os.path.exists(path):
             os.makedirs(path)
@@ -143,7 +138,7 @@ class SettingsDialog(QMainWindow):
         return state == Qt.Checked
 
     def handle_change(self, prop: str | SettingsKey, state: Qt.CheckState):
-        self.settings.set(prop, self.get_checked(state))
+        settings.set(prop, self.get_checked(state))
 
     def get_dir(self):
         ret = QFileDialog.getExistingDirectory(
@@ -153,13 +148,13 @@ class SettingsDialog(QMainWindow):
             QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks
         )
 
-        if not ret or ret == self.settings.get(SettingsKey.DOWNLOAD_PATH):
+        if not ret or ret == settings.get(SettingsKey.DOWNLOAD_PATH):
             return
 
         self.set_path(ret, True)
 
     def get_path(self):
-        return self.settings.get(SettingsKey.DOWNLOAD_PATH)
+        return settings.get(SettingsKey.DOWNLOAD_PATH)
 
     def get_size(self, path: str) -> float:
         path = os.path.normpath(path)
@@ -222,7 +217,7 @@ class SettingsDialog(QMainWindow):
         self.p_btn.setText(path)
         self.used_label.setText("正在计算...")
         if save:
-            self.settings.set(SettingsKey.DOWNLOAD_PATH, path)
+            settings.set(SettingsKey.DOWNLOAD_PATH, path)
         self.start_calc(path)
 
     @staticmethod

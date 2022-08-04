@@ -3,9 +3,9 @@ import sys
 
 from PySide6.QtWidgets import QMenu
 from PySide6.QtGui import QAction
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtCore import Qt
 
-from .settings import SettingsDialog
+from .SettingsDialog import SettingsDialog
 from .utils import utils
 
 

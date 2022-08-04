@@ -7,24 +7,11 @@ from PySide6.QtWidgets import (
     QMainWindow
 )
 
-from .utils import utils
-from .actions import get_settings_action, get_quit_action
-
-_tray: QSystemTrayIcon | None = None
+from downloader.utils import utils
+from downloader.actions import get_settings_action, get_quit_action
 
 
-def create_tray(app: QApplication, win: QMainWindow):
-    global _tray
-    if _tray is None:
-        _tray = _Tray(app, win)
-    return _tray
-
-
-def get_tray():
-    return _tray
-
-
-class _Tray(QSystemTrayIcon):
+class Tray(QSystemTrayIcon):
     def __init__(self, app: QApplication, win: QMainWindow):
         super().__init__(app)
         self._window = win

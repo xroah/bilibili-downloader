@@ -2,9 +2,9 @@ from PySide6.QtWidgets import QApplication, QSystemTrayIcon
 from PySide6.QtCore import Qt
 
 from .main_window import MainWindow
-from .Tray import create_tray
+from .SettingsDialog import SettingsDialog
 from .utils.decorators import singleton
-from .settings import SettingsDialog
+from .tray import create_tray
 
 
 @singleton

@@ -1,6 +1,7 @@
 import sys
 import os.path
 from typing import cast, TypeVar, Generic
+from threading import Thread
 
 from PySide6.QtCore import QSize, Qt, Signal
 from PySide6.QtGui import (
@@ -24,11 +25,18 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtUiTools import QUiLoader
 
-from ..utils import utils, event_bus, decorators
-from ..enums import EventName
+from ..utils import (
+    utils,
+    event_bus,
+    decorators,
+    request
+)
+from ..enums import EventName, Req
 from .MainMenu import MainMenu
 from .NewDialog import NewDialog
 from ..main_widget import DownloadingPanel, DownloadedPanel
+from ..common_widgets import MessageBox
+from ..cookie import cookie
 
 T = TypeVar("T", QToolButton, QLabel, QPushButton)
 
@@ -36,12 +44,14 @@ T = TypeVar("T", QToolButton, QLabel, QPushButton)
 @decorators.singleton
 class MainWindow(QMainWindow):
     bg_sig = Signal(str)
+    login_sig = Signal(bool, str)
 
     def __init__(self):
         super().__init__()
         loader = QUiLoader()
         central_widget = QWidget(self)
         widget = loader.load(utils.get_resource_path("uis/main.ui"))
+        self.default_login_state = "bilibili帐号未登录"
         self.hide_to_tray = QSystemTrayIcon.isSystemTrayAvailable()
         self.bg = utils.get_resource_path("default-bg.png")
         self._size = QSize(900, 580)
@@ -78,6 +88,7 @@ class MainWindow(QMainWindow):
 
     def init(self, central: QWidget):
         central.setStyleSheet(utils.get_style("main", "toolbutton"))
+        self.username.setText(self.default_login_state)
         self.menu_btn.setPopupMode(QToolButton.InstantPopup)
         self.menu_btn.setMenu(self.menu)
         self.setCentralWidget(central)
@@ -92,10 +103,12 @@ class MainWindow(QMainWindow):
         )
         self.set_bg_img()
         self.switch_tab(self.downloading_tab_btn)
+        self.start_check_login()
         self.show()
 
     def init_signal(self):
-        event_bus.on(EventName.NEW_DOWNLOAD, self.handle_download)
+        event_bus.on(EventName.NEW_DOWNLOAD, lambda d: print(d))
+        event_bus.on(EventName.COOKIE_CHANGE, self.start_check_login)
         self.bg_sig.connect(self.set_bg_img)
         self.new_btn.clicked.connect(lambda: NewDialog(self))
         self.downloading_tab_btn.clicked.connect(
@@ -104,6 +117,7 @@ class MainWindow(QMainWindow):
         self.downloaded_tab_btn.clicked.connect(
             lambda: self.switch_tab(self.downloaded_tab_btn)
         )
+        self.login_sig.connect(self.login_checked)
 
     @staticmethod
     def get_child(t: Generic[T], parent: QWidget, name: str) -> T:
@@ -142,8 +156,44 @@ class MainWindow(QMainWindow):
         self.resize(self._size)
         super().show()
 
-    def handle_download(self, data: dict):
-        print(data)
+    def check_login_state(self):
+        def emit_false():
+            self.login_sig.emit(False, "")
+
+        if not cookie.cookie:
+            emit_false()
+            return
+
+        try:
+            res = request.get(str(Req.CHECK_LOGIN))
+            res = res.json()
+        except:
+            pass
+        else:
+            if res["code"] != 0:
+                emit_false()
+                return
+            data = res["data"]
+            self.login_sig.emit(
+                data["isLogin"],
+                data["uname"]
+            )
+
+    def start_check_login(self):
+        t = Thread(target=self.check_login_state)
+        t.daemon = True
+        t.start()
+
+    def login_checked(self, is_login: bool, uname: str):
+        if is_login:
+            self.username.setText(uname)
+        elif cookie.cookie:
+            MessageBox.alert(
+                "登录已过期或者cookie设置错误",
+                parent=self._window
+            )
+        else:
+            self.username.setText(self.default_login_state)
 
     def closeEvent(self, e: QCloseEvent) -> None:
         if self.hide_to_tray:

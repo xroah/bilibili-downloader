@@ -1,11 +1,10 @@
 import requests
 
-from ..Cookie import Cookie
+from ..cookie import cookie
 from ..enums import Req
 
 
 def get(url: str, **kwargs):
-    cookie = Cookie()
     headers = {
         "cookie": cookie.cookie,
         "user-agent": Req.USER_AGENT.value,

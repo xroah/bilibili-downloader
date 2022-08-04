@@ -1,2 +1,2 @@
 from .App import App
-from .Cookie import Cookie
+from downloader.cookie.Cookie import Cookie

@@ -1,8 +1,8 @@
 import os
 
-from .utils import utils, event_bus
-from .utils.Singleton import Singleton
-from .enums import EventName
+from downloader.utils import utils, event_bus
+from downloader.utils.Singleton import Singleton
+from downloader.enums import EventName
 
 
 class Cookie(Singleton):
