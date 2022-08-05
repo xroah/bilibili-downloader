@@ -10,7 +10,7 @@ from PySide6.QtGui import (
     QContextMenuEvent,
     QPixmap
 )
-from PySide6.QtCore import QSize
+from PySide6.QtCore import QSize, Qt
 
 from ..common_widgets import Menu
 from .ClickableWidget import ClickableWidget
@@ -24,6 +24,7 @@ class CheckableItem(ClickableWidget):
             parent: QWidget = None
     ):
         super().__init__(parent)
+        self._parent = parent
         self._bg = QWidget(self)
         self._widget = widget
         self._checked = False
@@ -63,14 +64,24 @@ class CheckableItem(ClickableWidget):
         self._checked = False
         self._bg.setStyleSheet("")
 
-    def clickEvent(self):
+    def clickEvent(self, modifier: Qt.KeyboardModifiers):
+        ctrl_pressed = Qt.ControlModifier == modifier
         if not self._checked:
+            if not ctrl_pressed:
+                self.uncheck_all()
+
             self.check()
         else:
             self.uncheck()
 
     def dblClickEvent(self):
         print("dbl click")
+
+    def uncheck_all(self):
+        try:
+            self._parent.uncheck_all()
+        except AttributeError:
+            pass
 
     def contextMenuEvent(self, e: QContextMenuEvent) -> None:
         self._ctx_menu.exec(QCursor.pos())

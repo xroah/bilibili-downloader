@@ -208,15 +208,15 @@ class MainWindow(QMainWindow):
             e.accept()
 
     def keyPressEvent(self, e: QKeyEvent) -> None:
-        combination = e.keyCombination()
         # mac os hot key
         if (
                 sys.platform == "darwin" and
-                combination.keyboardModifiers() == Qt.MetaModifier
+                # Control key mapped to MetaModifier
+                e.modifiers() == Qt.ControlModifier
         ):
             match e.key():
                 case Qt.Key_W:
-                    self.close()
+                    self.hide()
                 case Qt.Key_M:
                     self.showMinimized()
 

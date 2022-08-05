@@ -1,3 +1,4 @@
+from multiprocessing import parent_process
 from typing import cast
 
 from PySide6.QtWidgets import QWidget, QToolButton

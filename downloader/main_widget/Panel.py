@@ -1,5 +1,3 @@
-from typing import cast
-
 from PySide6.QtWidgets import (
     QWidget,
     QLabel,
@@ -65,12 +63,23 @@ class Panel(ClickableWidget):
         widget.setLayout(layout)
 
         return widget
-    
-    def clickEvent(self):
-        items = self._widget.findChildren(ClickableWidget)
-        
-        for item in items:
-            widget = cast(CheckableItem, item)
 
-            if widget._checked:
-                widget.uncheck()
+    def find_children(self, all = True):
+        children = super().findChildren(CheckableItem)
+
+        if not all:
+            children = filter(
+                lambda item: item._checked,
+                children
+            )
+
+        return list(children)
+
+    def uncheck_all(self):
+        checked = self.find_children(False)
+
+        for item in checked:
+            item.uncheck()
+
+    def clickEvent(self, _):
+        self.uncheck_all()

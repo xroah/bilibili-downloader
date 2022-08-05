@@ -10,12 +10,12 @@ class ClickableWidget(QWidget):
         self._mouse_pressed = False
         self._mouse_entered = False
 
-    def _click(self):
+    def _click(self, modifier: Qt.KeyboardModifiers):
         self._timer = None
         self._mouse_pressed = False
-        self.clickEvent()
+        self.clickEvent(modifier)
 
-    def clickEvent(self):
+    def clickEvent(self, modifier: Qt.KeyboardModifiers):
         pass
 
     def dblClickEvent(self):
@@ -31,6 +31,7 @@ class ClickableWidget(QWidget):
             self._mouse_pressed and
             self._mouse_entered
         ):
+            modifier = e.modifiers()
             if self._timer:
                 # double click
                 self._timer.stop()
@@ -38,7 +39,9 @@ class ClickableWidget(QWidget):
                 self.dblClickEvent()
             else:
                 self._timer = QTimer()
-                self._timer.timeout.connect(self._click)
+                self._timer.timeout.connect(
+                    lambda: self._click(modifier)
+                )
                 self._timer.start(200)
 
     def enterEvent(self, e: QEvent):

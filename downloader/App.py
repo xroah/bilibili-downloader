@@ -25,7 +25,7 @@ class App(QApplication):
         # as expected by macOS users. The actual Control (or Ctrl)
         # modifier on macOS, represented by ⌃,
         # is mapped to MetaModifier .
-        self.setAttribute(Qt.AA_MacDontSwapCtrlAndMeta, True)
+        # self.setAttribute(Qt.AA_MacDontSwapCtrlAndMeta, True)
         self.applicationStateChanged.connect(self.state_change)
 
         if tray_avail:

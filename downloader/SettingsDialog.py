@@ -1,11 +1,15 @@
 import sys
 import os
-from typing import cast, Callable, Union
+from typing import Callable, Union
 from threading import Thread
 import subprocess
 import shutil
 
-from PySide6.QtGui import QCloseEvent, QShowEvent
+from PySide6.QtGui import (
+    QCloseEvent, 
+    QShowEvent, 
+    QKeyEvent
+)
 from PySide6.QtWidgets import (
     QFileDialog,
     QMainWindow,
@@ -206,6 +210,16 @@ class SettingsDialog(QMainWindow):
             os.startfile(path, "open")
         else:
             subprocess.call(("open", path))
+    
+    def keyPressEvent(self, e: QKeyEvent) -> None:
+        # mac os hot key
+        if (
+                sys.platform == "darwin" and
+                # Control key mapped to MetaModifier
+                e.modifiers() == Qt.ControlModifier and
+                e.key() == Qt.Key_W
+        ):
+            self.hide()
 
     def showEvent(self, e: QShowEvent) -> None:
         if (
