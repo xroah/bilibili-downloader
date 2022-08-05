@@ -1,6 +1,6 @@
 import sys
 import os.path
-from typing import cast, TypeVar, Generic
+from typing import cast, TypeVar
 from threading import Thread
 
 from PySide6.QtCore import QSize, Qt, Signal
@@ -208,18 +208,24 @@ class MainWindow(QMainWindow):
             e.accept()
 
     def keyPressEvent(self, e: QKeyEvent) -> None:
-        # mac os hot key
+        is_mac = sys.platform == "darwin"
         if (
-                sys.platform == "darwin" and
-                # Control key mapped to MetaModifier
+                # Control key mapped to MetaModifier macos
                 e.modifiers() == Qt.ControlModifier
         ):
             match e.key():
                 case Qt.Key_W:
-                    self.hide()
+                    if is_mac:
+                        self.hide()
                 case Qt.Key_M:
-                    self.showMinimized()
-
+                    if is_mac:
+                        self.showMinimized()
+                case Qt.Key_N:
+                    NewDialog(self)
+                case Qt.Key_A:
+                    current = self.right_panel.currentWidget()
+                    current.check_all()
+                    
     def resizeEvent(self, e: QResizeEvent) -> None:
         self._size = e.size()
         self.set_bg_img()

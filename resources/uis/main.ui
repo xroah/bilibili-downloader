@@ -266,7 +266,7 @@
              <number>-1</number>
             </property>
             <property name="class" stdset="0">
-             <string>right-panel bg</string>
+             <string>bg</string>
             </property>
            </widget>
           </item>

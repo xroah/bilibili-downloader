@@ -66,13 +66,11 @@ class CheckableItem(ClickableWidget):
 
     def clickEvent(self, modifier: Qt.KeyboardModifiers):
         ctrl_pressed = Qt.ControlModifier == modifier
+        
+        if not ctrl_pressed:
+            self.uncheck_all()
         if not self._checked:
-            if not ctrl_pressed:
-                self.uncheck_all()
-
             self.check()
-        else:
-            self.uncheck()
 
     def dblClickEvent(self):
         print("dbl click")
@@ -84,4 +82,7 @@ class CheckableItem(ClickableWidget):
             pass
 
     def contextMenuEvent(self, e: QContextMenuEvent) -> None:
+        if not self._checked:
+            self.uncheck_all()
+
         self._ctx_menu.exec(QCursor.pos())

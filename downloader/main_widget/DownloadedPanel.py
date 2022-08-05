@@ -15,3 +15,4 @@ class DownloadedPanel(Panel):
         layout.addWidget(DownloadedItem(self))
         layout.addWidget(DownloadedItem(self, True))
         self._layout.setCurrentIndex(1)
+        

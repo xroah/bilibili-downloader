@@ -30,4 +30,7 @@ QToolButton::menu-indicator {
     background-color: #f0f0f0;
 }
 
-
+.no-data-text {
+    color: #666;
+    font-size: 20px;
+}
