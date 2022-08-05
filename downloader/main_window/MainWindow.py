@@ -136,7 +136,7 @@ class MainWindow(QMainWindow):
         img = QImage(self.bg)
         img = img.scaled(self.size())
         blur_effect = QGraphicsBlurEffect(self.bg_label)
-        blur_effect.setBlurRadius(10)
+        blur_effect.setBlurRadius(30)
         self.bg_label.setPixmap(QPixmap.fromImage(img))
         self.bg_label.setGraphicsEffect(blur_effect)
 
@@ -209,10 +209,10 @@ class MainWindow(QMainWindow):
 
     def keyPressEvent(self, e: QKeyEvent) -> None:
         is_mac = sys.platform == "darwin"
-        if (
-                # Control key mapped to MetaModifier macos
-                e.modifiers() == Qt.ControlModifier
-        ):
+        current = self.right_panel.currentWidget()
+        
+        # Control key mapped to MetaModifier macos
+        if e.modifiers() == Qt.ControlModifier:
             match e.key():
                 case Qt.Key_W:
                     if is_mac:
@@ -223,8 +223,14 @@ class MainWindow(QMainWindow):
                 case Qt.Key_N:
                     NewDialog(self)
                 case Qt.Key_A:
-                    current = self.right_panel.currentWidget()
                     current.check_all()
+        else:
+            match e.key():
+                case Qt.Key_Escape:
+                    current.uncheck_all()
+                case Qt.Key_Delete:
+                    print("delete")
+        
                     
     def resizeEvent(self, e: QResizeEvent) -> None:
         self._size = e.size()

@@ -31,6 +31,7 @@ class DownloadedItem(CheckableItem):
         self._ctx_menu.addAction("打开文件夹")
         self._ctx_menu.addAction("删除")
         self._ctx_menu.addAction("从列表中移除")
+        self.deleted = deleted
         self.setProperty(
             "class",
             f"downloaded-item{'-deleted' if deleted else ''}"

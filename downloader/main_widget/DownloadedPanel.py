@@ -14,5 +14,5 @@ class DownloadedPanel(Panel):
         layout = widget.layout()
         layout.addWidget(DownloadedItem(self))
         layout.addWidget(DownloadedItem(self, True))
-        self._layout.setCurrentIndex(1)
+        self.set_current_index(1)
         

@@ -10,17 +10,4 @@ class DownloadingPanel(Panel):
             parent=parent,
             widget=QWidget()
         )
-        widget = self._widget
-        layout = widget.layout()
-        layout.addWidget(DownloadingItem(self))
-        layout.addWidget(DownloadingItem(self))
-        layout.addWidget(DownloadingItem(self))
-        layout.addWidget(DownloadingItem(self))
-        layout.addWidget(DownloadingItem(self))
-        layout.addWidget(DownloadingItem(self))
-        layout.addWidget(DownloadingItem(self))
-        layout.addWidget(DownloadingItem(self))
-        layout.addWidget(DownloadingItem(self))
-        layout.addWidget(DownloadingItem(self))
-        self._layout.setCurrentIndex(1)
-
+        self.set_current_index(1)

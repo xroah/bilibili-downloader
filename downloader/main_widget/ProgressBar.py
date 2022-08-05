@@ -28,6 +28,6 @@ class ProgressBar(QProgressBar):
         layout.addWidget(widget)
         layout.setContentsMargins(0, 0, 0, 0)
         self.setTextVisible(False)
-        self.setValue(50)
+        self.setValue(0)
         self.setProperty("class", "progress-bar")
         self.setLayout(layout)
