@@ -114,7 +114,6 @@ class MainWindow(QMainWindow):
         self.show()
 
     def init_signal(self):
-        event_bus.on(EventName.NEW_DOWNLOAD, lambda d: print(d))
         event_bus.on(EventName.COOKIE_CHANGE, self.start_check_login)
         self.bg_sig.connect(self.set_bg_img)
         self.new_btn.clicked.connect(lambda: NewDialog(self))

@@ -81,14 +81,14 @@ class NewDialog(Dialog):
     def show_select_dialog(self, title: str):
         SelectDialog(
             parent=self,
-            data=self.data["quality"],
+            data=self.data["qualities"],
             ok_callback=self.on_select_resolution,
             title=title
         )
 
     def on_select_resolution(self, sel: int):
         self.accept()
-        self.data["download_quality"] = sel
+        self.data["quality"] = sel
         event_bus.emit(EventName.NEW_DOWNLOAD, self.data)
 
     def fet_video_info(self, bv: str):

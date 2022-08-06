@@ -10,7 +10,7 @@ _state_prefix = "window.__INITIAL_STATE__="
 
 def parse(html_text: str) -> dict:
     soup = BeautifulSoup(html_text, "html.parser")
-    quality = {}
+    qualities = {}
     title = ""
     bvid = ""
     pic = ""
@@ -31,7 +31,7 @@ def parse(html_text: str) -> dict:
             text = text.replace(_info_prefix, "")
             info = json.loads(text)
             data = info["data"]
-            quality = dict(zip(data["accept_description"], data["accept_quality"]))
+            qualities = dict(zip(data["accept_description"], data["accept_quality"]))
         elif text.startswith(_state_prefix):
             text = text.replace(_state_prefix, "")
             # remove js code
@@ -46,10 +46,10 @@ def parse(html_text: str) -> dict:
             pages = video_data["pages"]
             bvid = video_data["bvid"]
             pic = video_data["pic"]
-            avid = video_data["avid"]
+            avid = video_data["aid"]
 
     ret = {
-        "quality": quality,
+        "qualities": qualities,
         "title": title,
         "pages": pages,
         "bvid": bvid,
