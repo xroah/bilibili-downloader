@@ -14,6 +14,7 @@ def parse(html_text: str) -> dict:
     title = ""
     bvid = ""
     pic = ""
+    avid = ""
     pages = []
     scripts = soup.select("script")
 
@@ -45,13 +46,15 @@ def parse(html_text: str) -> dict:
             pages = video_data["pages"]
             bvid = video_data["bvid"]
             pic = video_data["pic"]
+            avid = video_data["avid"]
 
     ret = {
         "quality": quality,
         "title": title,
         "pages": pages,
         "bvid": bvid,
-        "pic": pic
+        "pic": pic,
+        "avid": avid
     }
 
     return ret
