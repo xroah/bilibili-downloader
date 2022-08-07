@@ -31,7 +31,8 @@ class Db(Singleton):
                 vid VARCHAR(20) PRIMARY KEY,
                 aid UNSIGNED INT,
                 name VARCHAR(200),
-                quality UNSIGNED SMALLINT
+                quality UNSIGNED SMALLINT,
+                create_time DATETIME
             )
         """)
         conn.commit()
@@ -45,25 +46,21 @@ class Db(Singleton):
             ) VALUES
         """
         video_values = []
+        first = data[0]
         album_clause = """
-            INSERT INTO album(vid, aid, name, quality) VALUES
-        """
-        album_values = []
+            INSERT INTO album(vid, aid, name, quality, create_time) 
+            VALUES('{0}', '{1}', '{2}', {3}, datetime("now", "localtime"))
+        """.format(first["vid"], first["aid"], first["album"], first["quality"])
 
         for v in data:
             video_values.append(f"""(
                 '{v["vid"]}', {v["cid"]}, 0,'{v["part"]}', 0,
                 datetime("now", "localtime")
             )""")
-            if not len(album_values):
-                album_values.append(f"""(
-                    '{v["vid"]}', {v['aid']}, '{v['album']}', {v['quality']}
-                )""")
 
         video_clause += ",".join(video_values)
-        album_clause += ",".join(album_values)
-        conn.execute(video_clause)
         conn.execute(album_clause)
+        conn.execute(video_clause)
         conn.commit()
         conn.close()
 
