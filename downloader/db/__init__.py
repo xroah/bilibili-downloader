@@ -1,4 +1,1 @@
-from .Db import Db
-
-
-db = Db()
+from .DB import DB

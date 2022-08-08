@@ -12,7 +12,6 @@ from downloader.bing_image import (
 )
 from downloader.utils import utils
 from downloader.App import App
-from downloader.db import db
 
 
 __version__ = "1.0.0"
@@ -46,5 +45,4 @@ if __name__ == "__main__":
         t.daemon = True
         t.start()
 
-    db.create_table()
     sys.exit(app.exec())

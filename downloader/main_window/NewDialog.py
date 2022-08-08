@@ -17,6 +17,7 @@ from .Loading import Loading
 from ..enums import Req, EventName
 from .SelectDialog import SelectDialog
 from ..utils.parse_video_page import parse
+from ..db import DB
 
 
 class NewDialog(Dialog):
@@ -89,6 +90,8 @@ class NewDialog(Dialog):
     def on_select_resolution(self, sel: int):
         self.accept()
         self.data["quality"] = sel
+        with DB() as db:
+            db.insert(self.data)
         event_bus.emit(EventName.NEW_DOWNLOAD, self.data)
 
     def fet_video_info(self, bv: str):
