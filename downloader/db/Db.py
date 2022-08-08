@@ -47,24 +47,38 @@ class DB(Singleton):
         """)
     
     def insert(self, data):
+        bvid = data["bvid"]
+        ret = self.cursor.execute(
+            f"SELECT vid FROM album WHERE vid='{bvid}'"
+        )
+        exists = []
+
+        # exists
+        if ret.fetchone():
+            exists = self.cursor.execute(
+                f"SELECT cid FROM download WHERE vid='{bvid}'"
+            ).fetchall()
+            exists = list(map(lambda d: d[0], exists))
+            
         now = 'datetime("now", "localtime")'
         video_clause = f"""
             INSERT INTO download(
                 vid, cid, size, title, status, create_time
             ) VALUES(?, ?, ?, ?, ?, {now})
         """
-        videos = list(map(
-            lambda v: (
-                f'{data["bvid"]}', v["cid"], 0, f'{v["part"]}', 0
-            ),
-            data["pages"]
-        ))
+        pages = data["pages"]
+        videos = []
+
+        for v in pages:
+            if v["cid"] not in exists:
+                videos.append(f'{bvid}', v["cid"], 0, f'{v["part"]}', 0)
+
         album_clause = f"""
             INSERT INTO album(vid, aid, name, quality, create_time) 
-            VALUES('{data["bvid"]}', '{data["avid"]}', '{data["title"]}',
+            VALUES('{bvid}', '{data["avid"]}', '{data["title"]}',
              {data["quality"]}, {now})
         """
 
-        self.cursor.execute(album_clause)
-        self.cursor.executemany(video_clause, videos)
-
+        if not len(exists):
+            self.cursor.execute(album_clause)
+            self.cursor.executemany(video_clause, videos)

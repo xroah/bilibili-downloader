@@ -16,4 +16,4 @@ class DownloadingPanel(Panel):
         event_bus.on(EventName.NEW_DOWNLOAD, self.new_download)
 
     def new_download(self, data):
-        print(data)
+        pass
