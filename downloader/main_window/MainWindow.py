@@ -40,6 +40,9 @@ from ..db import DB
 
 T = TypeVar("T", bound='QWidget')
 
+downloading_text = "正在下载"
+downloaded_text = "已下载"
+
 
 @decorators.singleton
 class MainWindow(QMainWindow):
@@ -83,6 +86,8 @@ class MainWindow(QMainWindow):
         )
         self.downloading = DownloadingPanel(self)
         self.downloaded = DownloadedPanel(self)
+        self.downloading_count = 0
+        self.downloaded_count = 0
         self.right_panel.addWidget(self.downloading)
         self.right_panel.addWidget(self.downloaded)
         widget.setParent(central_widget)
@@ -136,6 +141,7 @@ class MainWindow(QMainWindow):
             self.add_download(rows)
 
     def add_download(self, rows):
+        self.downloading_count += len(rows)
         for row in rows:
             if row["status"] == 0:
                 self.downloading.add_item(
@@ -146,6 +152,18 @@ class MainWindow(QMainWindow):
                     album=row["album"],
                     vid=row["vid"]
                 )
+        self.update_downloading_text()
+        self.update_downloaded_text()
+
+    def update_downloading_text(self):
+        self.downloading_tab.setText(
+            f"{downloading_text}({self.downloading_count})"
+        )
+
+    def update_downloaded_text(self):
+        self.downloaded_tab.setText(
+            f"{downloaded_text}({self.downloaded_count})"
+        )
 
     def new_download(self, data):
         self.add_download(data)
