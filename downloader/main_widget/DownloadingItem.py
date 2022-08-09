@@ -1,8 +1,7 @@
-from multiprocessing import parent_process
 from typing import cast
 
 from PySide6.QtWidgets import (
-    QWidget, 
+    QWidget,
     QLabel,
     QToolButton
 )
@@ -15,18 +14,20 @@ from .ProgressBar import ProgressBar
 
 class DownloadingItem(CheckableItem):
     def __init__(
-            self, 
+            self,
             parent: QWidget = None,
-            *
+            *,
             name: str,
             cid: int,
             aid: int,
-            vid: str
-        ):
+            vid: str,
+            album: str,
+            quality: int
+    ):
         super().__init__(widget=ProgressBar(), parent=parent)
         self.video_name = cast(
             QLabel,
-            self.findChild(QLabel, "videoName")    
+            self.findChild(QLabel, "videoName")
         )
         self.paused = False
         self.toggle_btn = cast(
@@ -41,6 +42,8 @@ class DownloadingItem(CheckableItem):
         self.setProperty("cid", cid)
         self.setProperty("aid", aid)
         self.setProperty("name", name)
+        self.setProperty("album", album)
+        self.setProperty("quality", quality)
         self.video_name.setText(name)
         self.setProperty("class", "downloading-item")
         self.setStyleSheet(utils.get_style("downloading-item"))
@@ -48,14 +51,12 @@ class DownloadingItem(CheckableItem):
     def contextMenuEvent(self, e: QContextMenuEvent):
         pos = e.pos()
         g = self.toggle_btn.geometry()
-        
+
         # mouse pointer within toggle button
         if (
-            pos.x() >= g.x() and
-            pos.x() <= g.width() + g.x() and
-            pos.y() >= g.y() and
-            pos.y() <= g.y() + g.height()
+                g.x() <= pos.x() <= g.width() + g.x() and
+                g.y() <= pos.y() <= g.y() + g.height()
         ):
             return
-        
+
         super().contextMenuEvent(e)

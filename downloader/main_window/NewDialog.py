@@ -91,8 +91,13 @@ class NewDialog(Dialog):
         self.accept()
         self.data["quality"] = sel
         with DB() as db:
-            db.insert(self.data, print)
-        event_bus.emit(EventName.NEW_DOWNLOAD, self.data)
+            db.insert(
+                self.data,
+                lambda videos: event_bus.emit(
+                    EventName.NEW_DOWNLOAD,
+                    videos
+                )
+            )
 
     def fet_video_info(self, bv: str):
         try:

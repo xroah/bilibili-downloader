@@ -36,6 +36,7 @@ from .NewDialog import NewDialog
 from ..main_widget import DownloadingPanel, DownloadedPanel
 from ..common_widgets import MessageBox
 from ..cookie import cookie
+from ..db import DB
 
 T = TypeVar("T", bound='QWidget')
 
@@ -94,6 +95,7 @@ class MainWindow(QMainWindow):
 
         self.init(central_widget)
         self.init_signal()
+        self.init_data()
 
     def init(self, central: QWidget):
         central.setStyleSheet(utils.get_style("main", "toolbutton"))
@@ -117,6 +119,7 @@ class MainWindow(QMainWindow):
 
     def init_signal(self):
         event_bus.on(EventName.COOKIE_CHANGE, self.start_check_login)
+        event_bus.on(EventName.NEW_DOWNLOAD, self.new_download)
         self.bg_sig.connect(self.set_bg_img)
         self.new_btn.clicked.connect(lambda: NewDialog(self))
         self.downloading_tab.clicked.connect(
@@ -126,6 +129,26 @@ class MainWindow(QMainWindow):
             lambda: self.switch_tab(self.downloaded_tab)
         )
         self.login_sig.connect(self.login_checked)
+
+    def init_data(self):
+        with DB() as db:
+            rows = db.query_all()
+            self.add_download(rows)
+
+    def add_download(self, rows):
+        for row in rows:
+            if row["status"] == 0:
+                self.downloading.add_item(
+                    name=row["name"],
+                    cid=row["cid"],
+                    aid=row["aid"],
+                    quality=row["quality"],
+                    album=row["album"],
+                    vid=row["vid"]
+                )
+
+    def new_download(self, data):
+        self.add_download(data)
 
     def set_bg_img(self, bg: str = ""):
         if bg:
@@ -152,11 +175,10 @@ class MainWindow(QMainWindow):
         tab = btn.property("tab")
         self.right_panel.setCurrentIndex(tab)
         btn.setStyleSheet(utils.get_style("active"))
-        
+
         # 已下载tab
         self.pause_all.setEnabled(tab != 1)
         self.start_all.setEnabled(tab != 1)
-
 
     def show(self) -> None:
         self.resize(self._size)
@@ -211,7 +233,7 @@ class MainWindow(QMainWindow):
     def keyPressEvent(self, e: QKeyEvent) -> None:
         is_mac = sys.platform == "darwin"
         current = self.right_panel.currentWidget()
-        
+
         # Control key mapped to MetaModifier macos
         if e.modifiers() == Qt.ControlModifier:
             match e.key():
@@ -231,8 +253,7 @@ class MainWindow(QMainWindow):
                     current.uncheck_all()
                 case Qt.Key_Delete:
                     print("delete")
-        
-                    
+
     def resizeEvent(self, e: QResizeEvent) -> None:
         self._size = e.size()
         self.set_bg_img()

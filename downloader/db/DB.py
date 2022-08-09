@@ -1,4 +1,3 @@
-from readline import insert_text
 import sqlite3
 import os
 from typing import Callable
@@ -11,24 +10,24 @@ class DB(Singleton):
     def __init__(self) -> None:
         data_dir = utils.get_data_dir()
         path = os.path.join(data_dir, "data.db")
-        self.conn = sqlite3.connect(path)
-        self.conn.row_factory = sqlite3.Row
-        self.cursor = self.conn.cursor()
+        self._conn = sqlite3.connect(path)
+        self._conn.row_factory = sqlite3.Row
+        self._cursor = self._conn.cursor()
 
     def __enter__(self):
         self.create_table()
         return self
 
     def __exit__(self, t, v, tb):
-        self.conn.commit()
-        self.cursor.close()
-        self.conn.close()
+        self._conn.commit()
+        self._cursor.close()
+        self._conn.close()
 
         if t is not None:
             return False
 
     def create_table(self):
-        self.cursor.execute("""
+        self._cursor.execute("""
             CREATE TABLE IF NOT EXISTS download(
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 vid VARCHAR(20),
@@ -40,7 +39,7 @@ class DB(Singleton):
                 finished_time DATETIME
             )
         """)
-        self.cursor.execute("""
+        self._cursor.execute("""
             CREATE TABLE IF NOT EXISTS album(
                 vid VARCHAR(20) PRIMARY KEY,
                 aid UNSIGNED INT,
@@ -51,8 +50,8 @@ class DB(Singleton):
         """)
 
     def query_all(self, vid: str = ""):
-        where = (f"WHERE vid='{id}'") if vid else ""
-        r = self.cursor.execute(f"""
+        where = f"WHERE vid='{id}'" if vid else ""
+        r = self._cursor.execute(f"""
             SELECT d.vid, d.name, d.cid, d.status, 
             a.quality, a.name album, a.aid
             FROM download d LEFT OUTER JOIN album a 
@@ -63,7 +62,7 @@ class DB(Singleton):
 
     def insert(self, data, cb: Callable = None):
         bvid = data["bvid"]
-        ret = self.cursor.execute(
+        ret = self._cursor.execute(
             f"SELECT vid FROM album WHERE vid='{bvid}'"
         )
         album = data["title"]
@@ -72,7 +71,7 @@ class DB(Singleton):
 
         # exists
         if ret.fetchone():
-            exists = self.cursor.execute(
+            exists = self._cursor.execute(
                 f"SELECT cid FROM download WHERE vid='{bvid}'"
             ).fetchall()
             exists = list(map(lambda d: d[0], exists))
@@ -95,7 +94,8 @@ class DB(Singleton):
                     "album": album,
                     "quality": quality,
                     "status": 0,
-                    "vid": bvid
+                    "vid": bvid,
+                    "aid": data["avid"]
                 }
                 videos.append(video)
                 insertion_list.append(
@@ -109,8 +109,8 @@ class DB(Singleton):
         """
 
         if not len(exists):
-            self.cursor.execute(album_clause)
-            self.cursor.executemany(video_clause, insertion_list)
+            self._cursor.execute(album_clause)
+            self._cursor.executemany(video_clause, insertion_list)
 
             if cb:
                 cb(videos)
