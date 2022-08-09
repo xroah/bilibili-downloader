@@ -51,6 +51,9 @@ class Panel(ClickableWidget):
     def set_current_index(self, i: int):
         self._layout.setCurrentIndex(i)
         
+    def get_current_index(self):
+        return self._layout.currentIndex()
+        
     @staticmethod
     def gen_no_content_widget() -> QWidget:
         widget = QWidget()

@@ -80,8 +80,10 @@ class MainWindow(QMainWindow):
             QStackedWidget,
             widget.findChild(QStackedWidget, "rightPanel")
         )
-        self.right_panel.addWidget(DownloadingPanel(self))
-        self.right_panel.addWidget(DownloadedPanel(self))
+        self.downloading = DownloadingPanel(self)
+        self.downloaded = DownloadedPanel(self)
+        self.right_panel.addWidget(self.downloading)
+        self.right_panel.addWidget(self.downloaded)
         widget.setParent(central_widget)
         central_layout = QStackedLayout(central_widget)
         central_layout.setStackingMode(QStackedLayout.StackAll)

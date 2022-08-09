@@ -12,8 +12,19 @@ class DownloadingPanel(Panel):
             parent=parent,
             widget=QWidget()
         )
-        self.set_current_index(1)
+        self.set_current_index(0)
         event_bus.on(EventName.NEW_DOWNLOAD, self.new_download)
+
+    def add_item(
+        self,
+        *,
+        name: str,
+        aid: int,
+        cid: int,
+        vid: str
+    ):
+        if self.get_current_index() == 0:
+            self.set_current_index(1)
 
     def new_download(self, data):
         pass

@@ -12,14 +12,16 @@ class DB(Singleton):
         data_dir = utils.get_data_dir()
         path = os.path.join(data_dir, "data.db")
         self.conn = sqlite3.connect(path)
+        self.conn.row_factory = sqlite3.Row
         self.cursor = self.conn.cursor()
-        
+
     def __enter__(self):
         self.create_table()
         return self
 
     def __exit__(self, t, v, tb):
         self.conn.commit()
+        self.cursor.close()
         self.conn.close()
 
         if t is not None:
@@ -47,7 +49,18 @@ class DB(Singleton):
                 create_time DATETIME
             )
         """)
-    
+
+    def query_all(self, vid: str = ""):
+        where = (f"WHERE vid='{id}'") if vid else ""
+        r = self.cursor.execute(f"""
+            SELECT d.vid, d.name, d.cid, d.status, 
+            a.quality, a.name album, a.aid
+            FROM download d LEFT OUTER JOIN album a 
+            USING (vid) {where};
+        """)
+
+        return r.fetchall()
+
     def insert(self, data, cb: Callable = None):
         bvid = data["bvid"]
         ret = self.cursor.execute(
@@ -63,7 +76,7 @@ class DB(Singleton):
                 f"SELECT cid FROM download WHERE vid='{bvid}'"
             ).fetchall()
             exists = list(map(lambda d: d[0], exists))
-            
+
         now = 'datetime("now", "localtime")'
         video_clause = f"""
             INSERT INTO download(
