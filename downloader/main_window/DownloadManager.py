@@ -1,7 +1,5 @@
-from threading import Thread
-
-from PySide6.QtWidgets import QPushButton, QMainWindow, QWidget
-from PySide6.QtCore import Signal, QObject
+from PySide6.QtWidgets import QPushButton, QMainWindow
+from PySide6.QtCore import Signal, QObject, QThreadPool
 
 from ..main_widget import DownloadingPanel, DownloadedPanel
 from ..main_widget.DownloadingItem import DownloadingItem
@@ -14,6 +12,8 @@ downloaded_text = "已下载"
 
 
 class DownloadManager(QObject):
+    inited_sig = Signal()
+
     def __init__(
             self,
             *,
@@ -34,7 +34,6 @@ class DownloadManager(QObject):
         self._window = window
 
         event_bus.on(EventName.NEW_DOWNLOAD, self.new_download)
-        self.init_data()
 
     def init_data(self):
         with DB() as db:
@@ -51,6 +50,7 @@ class DownloadManager(QObject):
             self.downloading += 1
 
         self.update_text()
+        self.inited_sig.emit()
 
     def add_downloads(self, rows):
         downloading_items = []

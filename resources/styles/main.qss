@@ -20,7 +20,6 @@ QToolButton::menu-indicator {
 }
 
 .nav QPushButton {
-    width: 150px;
     padding: 10px;
     border: none;
     border-bottom: 1px solid #f0f0f0;

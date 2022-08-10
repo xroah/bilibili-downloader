@@ -55,6 +55,7 @@ class MainWindow(QMainWindow):
         self.hide_to_tray = QSystemTrayIcon.isSystemTrayAvailable()
         self.bg = utils.get_resource_path("default-bg.png")
         self._size = QSize(900, 580)
+        toolbar = utils.get_child(widget, QWidget, "toolbar")
         self.menu_btn = utils.get_child(widget, QToolButton, "menu")
         self.new_btn = utils.get_child(widget, QToolButton, "newDownload")
         self.start_all = utils.get_child(widget, QToolButton, "startAll")
@@ -66,6 +67,7 @@ class MainWindow(QMainWindow):
         self.bg_label = QLabel(central_widget)
         self.username = utils.get_child(widget, QLabel, "username")
         self.menu = MainMenu(self, self.menu_btn)
+        self.current_tab: QPushButton | None = None
         self.downloading_tab = utils.get_child(
             widget,
             QPushButton,
@@ -76,10 +78,10 @@ class MainWindow(QMainWindow):
             QPushButton,
             "downloaded"
         )
-        self.current_tab: QPushButton | None = None
-        self.right_panel = cast(
+        self.right_panel = utils.get_child(
+            widget,
             QStackedWidget,
-            widget.findChild(QStackedWidget, "rightPanel")
+            "rightPanel"
         )
         self.downloading = DownloadingPanel(self)
         self.downloaded = DownloadedPanel(self)
@@ -92,6 +94,9 @@ class MainWindow(QMainWindow):
             downloaded_panel=self.downloaded,
             downloading_panel=self.downloading
         )
+        toolbar.setFixedHeight(50)
+        self.downloading_tab.setFixedWidth(150)
+        self.downloaded_tab.setFixedWidth(150)
         self.right_panel.addWidget(self.downloading)
         self.right_panel.addWidget(self.downloaded)
         widget.setParent(central_widget)

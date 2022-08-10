@@ -39,9 +39,9 @@ class SettingsWindow(QMainWindow):
         super().__init__()
         self.top_win = top_win
         self.cookie_input: QPlainTextEdit | None = None
-        self.is_auto_download_checkbox: QCheckBox | None = None
-        self.is_play_checkbox: QCheckBox | None = None
-        self.is_show_msg_checkbox: QCheckBox | None = None
+        self.is_auto_download: QCheckBox | None = None
+        self.is_play: QCheckBox | None = None
+        self.is_show_msg: QCheckBox | None = None
         self.used_label: QLabel | None = None
         self.p_btn: QPushButton | None = None
         self.show_btn: QPushButton | None = None
