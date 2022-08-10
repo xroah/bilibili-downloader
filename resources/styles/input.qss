@@ -14,3 +14,15 @@
 .clear:pressed {
     background-color: #666;
 }
+
+Input {
+    height: 30px;
+    padding-left: 5px;
+    padding-right: 30px;
+    border: 1px solid #ced4da;
+    border-radius: 3px;
+}
+
+Input:focus {
+    border-color: #00aeec;
+}

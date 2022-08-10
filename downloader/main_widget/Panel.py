@@ -77,12 +77,12 @@ class Panel(ClickableWidget):
 
         return widget
 
-    def find_children(self, all=True):
+    def find_children(self, get_all=True):
         children = super().findChildren(CheckableItem)
 
-        if not all:
+        if not get_all:
             children = filter(
-                lambda item: item._checked,
+                lambda item: item.checked,
                 children
             )
 

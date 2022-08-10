@@ -58,12 +58,12 @@ class MainWindow(QMainWindow):
         toolbar = utils.get_child(widget, QWidget, "toolbar")
         self.menu_btn = utils.get_child(widget, QToolButton, "menu")
         self.new_btn = utils.get_child(widget, QToolButton, "newDownload")
-        self.start_all = utils.get_child(widget, QToolButton, "startAll")
-        self.pause_all = utils.get_child(widget, QToolButton, "pauseAll")
+        self.start_all_btn = utils.get_child(widget, QToolButton, "startAll")
+        self.pause_all_btn = utils.get_child(widget, QToolButton, "pauseAll")
         self.new_btn.setIcon(utils.get_icon("plus"))
         self.menu_btn.setIcon(utils.get_icon("menu"))
-        self.start_all.setIcon(utils.get_icon("play"))
-        self.pause_all.setIcon(utils.get_icon("pause"))
+        self.start_all_btn.setIcon(utils.get_icon("play"))
+        self.pause_all_btn.setIcon(utils.get_icon("pause"))
         self.bg_label = QLabel(central_widget)
         self.username = utils.get_child(widget, QLabel, "username")
         self.menu = MainMenu(self, self.menu_btn)
@@ -141,6 +141,8 @@ class MainWindow(QMainWindow):
             lambda: self.switch_tab(self.downloaded_tab)
         )
         self.login_sig.connect(self.login_checked)
+        self.start_all_btn.clicked.connect(self.dm.start_all)
+        self.pause_all_btn.clicked.connect(self.dm.pause_all)
 
     def set_bg_img(self, bg: str = ""):
         if bg:
@@ -169,8 +171,8 @@ class MainWindow(QMainWindow):
         btn.setStyleSheet(utils.get_style("active"))
 
         # 已下载tab
-        self.pause_all.setEnabled(tab != 1)
-        self.start_all.setEnabled(tab != 1)
+        self.pause_all_btn.setEnabled(tab != 1)
+        self.start_all_btn.setEnabled(tab != 1)
 
     def show(self) -> None:
         self.resize(self._size)

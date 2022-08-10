@@ -54,9 +54,7 @@ class NewDialog(Dialog):
         layout.addWidget(input_)
         layout.setContentsMargins(5, 5, 5, 5)
 
-        content.setProperty("class", "new-dialog")
         content.setLayout(layout)
-        content.setStyleSheet(utils.get_style("new-dialog"))
         self.set_content(content)
 
     def show_msg(self, t: str):

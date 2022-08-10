@@ -9,19 +9,19 @@ PushButton:hover {
 }
 
 PushButton:focus {
-    border: 3px solid #9bc2fd;
+    border: 3px solid #008ac5;
 }
 
 .primary {
     color: #fff;
     border-radius: 3px;
-    background-color: rgba(13, 110, 253, .8);
+    background-color: rgba(0, 174, 236, .8);
 }
 
 .primary:hover {
-    background-color: rgba(13, 110, 253, .9);
+    background-color: rgba(0, 174, 236, .9);
 }
 
 .primary:pressed {
-    background-color: rgba(13, 110, 253, 1);
+    background-color: rgba(0, 174, 236, 1);
 }

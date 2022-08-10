@@ -18,5 +18,5 @@ class DownloadingPanel(Panel):
             self.set_current_index(1)
 
         layout = self._widget.layout()
-        item.setParent(self)
+        item.set_parent(self)
         layout.addWidget(item)

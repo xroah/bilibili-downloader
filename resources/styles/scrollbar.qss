@@ -13,5 +13,5 @@ QScrollBar::sub-line {
 
 QScrollBar::handle {
     border-radius: 4px;
-    background-color: rgba(64, 158, 255, .6);
+    background-color: rgba(0, 174, 236, .5);
 }

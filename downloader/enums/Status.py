@@ -6,3 +6,4 @@ class Status(Enum):
     DONE = "done"
     UPDATE = "update"
     PAUSE = "pause"
+    START = "start"

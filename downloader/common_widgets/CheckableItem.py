@@ -27,10 +27,14 @@ class CheckableItem(ClickableWidget):
         self._parent = parent
         self._bg = QWidget(self)
         self._widget = widget
-        self._checked = False
+        self.checked = False
         self._ctx_menu = Menu(self)
         self._widget.setParent(self)
         self.init_layout()
+
+    def set_parent(self, parent: QWidget):
+        self._parent = parent
+        super().setParent(parent)
 
     def init_layout(self):
         layout = QStackedLayout(self)
@@ -55,21 +59,21 @@ class CheckableItem(ClickableWidget):
         layout.setStackingMode(QStackedLayout.StackAll)
 
     def check(self):
-        self._checked = True
+        self.checked = True
         self._bg.setStyleSheet("""
-                background-color: rgba(13, 110, 253, .3);
+                background-color: rgba(0, 174, 236, .36);
         """)
 
     def uncheck(self):
-        self._checked = False
+        self.checked = False
         self._bg.setStyleSheet("")
 
     def clickEvent(self, modifier: Qt.KeyboardModifiers):
         ctrl_pressed = Qt.ControlModifier == modifier
-        
+
         if not ctrl_pressed:
             self.uncheck_all()
-        if not self._checked:
+        if not self.checked:
             self.check()
 
     def dblClickEvent(self):
@@ -82,7 +86,7 @@ class CheckableItem(ClickableWidget):
             pass
 
     def contextMenuEvent(self, e: QContextMenuEvent) -> None:
-        if not self._checked:
+        if not self.checked:
             self.uncheck_all()
 
         self._ctx_menu.exec(QCursor.pos())

@@ -33,6 +33,7 @@ class DB(Singleton):
                 vid VARCHAR(20),
                 cid UNSIGNED INT,
                 size UNSIGNED INT,
+                path VARCHAR(1000),
                 name VARCHAR(200),
                 status UNSIGNED tinyint,
                 create_time DATETIME,
@@ -52,7 +53,7 @@ class DB(Singleton):
     def query_all(self, vid: str = ""):
         where = f"WHERE vid='{id}'" if vid else ""
         r = self._cursor.execute(f"""
-            SELECT d.vid, d.name, d.cid, d.status, 
+            SELECT d.vid, d.name, d.path, d.cid, d.status, 
             a.quality, a.name album, a.aid
             FROM download d LEFT OUTER JOIN album a 
             USING (vid) {where};

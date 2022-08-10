@@ -11,6 +11,7 @@ from PySide6.QtGui import QKeySequence, QContextMenuEvent
 from ..utils import utils
 from .Menu import Menu
 
+
 class Input(QLineEdit):
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)
