@@ -12,8 +12,7 @@ from PySide6.QtWidgets import (
 
 from ..common_widgets import Dialog
 from ..utils import utils, request, event_bus
-from ..common_widgets import Input, MessageBox
-from .Loading import Loading
+from ..common_widgets import Input, MessageBox, Loading
 from ..enums import Req, EventName
 from .SelectDialog import SelectDialog
 from ..utils.parse_video_page import parse

@@ -7,10 +7,11 @@ from PySide6.QtWidgets import (
     QMainWindow
 )
 
-from downloader.utils import utils
+from downloader.utils import utils, decorators
 from downloader.actions import get_settings_action, get_quit_action
 
 
+@decorators.singleton
 class Tray(QSystemTrayIcon):
     def __init__(self, app: QApplication, win: QMainWindow):
         super().__init__(app)

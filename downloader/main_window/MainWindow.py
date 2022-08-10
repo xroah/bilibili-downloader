@@ -36,12 +36,9 @@ from .NewDialog import NewDialog
 from ..main_widget import DownloadingPanel, DownloadedPanel
 from ..common_widgets import MessageBox
 from ..cookie import cookie
-from ..db import DB
+from .DownloadManager import DownloadManager
 
 T = TypeVar("T", bound='QWidget')
-
-downloading_text = "正在下载"
-downloaded_text = "已下载"
 
 
 @decorators.singleton
@@ -88,6 +85,13 @@ class MainWindow(QMainWindow):
         self.downloaded = DownloadedPanel(self)
         self.downloading_count = 0
         self.downloaded_count = 0
+        self.dm = DownloadManager(
+            window=self,
+            downloaded_btn=self.downloaded_tab,
+            downloading_btn=self.downloading_tab,
+            downloaded_panel=self.downloaded,
+            downloading_panel=self.downloading
+        )
         self.right_panel.addWidget(self.downloading)
         self.right_panel.addWidget(self.downloaded)
         widget.setParent(central_widget)
@@ -100,7 +104,6 @@ class MainWindow(QMainWindow):
 
         self.init(central_widget)
         self.init_signal()
-        self.init_data()
 
     def init(self, central: QWidget):
         central.setStyleSheet(utils.get_style("main", "toolbutton"))
@@ -120,11 +123,10 @@ class MainWindow(QMainWindow):
         self.set_bg_img()
         self.switch_tab(self.downloading_tab)
         self.start_check_login()
-        self.show()
+        # self.show()
 
     def init_signal(self):
         event_bus.on(EventName.COOKIE_CHANGE, self.start_check_login)
-        event_bus.on(EventName.NEW_DOWNLOAD, self.new_download)
         self.bg_sig.connect(self.set_bg_img)
         self.new_btn.clicked.connect(lambda: NewDialog(self))
         self.downloading_tab.clicked.connect(
@@ -134,39 +136,6 @@ class MainWindow(QMainWindow):
             lambda: self.switch_tab(self.downloaded_tab)
         )
         self.login_sig.connect(self.login_checked)
-
-    def init_data(self):
-        with DB() as db:
-            rows = db.query_all()
-            self.add_download(rows)
-
-    def add_download(self, rows):
-        self.downloading_count += len(rows)
-        for row in rows:
-            if row["status"] == 0:
-                self.downloading.add_item(
-                    name=row["name"],
-                    cid=row["cid"],
-                    aid=row["aid"],
-                    quality=row["quality"],
-                    album=row["album"],
-                    vid=row["vid"]
-                )
-        self.update_downloading_text()
-        self.update_downloaded_text()
-
-    def update_downloading_text(self):
-        self.downloading_tab.setText(
-            f"{downloading_text}({self.downloading_count})"
-        )
-
-    def update_downloaded_text(self):
-        self.downloaded_tab.setText(
-            f"{downloaded_text}({self.downloaded_count})"
-        )
-
-    def new_download(self, data):
-        self.add_download(data)
 
     def set_bg_img(self, bg: str = ""):
         if bg:

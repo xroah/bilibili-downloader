@@ -13,28 +13,10 @@ class DownloadingPanel(Panel):
         )
         self.set_current_index(0)
 
-    def add_item(
-        self,
-        *,
-        name: str,
-        aid: int,
-        cid: int,
-        vid: str,
-        album: str,
-        quality: int
-    ):
+    def add_item(self, item: DownloadingItem):
         if self.get_current_index() == 0:
             self.set_current_index(1)
 
         layout = self._widget.layout()
-        layout.addWidget(
-            DownloadingItem(
-                self,
-                name=name,
-                album=album,
-                aid=aid,
-                cid=cid,
-                vid=vid,
-                quality=quality
-            )
-        )
+        item.setParent(self)
+        layout.addWidget(item)

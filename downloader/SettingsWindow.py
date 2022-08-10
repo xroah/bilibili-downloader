@@ -32,7 +32,7 @@ class CancelException(Exception):
 
 
 @decorators.singleton
-class SettingsDialog(QMainWindow):
+class SettingsWindow(QMainWindow):
     size_calculated = Signal(str)
 
     def __init__(self, top_win: QMainWindow = None):

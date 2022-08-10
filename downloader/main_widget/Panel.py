@@ -8,7 +8,6 @@ from PySide6.QtWidgets import (
 from PySide6.QtGui import QImage, QPixmap, QKeyEvent
 from PySide6.QtCore import Qt
 
-
 from ..common_widgets import ClickableWidget, CheckableItem
 from ..utils import utils
 
@@ -18,26 +17,19 @@ class Panel(ClickableWidget):
             self,
             *,
             parent: QWidget = None,
-            widget: QWidget
+            widget: QWidget = None
     ):
         super().__init__(parent)
         stacked = QStackedLayout(self)
         scroll_area = QScrollArea(self)
         scroll_bar = scroll_area.verticalScrollBar()
-        w_layout = QVBoxLayout()
         self._layout = stacked
-        self._widget = widget
+        self._widget: QWidget | None = widget
         self._scroll_area = scroll_area
         self._no_content_widget = self.gen_no_content_widget()
         self._stacked = stacked
-        widget.setParent(self)
-        w_layout.setAlignment(Qt.AlignTop)
-        w_layout.setContentsMargins(0, 0, 0, 10)
-        w_layout.setSpacing(10)
-        widget.setLayout(w_layout)
         scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         scroll_area.setWidgetResizable(True)
-        scroll_area.setWidget(widget)
         scroll_area.setStyleSheet("""
             border: none;
             background-color: transparent;
@@ -47,13 +39,27 @@ class Panel(ClickableWidget):
         stacked.addWidget(self._no_content_widget)
         stacked.addWidget(scroll_area)
         stacked.setContentsMargins(0, 0, 0, 0)
-        
+        self.set_widget(widget)
+
+    def set_widget(self, widget: QWidget = None):
+        if not widget:
+            return
+
+        w_layout = QVBoxLayout()
+        self._widget = widget
+        widget.setParent(self)
+        w_layout.setAlignment(Qt.AlignTop)
+        w_layout.setContentsMargins(0, 0, 0, 10)
+        w_layout.setSpacing(10)
+        widget.setLayout(w_layout)
+        self._scroll_area.setWidget(widget)
+
     def set_current_index(self, i: int):
         self._layout.setCurrentIndex(i)
-        
+
     def get_current_index(self):
         return self._layout.currentIndex()
-        
+
     @staticmethod
     def gen_no_content_widget() -> QWidget:
         widget = QWidget()
@@ -71,7 +77,7 @@ class Panel(ClickableWidget):
 
         return widget
 
-    def find_children(self, all = True):
+    def find_children(self, all=True):
         children = super().findChildren(CheckableItem)
 
         if not all:
@@ -90,7 +96,7 @@ class Panel(ClickableWidget):
 
     def check_all(self):
         items = self.find_children()
-        
+
         for item in items:
             item.check()
 

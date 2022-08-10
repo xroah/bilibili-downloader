@@ -13,6 +13,13 @@ class EventBus(Singleton):
         if handler not in self._handlers:
             self._handlers[name].append(handler)
 
+    def once(self, name: any, handler: Callable):
+        def _handler(*args, **kwargs):
+            handler(*args, **kwargs)
+            self.off(name, _handler)
+
+        self.on(name, _handler)
+
     def emit(self, name: any, *args, **kwargs):
         if name in self._handlers:
             for h in self._handlers[name]:

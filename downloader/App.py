@@ -1,19 +1,27 @@
 from PySide6.QtWidgets import QApplication, QSystemTrayIcon
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QTimer
 
+from .StartWindow import StartWindow
+from .enums import EventName
 from .main_window import MainWindow
-from .SettingsDialog import SettingsDialog
-from .utils.decorators import singleton
-from .tray import create_tray
+from .SettingsWindow import SettingsWindow
+from .utils import decorators, event_bus
+from .tray import Tray
 
 
-@singleton
+@decorators.singleton
 class App(QApplication):
     def __init__(self):
         super().__init__()
-        tray_avail = QSystemTrayIcon.isSystemTrayAvailable()
         self.main_win = MainWindow()
-        self.settings_dialog = SettingsDialog(self.main_win)
+        self.settings_dialog = SettingsWindow(self.main_win)
+        self.tray: Tray | None = None
+        tray_avail = QSystemTrayIcon.isSystemTrayAvailable()
+
+        self.main_win.show()
+        if tray_avail:
+            self.tray = Tray(self, self.main_win)
+        # self.start_win = StartWindow()
         # Keyboard shortcuts on macOS are typically based on the Command
         # (or Cmd) keyboard modifier, represented by the ⌘ symbol.
         # For example, the ‘Copy’ action is Command+C (⌘+C).
@@ -27,9 +35,6 @@ class App(QApplication):
         # is mapped to MetaModifier .
         # self.setAttribute(Qt.AA_MacDontSwapCtrlAndMeta, True)
         self.applicationStateChanged.connect(self.state_change)
-
-        if tray_avail:
-            self.tray = create_tray(self, self.main_win)
 
     def state_change(self, state):
         if (
