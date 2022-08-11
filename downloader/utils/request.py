@@ -25,7 +25,3 @@ def get(url: str, **kwargs):
         raise E
     else:
         return res
-
-
-def head(url):
-    return requests.head(url, headers=headers)

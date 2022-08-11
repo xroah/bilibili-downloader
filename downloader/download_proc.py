@@ -7,12 +7,12 @@ import time
 
 from .settings import settings
 from .enums import SettingsKey, Req, Status
-from .utils import request, utils
+from .utils import request
 
 
 def get_size(url):
     try:
-        res = request.head(url)
+        res = request.get(url, stream=True)
     except:
         return -1
     else:
@@ -29,25 +29,35 @@ def get_name(url):
     return name
 
 
+def get_fullpath(url: str, album: str) -> str:
+    name = get_name(url)
+    d_path = settings.get(SettingsKey.DOWNLOAD_PATH)
+    album_dir = os.path.normpath(os.path.join(d_path, album))
+    fullpath = os.path.join(d_path, album, name)
+
+    if not os.path.exists(album_dir):
+        os.makedirs(album_dir)
+
+    return os.path.normpath(fullpath)
+
+
 def _download(
         *,
         album: str,
         url: str,
         event: Event,
         queue: Queue,
+        size: int
 ) -> bool | str:
     bytes_ = 0
-    name = get_name(url)
-    d_path = settings.get(SettingsKey.DOWNLOAD_PATH)
-    album_dir = os.path.join(d_path, album)
-    fullpath = os.path.join(d_path, album, name)
-
-    if not os.path.exists(album_dir):
-        os.makedirs(album_dir)
+    fullpath = get_fullpath(url, album)
 
     if os.path.exists(fullpath):
         st = os.lstat(fullpath)
         bytes_ = st.st_size
+
+    if bytes_ == size:
+        return fullpath
 
     headers = {
         "range": f"bytes={bytes_}-"
@@ -61,12 +71,14 @@ def _download(
         queue.put(err)
         return False
     else:
+        code = res.status_code
+
+        if code > 300:
+            print("Error:", res.text)
+            queue.put(err)
+            return
+
         start_time = time.time()
-        if bytes_ > 0:
-            queue.put({
-                "status": Status.UPDATE,
-                "chunk_size": bytes_
-            })
         downloaded = 0
         with open(fullpath, "ab+") as f:
             for c in res.iter_content(chunk_size=1024 * 10):
@@ -133,6 +145,21 @@ def merge(*, album, audio, video, name):
 
     return output
 
+
+def get_downloaded_size(audio_url: str, video_url: str, album: str):
+    audio_fullpath = get_fullpath(audio_url, album)
+    video_fullpath = get_fullpath(video_url, album)
+    size = 0
+
+    if os.path.exists(audio_fullpath):
+        size += os.lstat(audio_fullpath).st_size
+
+    if os.path.exists(video_fullpath):
+        size += os.lstat(video_fullpath).st_size
+
+    return size
+
+
 def download(
         *,
         event: Event,
@@ -156,17 +183,20 @@ def download(
     err = {
         "status": Status.ERROR
     }
+
     try:
         res = request.get(
             f"{Req.PLAY_URL}",
             params=params
         )
-        code = res.status_code
     except:
         queue.put(err)
     else:
+        code = res.status_code
+
         if code != 200:
             queue.put(err)
+            print("Status code is not 200: ", res.text)
             return
 
         data = res.json()
@@ -181,19 +211,29 @@ def download(
         video_url = get_video_url(dash["video"], quality)
         audio_size = get_size(audio_url)
         video_size = get_size(video_url)
+        downloaded_size = get_downloaded_size(audio_url, video_url, album)
 
         if video_size == -1 or audio_size == -1:
             queue.put(err)
             return
+
         queue.put({
             "status": Status.UPDATE,
-            "total": video_size + audio_size
+            "total": video_size + audio_size,
         })
+
+        if downloaded_size > 0:
+            queue.put({
+                "status": Status.RESUME,
+                "chunk_size": downloaded_size
+            })
+
         audio = _download(
             album=album,
             url=audio_url,
             event=event,
-            queue=queue
+            queue=queue,
+            size=audio_size
         )
 
         if not audio:
@@ -203,7 +243,8 @@ def download(
             album=album,
             url=video_url,
             event=event,
-            queue=queue
+            queue=queue,
+            size=video_size
         )
 
         if not video:

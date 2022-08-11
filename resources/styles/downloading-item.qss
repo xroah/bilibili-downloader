@@ -1,6 +1,9 @@
 .downloading-item {
     max-height: 65px;
     min-height: 65px;
+}
+
+.video-item {
     background-color: rgba(255, 255, 255, .2)
 }
 
@@ -9,6 +12,11 @@
     max-height: 3px;
     border: none;
     background-color: rgba(255, 255, 255, .15);
+}
+
+.progress-bar::chunk {
+    border: none;
+    background-color: rgba(0, 174, 236, .5);
 }
 
 .video-name {
@@ -23,11 +31,6 @@
     border: none;
     padding: 0;
     background-color: transparent;
-}
-
-.progress-bar::chunk {
-    border: none;
-    background-color: rgba(0, 174, 236, .5);
 }
 
 .downloading-item #background {

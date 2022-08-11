@@ -56,7 +56,7 @@ class DB(Singleton):
             SELECT d.vid, d.name, d.path, d.cid, d.status, d.size,
             d.finish_time, a.quality, a.name album, a.aid
             FROM download d LEFT OUTER JOIN album a 
-            USING (vid) {where};
+            USING (vid) {where} ORDER BY d.finish_time;
         """)
 
         return r.fetchall()

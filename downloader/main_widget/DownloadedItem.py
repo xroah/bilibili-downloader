@@ -1,4 +1,3 @@
-from typing import cast
 import os
 
 from PySide6.QtWidgets import QWidget, QLabel
@@ -33,7 +32,7 @@ class DownloadedItem(CheckableItem):
         self.size_label = utils.get_child(widget, QLabel, "videoSize")
         self.time_label = utils.get_child(widget, QLabel, "videoTime")
 
-        if deleted:
+        if not deleted:
             label = utils.get_child(widget, QLabel, "deletedText")
             layout = widget.layout()
             if label and layout:

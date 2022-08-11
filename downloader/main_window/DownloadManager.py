@@ -76,7 +76,7 @@ class DownloadManager(QObject):
 
         self.e = Event()
         self.q = Queue()
-        self.t = Thread(target=self.receive)
+        self.t = Thread(target=self.receive, args=(self.q, ))
         self.t.daemon = True
         self.p = Process(
             target=download,
@@ -114,6 +114,9 @@ class DownloadManager(QObject):
 
                 if "chunk_size" in data:
                     current.update_downloaded(data["chunk_size"])
+            case Status.RESUME:
+                current.downloaded_size = data["chunk_size"]
+                current.update_downloaded(0)
             case Status.ERROR:
                 current.set_hint_text("下载错误", True)
                 self.download_next()
@@ -149,10 +152,11 @@ class DownloadManager(QObject):
                 current.set_hint_text("已完成")
                 current.deleteLater()
                 self.download_next()
+                self.update_text()
 
-    def receive(self):
+    def receive(self, q: Queue):
         while True:
-            v = self.q.get()
+            v = q.get()
 
             if v["status"] == Status.PAUSE:
                 self.p.terminate()

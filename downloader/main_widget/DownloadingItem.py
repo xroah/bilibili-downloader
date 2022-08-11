@@ -51,12 +51,13 @@ class DownloadingItem(CheckableItem):
         self.setProperty("album", album)
         self.setProperty("quality", quality)
         self.video_name.setText(name)
+        self.setProperty("class", "downloading-item")
         self.setStyleSheet(utils.get_style("downloading-item"))
         self.start()
 
         self.toggle_btn.clicked.connect(self.toggle)
 
-    def update_downloaded(self, size: float):
+    def update_downloaded(self, size: int):
         self.downloaded_size += size
         self.downloaded_label.setText(
             utils.format_size(self.downloaded_size)
