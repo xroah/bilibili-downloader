@@ -14,7 +14,7 @@ def get(url: str, **kwargs):
     global headers
 
     if "headers" in kwargs:
-        for k, v in kwargs.items():
+        for k, v in kwargs["headers"].items():
             headers[k] = v
         del kwargs["headers"]
 

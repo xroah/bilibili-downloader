@@ -7,3 +7,5 @@ __pycache__
 tmp
 bg
 data
+ffmpeg
+ffmpeg.exe

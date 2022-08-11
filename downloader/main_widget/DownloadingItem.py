@@ -26,8 +26,12 @@ class DownloadingItem(CheckableItem):
             album: str,
             quality: int
     ):
-        super().__init__(widget=ProgressBar(), parent=parent)
+        progress = ProgressBar()
+        super().__init__(widget=progress, parent=parent)
         self.paused = False
+        self.downloaded_size = 0
+        self.total = 0
+        self._progress = progress
         self.video_name = utils.get_child(self, QLabel, "videoName")
         self.toggle_btn = utils.get_child(self, QToolButton, "toggle")
         self.speed_label = utils.get_child(self, QLabel, "speed")
@@ -49,6 +53,23 @@ class DownloadingItem(CheckableItem):
         self.start()
 
         self.toggle_btn.clicked.connect(self.toggle)
+
+    def update_downloaded(self, size: float):
+        self.downloaded_size += size
+        self.downloaded_label.setText(
+            utils.format_size(self.downloaded_size)
+        )
+
+    def update_speed(self, speed: float):
+        self.speed_label.setText(utils.format_size(speed) + "/s")
+
+    def update_total(self, total: float):
+        self.total_label.setText(utils.format_size(total))
+
+    def update_progress(self):
+        if self.total > 0:
+            p = self.downloaded_size / self.total
+            self._progress.setValue(int(p))
 
     def emit_change(self, status: Status):
         self.status_changed.emit(self, status)

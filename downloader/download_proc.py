@@ -1,12 +1,13 @@
+import sys
 from multiprocessing import Event, Queue
 import os
-from pickle import FALSE
 from urllib.parse import urlparse
 import subprocess
+import time
 
 from .settings import settings
 from .enums import SettingsKey, Req, Status
-from .utils import utils, request
+from .utils import request, utils
 
 
 def get_size(url):
@@ -28,18 +29,28 @@ def get_name(url):
     return name
 
 
-def _download(url: str, evt: Event, q: Queue) -> bool | str:
-    bytes = 0
+def _download(
+        *,
+        album: str,
+        url: str,
+        event: Event,
+        queue: Queue,
+) -> bool | str:
+    bytes_ = 0
     name = get_name(url)
     d_path = settings.get(SettingsKey.DOWNLOAD_PATH)
-    fullpath = os.path.join(d_path, name)
+    album_dir = os.path.join(d_path, album)
+    fullpath = os.path.join(d_path, album, name)
+
+    if not os.path.exists(album_dir):
+        os.makedirs(album_dir)
 
     if os.path.exists(fullpath):
         st = os.lstat(fullpath)
-        bytes = st.st_size
+        bytes_ = st.st_size
 
     headers = {
-        "range": f"bytes={bytes}-"
+        "range": f"bytes={bytes_}-"
     }
     err = {"status": Status.ERROR}
 
@@ -47,28 +58,44 @@ def _download(url: str, evt: Event, q: Queue) -> bool | str:
         res = request.get(url, headers=headers, stream=True)
     except Exception as e:
         print("Error", e)
-        q.put(err)
+        queue.put(err)
         return False
     else:
         code = res.status_code
         if code >= 300:
-            q.put(err)
+            queue.put(err)
             return False
-
+        start_time = time.time()
+        if bytes_ > 0:
+            queue.put({
+                "status": Status.UPDATE,
+                "chunk_size": bytes_
+            })
         with open(fullpath, "ab+") as f:
+            speed = 0
             for c in res.iter_content(chunk_size=1024*10):
                 if c:
+                    now = time.time()
+                    interval = now - start_time
+                    size = len(c)
+
+                    if interval > 0:
+                        speed = size / interval
+
+                    start_time = now
+
                     f.write(c)
-                    q.put({
+                    queue.put({
                         "status": Status.UPDATE,
-                        "data": len(c)
+                        "chunk_size": len(c),
+                        "speed": speed
                     })
 
-                if evt.is_set():
-                    q.put({
+                if event.is_set():
+                    queue.put({
                         "status": Status.PAUSE
                     })
-                    return FALSE
+                    return False
 
     return fullpath
 
@@ -86,9 +113,12 @@ def get_video_url(videos: list[dict], quality: int):
     return ret
 
 
-def merge(audio, video, name):
+def merge(*, album, audio, video, name):
+    d_path = settings.get(SettingsKey.DOWNLOAD_PATH)
+    output = os.path.join(d_path, album, name)
+    ffmpeg = "ffmpeg.exe" if sys.platform == "win32" else "ffmpeg"
     subprocess.run([
-        "ffmpeg",
+        os.path.join(os.getcwd(),  ffmpeg),
         "-i",
         audio,
         "-i",
@@ -96,19 +126,20 @@ def merge(audio, video, name):
         "-y",
         "-c",
         "copy",
-        f"{name}.mp4"
+        f"{output}.mp4"
     ])
 
 
 def download(
-    *
+    *,
     event: Event,
     queue: Queue,
     avid: int,
     bvid: str,
     cid: int,
     quality: int,
-    name: str
+    name: str,
+    album: str
 ):
     params = {
         "avid": avid,
@@ -124,7 +155,7 @@ def download(
     }
     try:
         res = request.get(
-            f"{Req.API_ADDR}{Req.URL_PATH}",
+            f"{Req.PLAY_URL}",
             params=params
         )
         code = res.status_code
@@ -137,7 +168,7 @@ def download(
 
         data = res.json()
 
-        if data.code != 0:
+        if data["code"] != 0:
             queue.put(err)
             return
 
@@ -145,15 +176,41 @@ def download(
         dash = data["dash"]
         audio_url = dash["audio"][0]["base_url"]
         video_url = get_video_url(dash["video"], quality)
-        audio = _download(audio_url, event, queue)
+        audio_size = get_size(audio_url)
+        video_size = get_size(video_url)
+
+        if video_size == -1 or audio_size == -1:
+            queue.put(err)
+            return
+        queue.put({
+            "status": Status.UPDATE,
+            "total": video_size + audio_size
+        })
+        audio = _download(
+            album=album,
+            url=audio_url,
+            event=event,
+            queue=queue
+        )
 
         if not audio:
             return
 
-        video = _download(video_url, event, queue)
+        video = _download(
+            album=album,
+            url=video_url,
+            event=event,
+            queue=queue
+        )
 
         if not video:
             return
 
-        merge(audio, video, name)
+        queue.put({"status": Status.MERGE})
+        merge(
+            album=album,
+            audio=audio,
+            video=video,
+            name=name
+        )
         queue.put({"status": Status.DONE})

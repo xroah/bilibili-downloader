@@ -7,3 +7,4 @@ class Status(Enum):
     UPDATE = "update"
     PAUSE = "pause"
     START = "start"
+    MERGE = "merge"
