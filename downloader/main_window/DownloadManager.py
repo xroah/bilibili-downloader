@@ -13,7 +13,7 @@ from ..utils import event_bus
 from ..utils.play_ring import play_ring
 from ..enums import EventName, SettingsKey, Status
 from ..settings import settings
-from ..download_proc import download
+from ..download import download
 
 downloading_text = "正在下载"
 downloaded_text = "已下载"
@@ -51,6 +51,7 @@ class DownloadManager(QObject):
         event_bus.on(EventName.NEW_DOWNLOAD, self.new_download)
         self.update_sig.connect(self.update)
         self.next_sig.connect(self.download_next)
+        self.downloading_panel.del_sig.connect(self.delete_downloading)
 
     def init_data(self):
         with DB() as db:
@@ -64,6 +65,7 @@ class DownloadManager(QObject):
                 self.download_first()
 
     def download_first(self):
+        return
         if len(self.downloading_items) and not len(self.current_items):
             for item in self.downloading_items:
                 if not item.paused:
@@ -202,6 +204,15 @@ class DownloadManager(QObject):
             case Status.START:
                 if len(self.current_items) == 0:
                     self.download(item)
+
+    def delete_downloading(self, item: DownloadingItem):
+        print("delete downloading", item.property("name"))
+
+    def delete_downloaded(self, item: DownloadedItem):
+        pass
+
+    def remove_downloaded(self, item: DownloadedItem):
+        pass
 
     def pause_all(self):
         if self.e:

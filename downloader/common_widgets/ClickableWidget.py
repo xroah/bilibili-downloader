@@ -4,7 +4,7 @@ from PySide6.QtCore import Qt, QEvent, QTimer
 
 
 class ClickableWidget(QWidget):
-    def __init__(self, parent: QWidget = None):
+    def __init__(self, parent: any = None):
         super().__init__(parent)
         self._timer: QTimer | None = None
         self._mouse_pressed = False
@@ -13,7 +13,7 @@ class ClickableWidget(QWidget):
     def _click(self, modifier: Qt.KeyboardModifiers):
         self._timer = None
         self._mouse_pressed = False
-        self.clickEvent(modifier)
+        self.click_event(modifier)
 
     def mousePressEvent(self, e: QMouseEvent) -> None:
         self._mouse_pressed = True
@@ -32,3 +32,6 @@ class ClickableWidget(QWidget):
 
     def leaveEvent(self, e: QEvent):
         self._mouse_entered = False
+
+    def click_event(self, modifier):
+        pass

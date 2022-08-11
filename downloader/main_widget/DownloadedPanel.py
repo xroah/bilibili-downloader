@@ -1,3 +1,4 @@
+from PySide6.QtCore import Signal, QObject
 from PySide6.QtWidgets import QWidget
 
 from .Panel import Panel
@@ -5,6 +6,8 @@ from .DownloadedItem import DownloadedItem
 
 
 class DownloadedPanel(Panel):
+    rm_sig = Signal(QObject)
+
     def __init__(self, parent: QWidget = None):
         super().__init__(
             parent=parent,

@@ -5,14 +5,17 @@ from PySide6.QtWidgets import (
     QStackedLayout,
     QScrollArea
 )
-from PySide6.QtGui import QImage, QPixmap, QKeyEvent
-from PySide6.QtCore import Qt
+from PySide6.QtGui import QImage, QPixmap
+from PySide6.QtCore import Qt, QObject, Signal
 
-from ..common_widgets import ClickableWidget, CheckableItem
+from ..common_widgets import ClickableWidget
+from .CheckableItem import CheckableItem
 from ..utils import utils
 
 
 class Panel(ClickableWidget):
+    del_sig = Signal(QObject)
+
     def __init__(
             self,
             *,
@@ -100,5 +103,5 @@ class Panel(ClickableWidget):
         for item in items:
             item.check()
 
-    def clickEvent(self, _):
+    def click_event(self, _):
         self.uncheck_all()

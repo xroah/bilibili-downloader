@@ -10,7 +10,8 @@ from PySide6.QtUiTools import QUiLoader
 
 from ..utils import utils
 from ..enums import Status
-from ..common_widgets import CheckableItem
+from .CheckableItem import CheckableItem
+from ..download import get_album_dir
 
 
 class DownloadingItem(CheckableItem):
@@ -18,7 +19,7 @@ class DownloadingItem(CheckableItem):
 
     def __init__(
             self,
-            parent: QWidget = None,
+            parent: any = None,
             *,
             name: str,
             cid: int,
@@ -45,6 +46,7 @@ class DownloadingItem(CheckableItem):
         del_action = self._ctx_menu.addAction("删除")
         self.toggle_action.triggered.connect(self.toggle)
         open_action.triggered.connect(self.open_dir)
+        del_action.triggered.connect(self.delete)
 
         self.toggle_btn.setStyleSheet(utils.get_style("toolbutton"))
         self.toggle_btn.setIconSize(QSize(32, 32))
@@ -62,7 +64,7 @@ class DownloadingItem(CheckableItem):
         self.start()
 
     def open_dir(self):
-        d = utils.get_album_dir(self.property("album"))
+        d = get_album_dir(self.property("album"))
         utils.open_path(d)
 
     def update_downloaded(self, size: int):

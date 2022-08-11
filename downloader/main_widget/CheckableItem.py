@@ -10,10 +10,9 @@ from PySide6.QtGui import (
     QContextMenuEvent,
     QPixmap
 )
-from PySide6.QtCore import QSize, Qt
+from PySide6.QtCore import QSize, Qt, QEvent
 
-from ..common_widgets import Menu
-from .ClickableWidget import ClickableWidget
+from ..common_widgets import Menu, ClickableWidget
 
 
 class CheckableItem(ClickableWidget):
@@ -21,7 +20,7 @@ class CheckableItem(ClickableWidget):
             self,
             *,
             widget: QWidget,
-            parent: QWidget = None
+            parent: any = None
     ):
         super().__init__(parent)
         self._parent = parent
@@ -31,6 +30,9 @@ class CheckableItem(ClickableWidget):
         self._ctx_menu = Menu(self)
         self._widget.setParent(self)
         self.init_layout()
+
+    def delete(self):
+        self._parent.del_sig.emit(self)
 
     def set_parent(self, parent: QWidget):
         self._parent = parent
@@ -61,14 +63,14 @@ class CheckableItem(ClickableWidget):
     def check(self):
         self.checked = True
         self._bg.setStyleSheet("""
-                background-color: rgba(0, 174, 236, .36);
+                background-color: rgba(0, 174, 236, .5);
         """)
 
     def uncheck(self):
         self.checked = False
         self._bg.setStyleSheet("")
 
-    def clickEvent(self, modifier: Qt.KeyboardModifiers):
+    def click_event(self, modifier: Qt.KeyboardModifiers):
         ctrl_pressed = Qt.ControlModifier == modifier
 
         if not ctrl_pressed:
@@ -76,17 +78,32 @@ class CheckableItem(ClickableWidget):
         if not self.checked:
             self.check()
 
-    def dblClickEvent(self):
-        print("dbl click")
-
     def uncheck_all(self):
-        try:
-            self._parent.uncheck_all()
-        except AttributeError:
-            pass
+        self._parent.uncheck_all()
+
+    def set_enter_style(self):
+        if not self.checked:
+            self._bg.setStyleSheet("""
+                background-color: rgba(0, 174, 236, .3);
+            """)
 
     def contextMenuEvent(self, e: QContextMenuEvent) -> None:
         if not self.checked:
             self.uncheck_all()
+            self.check()
 
         self._ctx_menu.exec(QCursor.pos())
+
+    def enterEvent(self, e: QEvent):
+        super().enterEvent(e)
+
+        if not self.checked:
+            self._bg.setStyleSheet("""
+                background-color: rgba(0, 174, 236, .3);
+            """)
+
+    def leaveEvent(self, e: QEvent):
+        super().leaveEvent(e)
+
+        if not self.checked:
+            self._bg.setStyleSheet("")

@@ -13,9 +13,6 @@ from typing import (
 from PySide6.QtWidgets import QWidget
 from PySide6.QtGui import QIcon, QGuiApplication
 
-from ..enums import SettingsKey
-from ..settings import settings
-
 
 def get_data_dir():
     return os.path.join(os.getcwd(), "data")
@@ -147,13 +144,3 @@ def open_path(path):
         os.startfile(path, "open")
     else:
         subprocess.call(("open", path))
-
-
-def get_album_dir(album: str) -> str:
-    d_path = settings.get(SettingsKey.DOWNLOAD_PATH)
-    album_dir = os.path.normpath(os.path.join(d_path, album))
-
-    if not os.path.exists(album_dir):
-        os.makedirs(album_dir)
-
-    return album_dir

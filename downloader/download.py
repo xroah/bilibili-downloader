@@ -10,6 +10,16 @@ from .enums import SettingsKey, Req, Status
 from .utils import request, utils
 
 
+def get_album_dir(album: str) -> str:
+    d_path = settings.get(SettingsKey.DOWNLOAD_PATH)
+    album_dir = os.path.normpath(os.path.join(d_path, album))
+
+    if not os.path.exists(album_dir):
+        os.makedirs(album_dir)
+
+    return album_dir
+
+
 def get_size(url):
     try:
         res = request.get(url, stream=True)
@@ -22,16 +32,9 @@ def get_size(url):
         return float(res.headers["content-length"])
 
 
-def get_name(url):
-    parsed = urlparse(url)
-    name = os.path.basename(parsed.path)
-
-    return name
-
-
-def get_fullpath(url: str, album: str) -> str:
-    name = get_name(url)
-    fullpath = os.path.join(utils.get_album_dir(album), name)
+def get_fullpath(cid: int, type_: str, album: str) -> str:
+    name = f"{cid}-{type_}.tmp"
+    fullpath = os.path.join(get_album_dir(album), name)
 
     return os.path.normpath(fullpath)
 
@@ -42,10 +45,12 @@ def _download(
         url: str,
         event: Event,
         queue: Queue,
-        size: int
+        size: int,
+        type_: str,
+        cid: int
 ) -> bool | str:
     bytes_ = 0
-    fullpath = get_fullpath(url, album)
+    fullpath = get_fullpath(cid, type_, album)
 
     if os.path.exists(fullpath):
         st = os.lstat(fullpath)
@@ -140,9 +145,9 @@ def merge(*, album, audio, video, name):
     return output
 
 
-def get_downloaded_size(audio_url: str, video_url: str, album: str):
-    audio_fullpath = get_fullpath(audio_url, album)
-    video_fullpath = get_fullpath(video_url, album)
+def get_downloaded_size(cid: int, album: str):
+    audio_fullpath = get_fullpath(cid, "audio", album)
+    video_fullpath = get_fullpath(cid, "video", album)
     size = 0
 
     if os.path.exists(audio_fullpath):
@@ -205,7 +210,7 @@ def download(
         video_url = get_video_url(dash["video"], quality)
         audio_size = get_size(audio_url)
         video_size = get_size(video_url)
-        downloaded_size = get_downloaded_size(audio_url, video_url, album)
+        downloaded_size = get_downloaded_size(cid, album)
 
         if video_size == -1 or audio_size == -1:
             queue.put(err)
@@ -227,7 +232,9 @@ def download(
             url=audio_url,
             event=event,
             queue=queue,
-            size=audio_size
+            size=audio_size,
+            type_="audio",
+            cid=cid
         )
 
         if not audio:
@@ -238,7 +245,9 @@ def download(
             url=video_url,
             event=event,
             queue=queue,
-            size=video_size
+            size=video_size,
+            type_="video",
+            cid=cid
         )
 
         if not video:

@@ -7,7 +7,7 @@ from PySide6.QtUiTools import QUiLoader
 from PySide6.QtGui import QMouseEvent
 
 from ..utils import utils
-from ..common_widgets import CheckableItem
+from .CheckableItem import CheckableItem
 
 
 class DownloadedItem(CheckableItem):
@@ -60,11 +60,15 @@ class DownloadedItem(CheckableItem):
     def init_menu(self):
         open_action = self._ctx_menu.addAction("打开")
         open_dir_action = self._ctx_menu.addAction("打开所在文件夹")
-        self._ctx_menu.addAction("删除")
-        self._ctx_menu.addAction("从列表中移除")
+        del_action = self._ctx_menu.addAction("删除")
+        rm_action = self._ctx_menu.addAction("从列表中移除")
 
         open_action.triggered.connect(self.open_file)
         open_dir_action.triggered.connect(self.open_dir)
+        del_action.triggered.connect(self.delete)
+        rm_action.trigger.connect(
+            lambda: self._parent.rm_sig.emit(self)
+        )
 
     def open_dir(self):
         path = PurePath(self.property("path"))

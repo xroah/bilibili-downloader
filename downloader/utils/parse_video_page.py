@@ -42,7 +42,7 @@ def parse(html_text: str) -> dict:
             video_data = state["videoData"]
             if "bvid" not in video_data:
                 continue
-            title = re.sub(r"[:*<>?\"'|]", " ", video_data["title"])
+            title = re.sub(r"[:*<>?\"'|/\\]+", " ", video_data["title"])
             pages = video_data["pages"]
             bvid = video_data["bvid"]
             pic = video_data["pic"]
