@@ -61,6 +61,11 @@ class DB(Singleton):
 
         return r.fetchall()
 
+    def delete_rows(self, cids: tuple):
+        self._cursor.execute(f"""
+            DELETE FROM download WHERE cid in ({",".join(cids)})
+        """)
+
     def update_finished(self, *, cid: int, path: str, size: int):
         self._cursor.execute(f"""
             UPDATE download SET finish_time=datetime('now', 'localtime'),

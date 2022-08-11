@@ -100,7 +100,7 @@ class SettingsWindow(QMainWindow):
 
     def init_signal(self):
         self.show_btn.clicked.connect(self.get_dir)
-        self.p_btn.clicked.connect(lambda: self.open_path(self.get_path()))
+        self.p_btn.clicked.connect(lambda: utils.open_path(self.get_path()))
         self.is_show_msg.stateChanged.connect(
             lambda s: self.handle_change(SettingsKey.IS_SHOW_MESSAGE, s)
         )
@@ -203,14 +203,6 @@ class SettingsWindow(QMainWindow):
             settings.set(SettingsKey.DOWNLOAD_PATH, path)
         self.start_calc(path)
 
-    @staticmethod
-    def open_path(path):
-        platform = sys.platform
-        if platform == "win32":
-            os.startfile(path, "open")
-        else:
-            subprocess.call(("open", path))
-    
     def keyPressEvent(self, e: QKeyEvent) -> None:
         # mac os hot key
         if (

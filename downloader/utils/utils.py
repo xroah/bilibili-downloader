@@ -1,4 +1,6 @@
 import os
+import subprocess
+import sys
 from urllib.parse import urlparse
 import re
 from typing import (
@@ -8,8 +10,11 @@ from typing import (
     Tuple
 )
 
-from PySide6.QtWidgets import QWidget, QToolButton
+from PySide6.QtWidgets import QWidget
 from PySide6.QtGui import QIcon, QGuiApplication
+
+from ..enums import SettingsKey
+from ..settings import settings
 
 
 def get_data_dir():
@@ -103,8 +108,8 @@ def parse_url(url: str) -> str | None:
 
 
 def center(
-    widget: QWidget,
-    parent: QWidget | bool
+        widget: QWidget,
+        parent: QWidget | bool
 ) -> Tuple[float, float]:
     size = widget.size()
 
@@ -134,3 +139,21 @@ def get_child(p: QWidget, t: Type[T], name: str) -> T:
         t,
         p.findChild(t, name)
     )
+
+
+def open_path(path):
+    platform = sys.platform
+    if platform == "win32":
+        os.startfile(path, "open")
+    else:
+        subprocess.call(("open", path))
+
+
+def get_album_dir(album: str) -> str:
+    d_path = settings.get(SettingsKey.DOWNLOAD_PATH)
+    album_dir = os.path.normpath(os.path.join(d_path, album))
+
+    if not os.path.exists(album_dir):
+        os.makedirs(album_dir)
+
+    return album_dir

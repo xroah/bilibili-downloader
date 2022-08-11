@@ -39,11 +39,17 @@ class DownloadingItem(CheckableItem):
         self.downloaded_label = utils.get_child(widget, QLabel, "downloaded")
         self.total_label = utils.get_child(widget, QLabel, "total")
         self._progress = utils.get_child(widget, QProgressBar, "progressBar")
+
+        self.toggle_action = self._ctx_menu.addAction("开始")
+        open_action = self._ctx_menu.addAction("打开文件夹")
+        del_action = self._ctx_menu.addAction("删除")
+        self.toggle_action.triggered.connect(self.toggle)
+        open_action.triggered.connect(self.open_dir)
+
         self.toggle_btn.setStyleSheet(utils.get_style("toolbutton"))
         self.toggle_btn.setIconSize(QSize(32, 32))
-        self._ctx_menu.addAction("开始/暂停")
-        self._ctx_menu.addAction("打开文件夹")
-        self._ctx_menu.addAction("删除")
+        self.toggle_btn.clicked.connect(self.toggle)
+
         self.setProperty("vid", vid)
         self.setProperty("cid", cid)
         self.setProperty("aid", aid)
@@ -55,7 +61,9 @@ class DownloadingItem(CheckableItem):
         self.setStyleSheet(utils.get_style("downloading-item"))
         self.start()
 
-        self.toggle_btn.clicked.connect(self.toggle)
+    def open_dir(self):
+        d = utils.get_album_dir(self.property("album"))
+        utils.open_path(d)
 
     def update_downloaded(self, size: int):
         self.downloaded_size += size
@@ -90,6 +98,7 @@ class DownloadingItem(CheckableItem):
         self.paused = True
         self.toggle_btn.setIcon(utils.get_icon("play"))
         self.set_hint_text("已暂停")
+        self.toggle_action.setText("开始")
 
     def _start(self):
         self.start()
@@ -99,6 +108,7 @@ class DownloadingItem(CheckableItem):
         self.paused = False
         self.toggle_btn.setIcon(utils.get_icon("pause"))
         self.set_hint_text("等待开始")
+        self.toggle_action.setText("暂停")
 
     def toggle(self):
         if self.paused:

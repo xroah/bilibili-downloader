@@ -7,7 +7,7 @@ import time
 
 from .settings import settings
 from .enums import SettingsKey, Req, Status
-from .utils import request
+from .utils import request, utils
 
 
 def get_size(url):
@@ -31,12 +31,7 @@ def get_name(url):
 
 def get_fullpath(url: str, album: str) -> str:
     name = get_name(url)
-    d_path = settings.get(SettingsKey.DOWNLOAD_PATH)
-    album_dir = os.path.normpath(os.path.join(d_path, album))
-    fullpath = os.path.join(d_path, album, name)
-
-    if not os.path.exists(album_dir):
-        os.makedirs(album_dir)
+    fullpath = os.path.join(utils.get_album_dir(album), name)
 
     return os.path.normpath(fullpath)
 
@@ -74,9 +69,8 @@ def _download(
         code = res.status_code
 
         if code > 300:
-            print("Error:", res.text)
             queue.put(err)
-            return
+            return False
 
         start_time = time.time()
         downloaded = 0
@@ -219,7 +213,7 @@ def download(
 
         queue.put({
             "status": Status.UPDATE,
-            "total": video_size + audio_size,
+            "total": video_size + audio_size
         })
 
         if downloaded_size > 0:
