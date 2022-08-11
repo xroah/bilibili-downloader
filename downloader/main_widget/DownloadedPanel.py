@@ -10,9 +10,11 @@ class DownloadedPanel(Panel):
             parent=parent,
             widget=QWidget()
         )
-        widget = self._widget
-        layout = widget.layout()
-        layout.addWidget(DownloadedItem(self))
-        layout.addWidget(DownloadedItem(self, True))
         self.set_current_index(0)
-        
+
+    def insert_item(self, item: DownloadedItem):
+        if self.get_current_index() == 0:
+            self.set_current_index(1)
+
+        layout = self._widget.layout()
+        layout.insertWidget(0, item)

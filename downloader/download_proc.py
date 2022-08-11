@@ -61,35 +61,32 @@ def _download(
         queue.put(err)
         return False
     else:
-        code = res.status_code
-        if code >= 300:
-            queue.put(err)
-            return False
         start_time = time.time()
         if bytes_ > 0:
             queue.put({
                 "status": Status.UPDATE,
                 "chunk_size": bytes_
             })
+        downloaded = 0
         with open(fullpath, "ab+") as f:
-            speed = 0
-            for c in res.iter_content(chunk_size=1024*10):
+            for c in res.iter_content(chunk_size=1024 * 10):
                 if c:
                     now = time.time()
                     interval = now - start_time
-                    size = len(c)
-
-                    if interval > 0:
-                        speed = size / interval
-
-                    start_time = now
-
-                    f.write(c)
-                    queue.put({
+                    downloaded += len(c)
+                    data = {
                         "status": Status.UPDATE,
                         "chunk_size": len(c),
-                        "speed": speed
-                    })
+                    }
+
+                    if interval > 1:
+                        speed = downloaded / interval
+                        data["speed"] = speed
+                        start_time = now
+                        downloaded = 0
+
+                    f.write(c)
+                    queue.put(data)
 
                 if event.is_set():
                     queue.put({
@@ -115,10 +112,10 @@ def get_video_url(videos: list[dict], quality: int):
 
 def merge(*, album, audio, video, name):
     d_path = settings.get(SettingsKey.DOWNLOAD_PATH)
-    output = os.path.join(d_path, album, name)
+    output = os.path.join(d_path, album, name) + ".mp4"
     ffmpeg = "ffmpeg.exe" if sys.platform == "win32" else "ffmpeg"
     subprocess.run([
-        os.path.join(os.getcwd(),  ffmpeg),
+        os.path.join(os.getcwd(), ffmpeg),
         "-i",
         audio,
         "-i",
@@ -126,20 +123,26 @@ def merge(*, album, audio, video, name):
         "-y",
         "-c",
         "copy",
-        f"{output}.mp4"
+        output
     ])
+    try:
+        os.unlink(audio)
+        os.unlink(video)
+    except:
+        pass
 
+    return output
 
 def download(
-    *,
-    event: Event,
-    queue: Queue,
-    avid: int,
-    bvid: str,
-    cid: int,
-    quality: int,
-    name: str,
-    album: str
+        *,
+        event: Event,
+        queue: Queue,
+        avid: int,
+        bvid: str,
+        cid: int,
+        quality: int,
+        name: str,
+        album: str
 ):
     params = {
         "avid": avid,
@@ -207,10 +210,13 @@ def download(
             return
 
         queue.put({"status": Status.MERGE})
-        merge(
+        video_path = merge(
             album=album,
             audio=audio,
             video=video,
             name=name
         )
-        queue.put({"status": Status.DONE})
+        queue.put({
+            "status": Status.DONE,
+            "video_path": os.path.normpath(video_path)
+        })

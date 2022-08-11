@@ -37,7 +37,7 @@ class DB(Singleton):
                 name VARCHAR(200),
                 status UNSIGNED tinyint,
                 create_time DATETIME,
-                finished_time DATETIME
+                finish_time DATETIME
             )
         """)
         self._cursor.execute("""
@@ -53,13 +53,19 @@ class DB(Singleton):
     def query_all(self, vid: str = ""):
         where = f"WHERE vid='{id}'" if vid else ""
         r = self._cursor.execute(f"""
-            SELECT d.vid, d.name, d.path, d.cid, d.status, 
-            a.quality, a.name album, a.aid
+            SELECT d.vid, d.name, d.path, d.cid, d.status, d.size,
+            d.finish_time, a.quality, a.name album, a.aid
             FROM download d LEFT OUTER JOIN album a 
             USING (vid) {where};
         """)
 
         return r.fetchall()
+
+    def update_finished(self, *, cid: int, path: str, size: int):
+        self._cursor.execute(f"""
+            UPDATE download SET finish_time=datetime('now', 'localtime'),
+            path='{path}', status=1, size={size} WHERE cid={cid}
+        """)
 
     def insert(self, data, cb: Callable = None):
         bvid = data["bvid"]

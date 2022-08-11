@@ -106,7 +106,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="videoDate">
+             <widget class="QLabel" name="videoTime">
               <property name="text">
                <string>下载日期</string>
               </property>

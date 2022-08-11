@@ -1,23 +1,25 @@
 .downloading-item {
-    max-height: 60px;
-    min-height: 60px;
+    max-height: 65px;
+    min-height: 65px;
+    background-color: rgba(255, 255, 255, .2)
 }
 
 .progress-bar {
     padding: 0;
+    max-height: 3px;
     border: none;
     background-color: rgba(255, 255, 255, .15);
 }
 
-.progress-bar .video-name {
+.video-name {
     color: #333;
 }
 
-.progress-bar .size-info {
+.size-info {
     color: #666;
 }
 
-.progress-bar .toggle {
+.toggle {
     border: none;
     padding: 0;
     background-color: transparent;
@@ -25,7 +27,7 @@
 
 .progress-bar::chunk {
     border: none;
-    background-color: rgba(255, 255, 255, .36);
+    background-color: rgba(0, 174, 236, .5);
 }
 
 .downloading-item #background {
