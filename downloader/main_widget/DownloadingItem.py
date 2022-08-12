@@ -57,6 +57,9 @@ class DownloadingItem(CheckableItem):
         self.toggle_btn.setIconSize(QSize(32, 32))
         self.toggle_btn.clicked.connect(self.toggle)
 
+        if size:
+            self.update_total(size)
+
         self.setProperty("vid", vid)
         self.setProperty("cid", cid)
         self.setProperty("aid", aid)
@@ -66,11 +69,10 @@ class DownloadingItem(CheckableItem):
         self.video_name.setText(name)
         self.setProperty("class", "downloading-item")
         self.setStyleSheet(utils.get_style("downloading-item"))
-        self.update_total(size if size else 0)
-        self.init_downloaded_size()
+        self.init_downloaded()
         self.start()
 
-    def init_downloaded_size(self):
+    def init_downloaded(self):
         audio_path, video_path = self.get_paths()
         size = 0
 
@@ -80,7 +82,8 @@ class DownloadingItem(CheckableItem):
         if os.path.exists(video_path):
             size += os.lstat(video_path).st_size
 
-        self.update_downloaded(size)
+        if size > 0:
+            self.update_downloaded(size)
 
     def get_paths(self) -> Tuple[str, str]:
         cid = self.property("cid")

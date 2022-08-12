@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="class" stdset="0">
+   <string/>
+  </property>
   <layout class="QHBoxLayout" name="horizontalLayout_2">
    <property name="spacing">
     <number>0</number>
@@ -116,6 +119,16 @@
              </widget>
             </item>
             <item>
+             <widget class="QLabel" name="deletedText">
+              <property name="text">
+               <string>已删除</string>
+              </property>
+              <property name="class" stdset="0">
+               <string>deleted-text</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <spacer name="horizontalSpacer">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -133,16 +146,6 @@
          </layout>
         </item>
        </layout>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="deletedText">
-       <property name="text">
-        <string>已删除</string>
-       </property>
-       <property name="class" stdset="0">
-        <string>deleted-text</string>
-       </property>
       </widget>
      </item>
     </layout>

@@ -79,15 +79,15 @@ class DB(Singleton):
 
     def insert(self, data, cb: Callable = None):
         bvid = data["bvid"]
-        ret = self._cursor.execute(
+        exist_album = self._cursor.execute(
             f"SELECT vid FROM album WHERE vid='{bvid}';"
-        )
+        ).fetchone()
         album = data["title"]
         exists = []
         quality = data["quality"]
 
         # exists
-        if ret.fetchone():
+        if exist_album:
             exists = self._cursor.execute(
                 f"SELECT cid FROM download WHERE vid='{bvid}';"
             ).fetchall()
@@ -125,9 +125,10 @@ class DB(Singleton):
              {quality}, {now});
         """
 
-        if not len(exists):
-            self._cursor.execute(album_clause)
+        if len(videos):
+            if not exist_album:
+                self._cursor.execute(album_clause)
             self._cursor.executemany(video_clause, insertion_list)
 
-            if cb:
-                cb(videos)
+        if cb:
+            cb(videos)

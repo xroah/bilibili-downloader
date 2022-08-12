@@ -132,6 +132,9 @@ class DownloadManager(QObject):
             case Status.MERGE:
                 current.set_hint_text("正在合并")
             case Status.DONE:
+                if self.p:
+                    self.p.join()
+
                 if settings.get(SettingsKey.IS_PLAY_RINGTONE):
                     play_ring(self._window)
 
@@ -171,12 +174,10 @@ class DownloadManager(QObject):
                 self.next_sig.emit()
                 break
             else:
-                if v["status"] == Status.DONE:
-                    if self.p:
-                        self.p.join()
-                    break
-
                 self.update_sig.emit(v)
+
+                if v["status"] == Status.DONE:
+                    break
 
     def download_next(self):
         self.q = None
@@ -216,13 +217,27 @@ class DownloadManager(QObject):
                 if len(self.current_items) == 0:
                     self.download(item)
 
-    @staticmethod
-    def delete_items(cids, items):
+    def delete_items(
+            self,
+            cids,
+            items,
+            is_downloading,
+            delete_file=False
+    ):
         with DB() as db:
             db.delete_rows(tuple(cids))
 
-        for c in items:
-            c.delete_later()
+        for item in items:
+            if is_downloading:
+                if item in self.downloading_items:
+                    item.delete_later()
+                    self.downloading_items.remove(item)
+            else:
+                if item in self.downloaded_items:
+                    self.downloaded_items.remove(item)
+                    item.delete_later(delete_file)
+
+        self.update_text()
 
     def handle_downloading(self, t: str, item: DownloadingItem):
         checked = self.downloading_panel.find_children(False)
@@ -248,11 +263,7 @@ class DownloadManager(QObject):
                         c.pause()
 
         if t == "delete":
-            MessageBox.confirm(
-                text="确定要删除选中的项目吗？",
-                parent=self._window,
-                on_ok=lambda: self.delete_items(cids, checked)
-            )
+            self.delete_items(cids, checked, True)
 
         # if downloading, download next will be called by the update thread
         if not downloading:
@@ -276,10 +287,20 @@ class DownloadManager(QObject):
                 MessageBox.confirm(
                     text="确定要删除选中的项目(已下载的文件也会从本地删除)吗",
                     parent=self._window,
-                    on_ok=lambda: self.delete_items(cids, checked)
+                    on_ok=lambda: self.delete_items(
+                        cids,
+                        checked,
+                        False,
+                        True
+                    )
                 )
             case "remove":
-                self.delete_items(cids, checked)
+                self.delete_items(
+                    cids,
+                    checked,
+                    False,
+                    False
+                )
 
     def delete_downloaded(self, item: DownloadedItem):
         self.handle_downloaded("delete")
@@ -326,7 +347,8 @@ class DownloadManager(QObject):
         self.update_text()
 
     def add_downloads(self, rows):
-        for row in rows:
+        for r in rows:
+            row = dict(r)
             name = row["name"]
             cid = row["cid"]
             if row["status"] == 0:
@@ -337,7 +359,7 @@ class DownloadManager(QObject):
                     quality=row["quality"],
                     album=row["album"],
                     vid=row["vid"],
-                    size=row["size"]
+                    size=row["size"] if "size" in row else 0
                 )
                 self.downloading_panel.add_item(item)
                 item.status_changed.connect(self.item_status_change)

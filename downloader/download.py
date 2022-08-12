@@ -79,6 +79,7 @@ def _download(
 
         start_time = time.time()
         downloaded = 0
+        speed = 0
         with open(fullpath, "ab+") as f:
             for c in res.iter_content(chunk_size=1024 * 10):
                 if c:
@@ -95,6 +96,9 @@ def _download(
                         data["speed"] = speed
                         start_time = now
                         downloaded = 0
+                    elif interval > 0 and not speed:
+                        speed = len(c) / interval
+                        data["speed"] = speed
 
                     f.write(c)
                     queue.put(data)

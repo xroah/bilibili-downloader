@@ -70,19 +70,26 @@ class DownloadedItem(CheckableItem):
             lambda: self._parent.rm_sig.emit(self)
         )
 
-    def delete_later(self):
-        path = self.property("path")
-        try:
-            os.unlink(path)
-        except:
-            pass
+    def delete_later(self, remove_file=False):
+        if remove_file:
+            path = self.property("path")
+            try:
+                os.unlink(path)
+            except:
+                pass
         super().deleteLater()
 
     def open_dir(self):
+        if self.deleted:
+            return
+
         path = PurePath(self.property("path"))
         utils.open_path(str(path.parent))
 
     def open_file(self):
+        if self.deleted:
+            return
+
         utils.open_path(self.property("path"))
 
     def mouseDoubleClickEvent(self, event: QMouseEvent) -> None:

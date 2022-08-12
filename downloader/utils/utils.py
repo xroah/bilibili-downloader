@@ -139,6 +139,9 @@ def get_child(p: QWidget, t: Type[T], name: str) -> T:
 
 
 def open_path(path):
+    if not os.path.exists(path):
+        return
+
     platform = sys.platform
     if platform == "win32":
         os.startfile(path, "open")
