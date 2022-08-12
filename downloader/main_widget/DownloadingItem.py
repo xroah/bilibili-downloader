@@ -1,5 +1,7 @@
+import os
+from typing import Tuple
+
 from PySide6.QtWidgets import (
-    QWidget,
     QLabel,
     QToolButton,
     QProgressBar,
@@ -11,7 +13,7 @@ from PySide6.QtUiTools import QUiLoader
 from ..utils import utils
 from ..enums import Status
 from .CheckableItem import CheckableItem
-from ..download import get_album_dir
+from ..download import get_album_dir, get_fullpath
 
 
 class DownloadingItem(CheckableItem):
@@ -26,7 +28,8 @@ class DownloadingItem(CheckableItem):
             aid: int,
             vid: str,
             album: str,
-            quality: int
+            quality: int,
+            size: int
     ):
         loader = QUiLoader()
         widget = loader.load(utils.get_resource_path("uis/downloading-item.ui"))
@@ -44,7 +47,9 @@ class DownloadingItem(CheckableItem):
         self.toggle_action = self._ctx_menu.addAction("开始")
         open_action = self._ctx_menu.addAction("打开文件夹")
         del_action = self._ctx_menu.addAction("删除")
-        self.toggle_action.triggered.connect(self.toggle)
+        self.toggle_action.triggered.connect(
+            lambda: self._parent.toggle_sig.emit(self)
+        )
         open_action.triggered.connect(self.open_dir)
         del_action.triggered.connect(self.delete)
 
@@ -61,7 +66,29 @@ class DownloadingItem(CheckableItem):
         self.video_name.setText(name)
         self.setProperty("class", "downloading-item")
         self.setStyleSheet(utils.get_style("downloading-item"))
+        self.update_total(size if size else 0)
+        self.init_downloaded_size()
         self.start()
+
+    def init_downloaded_size(self):
+        audio_path, video_path = self.get_paths()
+        size = 0
+
+        if os.path.exists(audio_path):
+            size += os.lstat(audio_path).st_size
+
+        if os.path.exists(video_path):
+            size += os.lstat(video_path).st_size
+
+        self.update_downloaded(size)
+
+    def get_paths(self) -> Tuple[str, str]:
+        cid = self.property("cid")
+        album = self.property("album")
+        audio_path = get_fullpath(cid, "audio", album)
+        video_path = get_fullpath(cid, "video", album)
+
+        return audio_path, video_path
 
     def open_dir(self):
         d = get_album_dir(self.property("album"))
@@ -91,6 +118,20 @@ class DownloadingItem(CheckableItem):
 
     def emit_change(self, status: Status):
         self.status_changed.emit(self, status)
+
+    def delete_later(self):
+        audio_path, video_path = self.get_paths()
+
+        try:
+            if os.path.exists(audio_path):
+                os.unlink(audio_path)
+
+            if os.path.exists(video_path):
+                os.unlink(video_path)
+        except:
+            pass
+
+        super().deleteLater()
 
     def _pause(self):
         self.pause()

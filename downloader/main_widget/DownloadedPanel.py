@@ -6,8 +6,6 @@ from .DownloadedItem import DownloadedItem
 
 
 class DownloadedPanel(Panel):
-    rm_sig = Signal(QObject)
-
     def __init__(self, parent: QWidget = None):
         super().__init__(
             parent=parent,

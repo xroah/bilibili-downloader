@@ -66,9 +66,17 @@ class DownloadedItem(CheckableItem):
         open_action.triggered.connect(self.open_file)
         open_dir_action.triggered.connect(self.open_dir)
         del_action.triggered.connect(self.delete)
-        rm_action.trigger.connect(
+        rm_action.triggered.connect(
             lambda: self._parent.rm_sig.emit(self)
         )
+
+    def delete_later(self):
+        path = self.property("path")
+        try:
+            os.unlink(path)
+        except:
+            pass
+        super().deleteLater()
 
     def open_dir(self):
         path = PurePath(self.property("path"))

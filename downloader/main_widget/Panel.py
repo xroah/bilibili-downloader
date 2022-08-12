@@ -15,6 +15,8 @@ from ..utils import utils
 
 class Panel(ClickableWidget):
     del_sig = Signal(QObject)
+    rm_sig = Signal(QObject)
+    toggle_sig = Signal(QObject)
 
     def __init__(
             self,

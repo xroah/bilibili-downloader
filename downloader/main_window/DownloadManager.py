@@ -1,3 +1,4 @@
+import os
 from multiprocessing import Process, Queue, Event
 from threading import Thread
 import time
@@ -5,9 +6,13 @@ import time
 from PySide6.QtWidgets import QPushButton, QMainWindow
 from PySide6.QtCore import Signal, QObject
 
-from ..main_widget import DownloadingPanel, DownloadedPanel
-from ..main_widget.DownloadingItem import DownloadingItem
-from ..main_widget.DownloadedItem import DownloadedItem
+from ..common_widgets import MessageBox
+from ..main_widget import (
+    DownloadingPanel,
+    DownloadedPanel,
+    DownloadedItem,
+    DownloadingItem
+)
 from ..db import DB
 from ..utils import event_bus
 from ..utils.play_ring import play_ring
@@ -52,6 +57,11 @@ class DownloadManager(QObject):
         self.update_sig.connect(self.update)
         self.next_sig.connect(self.download_next)
         self.downloading_panel.del_sig.connect(self.delete_downloading)
+        self.downloading_panel.toggle_sig.connect(
+            self.toggle_downloading
+        )
+        self.downloaded_panel.del_sig.connect(self.delete_downloaded)
+        self.downloaded_panel.rm_sig.connect(self.remove_downloaded)
 
     def init_data(self):
         with DB() as db:
@@ -65,7 +75,6 @@ class DownloadManager(QObject):
                 self.download_first()
 
     def download_first(self):
-        return
         if len(self.downloading_items) and not len(self.current_items):
             for item in self.downloading_items:
                 if not item.paused:
@@ -78,7 +87,7 @@ class DownloadManager(QObject):
 
         self.e = Event()
         self.q = Queue()
-        self.t = Thread(target=self.receive, args=(self.q, ))
+        self.t = Thread(target=self.receive, args=(self.q,))
         self.t.daemon = True
         self.p = Process(
             target=download,
@@ -90,7 +99,8 @@ class DownloadManager(QObject):
                 "cid": item.property("cid"),
                 "quality": item.property("quality"),
                 "name": item.property("name"),
-                "album": item.property("album")
+                "album": item.property("album"),
+                "has_size": item.total > 0
             }
         )
         self.p.daemon = True
@@ -116,9 +126,6 @@ class DownloadManager(QObject):
 
                 if "chunk_size" in data:
                     current.update_downloaded(data["chunk_size"])
-            case Status.RESUME:
-                current.downloaded_size = data["chunk_size"]
-                current.update_downloaded(0)
             case Status.ERROR:
                 current.set_hint_text("下载错误", True)
                 self.download_next()
@@ -137,11 +144,7 @@ class DownloadManager(QObject):
                 finish_time = time.strftime("%Y-%m-%d %H:%M:%S")
 
                 with DB() as db:
-                    db.update_finished(
-                        cid=cid,
-                        path=path,
-                        size=size
-                    )
+                    db.update_finished(cid=cid, path=path)
 
                 self.add_downloaded_item(
                     name=name,
@@ -161,16 +164,19 @@ class DownloadManager(QObject):
             v = q.get()
 
             if v["status"] == Status.PAUSE:
-                self.p.terminate()
-                self.p.join()
+                if self.p:
+                    self.p.terminate()
+                    self.p.join()
+
                 self.next_sig.emit()
                 break
             else:
-                self.update_sig.emit(v)
-
                 if v["status"] == Status.DONE:
-                    self.p.join()
+                    if self.p:
+                        self.p.join()
                     break
+
+                self.update_sig.emit(v)
 
     def download_next(self):
         self.q = None
@@ -184,11 +190,15 @@ class DownloadManager(QObject):
             self.current_items = []
 
         for i, item in items:
-            if not item.paused and item not in self.current_items:
+            if not item.paused:
                 next_item = item
                 break
 
         self.download(next_item)
+
+    def stop(self):
+        if self.e:
+            self.e.set()
 
     def item_status_change(
             self,
@@ -199,24 +209,86 @@ class DownloadManager(QObject):
             case Status.PAUSE:
                 if item not in self.current_items:
                     return
+
                 self.current_items.remove(item)
-                self.e.set()
+                self.stop()
             case Status.START:
                 if len(self.current_items) == 0:
                     self.download(item)
 
+    @staticmethod
+    def delete_items(cids, items):
+        with DB() as db:
+            db.delete_rows(tuple(cids))
+
+        for c in items:
+            c.delete_later()
+
+    def handle_downloading(self, t: str, item: DownloadingItem):
+        checked = self.downloading_panel.find_children(False)
+        downloading = False
+        paused = item.paused
+        cids = []
+
+        if (
+                len(self.current_items) and
+                self.current_items[0] in checked
+        ):
+            self.stop()
+            downloading = True
+
+        for c in checked:
+            match t:
+                case "delete":
+                    cids.append(str(c.property("cid")))
+                case "toggle":
+                    if paused:
+                        c.start()
+                    else:
+                        c.pause()
+
+        if t == "delete":
+            MessageBox.confirm(
+                text="确定要删除选中的项目吗？",
+                parent=self._window,
+                on_ok=lambda: self.delete_items(cids, checked)
+            )
+
+        # if downloading, download next will be called by the update thread
+        if not downloading:
+            self.download_next()
+
+    def toggle_downloading(self, item: DownloadingItem):
+        self.handle_downloading("toggle", item)
+
     def delete_downloading(self, item: DownloadingItem):
-        print("delete downloading", item.property("name"))
+        self.handle_downloading("delete", item)
+
+    def handle_downloaded(self, t: str):
+        checked = self.downloaded_panel.find_children(False)
+        cids = []
+
+        for c in checked:
+            cids.append(str(c.property("cid")))
+
+        match t:
+            case "delete":
+                MessageBox.confirm(
+                    text="确定要删除选中的项目(已下载的文件也会从本地删除)吗",
+                    parent=self._window,
+                    on_ok=lambda: self.delete_items(cids, checked)
+                )
+            case "remove":
+                self.delete_items(cids, checked)
 
     def delete_downloaded(self, item: DownloadedItem):
-        pass
+        self.handle_downloaded("delete")
 
     def remove_downloaded(self, item: DownloadedItem):
-        pass
+        self.handle_downloaded("remove")
 
     def pause_all(self):
-        if self.e:
-            self.e.set()
+        self.stop()
 
         for item in self.downloading_items:
             item.pause()
@@ -264,7 +336,8 @@ class DownloadManager(QObject):
                     aid=row["aid"],
                     quality=row["quality"],
                     album=row["album"],
-                    vid=row["vid"]
+                    vid=row["vid"],
+                    size=row["size"]
                 )
                 self.downloading_panel.add_item(item)
                 item.status_changed.connect(self.item_status_change)

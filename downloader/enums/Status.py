@@ -8,4 +8,3 @@ class Status(Enum):
     PAUSE = "pause"
     START = "start"
     MERGE = "merge"
-    RESUME = "RESUME"

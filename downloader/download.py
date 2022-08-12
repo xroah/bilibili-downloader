@@ -1,13 +1,13 @@
 import sys
 from multiprocessing import Event, Queue
 import os
-from urllib.parse import urlparse
 import subprocess
 import time
 
+from .db import DB
 from .settings import settings
 from .enums import SettingsKey, Req, Status
-from .utils import request, utils
+from .utils import request
 
 
 def get_album_dir(album: str) -> str:
@@ -145,20 +145,6 @@ def merge(*, album, audio, video, name):
     return output
 
 
-def get_downloaded_size(cid: int, album: str):
-    audio_fullpath = get_fullpath(cid, "audio", album)
-    video_fullpath = get_fullpath(cid, "video", album)
-    size = 0
-
-    if os.path.exists(audio_fullpath):
-        size += os.lstat(audio_fullpath).st_size
-
-    if os.path.exists(video_fullpath):
-        size += os.lstat(video_fullpath).st_size
-
-    return size
-
-
 def download(
         *,
         event: Event,
@@ -168,7 +154,8 @@ def download(
         cid: int,
         quality: int,
         name: str,
-        album: str
+        album: str,
+        has_size=False
 ):
     params = {
         "avid": avid,
@@ -210,22 +197,19 @@ def download(
         video_url = get_video_url(dash["video"], quality)
         audio_size = get_size(audio_url)
         video_size = get_size(video_url)
-        downloaded_size = get_downloaded_size(cid, album)
 
         if video_size == -1 or audio_size == -1:
             queue.put(err)
             return
 
-        queue.put({
-            "status": Status.UPDATE,
-            "total": video_size + audio_size
-        })
-
-        if downloaded_size > 0:
+        if not has_size:
             queue.put({
-                "status": Status.RESUME,
-                "chunk_size": downloaded_size
+                "status": Status.UPDATE,
+                "total": video_size + audio_size
             })
+
+            with DB() as db:
+                db.update_size(cid, video_size + audio_size)
 
         audio = _download(
             album=album,

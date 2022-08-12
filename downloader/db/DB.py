@@ -38,7 +38,7 @@ class DB(Singleton):
                 status UNSIGNED tinyint,
                 create_time DATETIME,
                 finish_time DATETIME
-            )
+            );
         """)
         self._cursor.execute("""
             CREATE TABLE IF NOT EXISTS album(
@@ -47,7 +47,7 @@ class DB(Singleton):
                 name VARCHAR(200),
                 quality UNSIGNED SMALLINT,
                 create_time DATETIME
-            )
+            );
         """)
 
     def query_all(self, vid: str = ""):
@@ -63,19 +63,24 @@ class DB(Singleton):
 
     def delete_rows(self, cids: tuple):
         self._cursor.execute(f"""
-            DELETE FROM download WHERE cid in ({",".join(cids)})
+            DELETE FROM download WHERE cid in ({",".join(cids)});
         """)
 
-    def update_finished(self, *, cid: int, path: str, size: int):
+    def update_finished(self, cid: int, path: str):
         self._cursor.execute(f"""
             UPDATE download SET finish_time=datetime('now', 'localtime'),
-            path='{path}', status=1, size={size} WHERE cid={cid}
+            path='{path}', status=1 WHERE cid={cid};
+        """)
+
+    def update_size(self, cid: int, size: int):
+        self._cursor.execute(f"""
+            UPDATE download SET size='{size}' WHERE cid={cid};
         """)
 
     def insert(self, data, cb: Callable = None):
         bvid = data["bvid"]
         ret = self._cursor.execute(
-            f"SELECT vid FROM album WHERE vid='{bvid}'"
+            f"SELECT vid FROM album WHERE vid='{bvid}';"
         )
         album = data["title"]
         exists = []
@@ -84,7 +89,7 @@ class DB(Singleton):
         # exists
         if ret.fetchone():
             exists = self._cursor.execute(
-                f"SELECT cid FROM download WHERE vid='{bvid}'"
+                f"SELECT cid FROM download WHERE vid='{bvid}';"
             ).fetchall()
             exists = list(map(lambda d: d[0], exists))
 
@@ -92,7 +97,7 @@ class DB(Singleton):
         video_clause = f"""
             INSERT INTO download(
                 vid, cid, size, name, status, create_time
-            ) VALUES(?, ?, ?, ?, ?, {now})
+            ) VALUES(?, ?, ?, ?, ?, {now});
         """
         pages = data["pages"]
         insertion_list = []
@@ -117,7 +122,7 @@ class DB(Singleton):
         album_clause = f"""
             INSERT INTO album(vid, aid, name, quality, create_time) 
             VALUES('{bvid}', '{data["avid"]}', '{album}',
-             {quality}, {now})
+             {quality}, {now});
         """
 
         if not len(exists):
