@@ -5,9 +5,10 @@ from PySide6.QtWidgets import QApplication, QSystemTrayIcon
 from PySide6.QtCore import Qt, Signal
 
 from .StartWindow import StartWindow
+from .enums import EventName
 from .main_window import MainWindow
 from .SettingsWindow import SettingsWindow
-from .utils import decorators
+from .utils import decorators, event_bus
 from .tray import Tray
 
 
@@ -34,8 +35,8 @@ class App(QApplication):
         # is mapped to MetaModifier .
         # self.setAttribute(Qt.AA_MacDontSwapCtrlAndMeta, True)
         self.applicationStateChanged.connect(self.state_change)
-        self.main_win.dm.inited_sig.connect(self.init)
         self.init_sig.connect(self.main_win.dm.init_data)
+        event_bus.once(EventName.DATA_INITIALIZED, self.init)
 
         t = Thread(target=self.start)
         t.daemon = True
@@ -43,6 +44,7 @@ class App(QApplication):
 
     def start(self):
         time.sleep(.5)
+        # init within main thread
         self.init_sig.emit()
 
     def init(self):

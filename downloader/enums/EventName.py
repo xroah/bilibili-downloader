@@ -7,3 +7,4 @@ class EventName(Enum):
     COOKIE_CHANGE = "cookie_change"
     CHECK_ALL = "check_all"
     DATA_INITIALIZED = "data_initialized"
+    DOWNLOAD_FINISHED = "download_finished"

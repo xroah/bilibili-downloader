@@ -1,4 +1,3 @@
-import os
 from multiprocessing import Process, Queue, Event
 from threading import Thread
 import time
@@ -67,7 +66,7 @@ class DownloadManager(QObject):
         with DB() as db:
             rows = db.query_all()
             self.add_downloads(rows)
-            self.inited_sig.emit()
+            event_bus.emit(EventName.DATA_INITIALIZED)
 
             if not settings.get(SettingsKey.IS_AUTO_DOWNLOAD):
                 self.pause_all()
@@ -132,35 +131,40 @@ class DownloadManager(QObject):
             case Status.MERGE:
                 current.set_hint_text("正在合并")
             case Status.DONE:
-                if self.p:
-                    self.p.join()
+                self.handle_finish(data["video_path"])
 
-                if settings.get(SettingsKey.IS_PLAY_RINGTONE):
-                    play_ring(self._window)
+    def handle_finish(self, path: str):
+        if self.p:
+            self.p.join()
 
-                current = self.current_items[0]
-                self.current_items = []
-                size = current.total
-                name = current.property("name")
-                cid = current.property("cid")
-                path = data["video_path"]
-                finish_time = time.strftime("%Y-%m-%d %H:%M:%S")
+        current = self.current_items[0]
+        self.current_items = []
+        size = current.total
+        name = current.property("name")
+        cid = current.property("cid")
+        finish_time = time.strftime("%Y-%m-%d %H:%M:%S")
 
-                with DB() as db:
-                    db.update_finished(cid=cid, path=path)
+        with DB() as db:
+            db.update_finished(cid=cid, path=path)
 
-                self.add_downloaded_item(
-                    name=name,
-                    cid=cid,
-                    path=path,
-                    size=size,
-                    finish_time=finish_time
-                )
-                self.downloading_items.remove(current)
-                current.set_hint_text("已完成")
-                current.deleteLater()
-                self.download_next()
-                self.update_text()
+        self.add_downloaded_item(
+            name=name,
+            cid=cid,
+            path=path,
+            size=size,
+            finish_time=finish_time
+        )
+        self.downloading_items.remove(current)
+        current.set_hint_text("已完成")
+        current.deleteLater()
+        self.download_next()
+        self.update_text()
+
+        if settings.get(SettingsKey.IS_PLAY_RINGTONE):
+            play_ring(self._window)
+
+        if settings.get(SettingsKey.IS_SHOW_MESSAGE):
+            event_bus.emit(EventName.DOWNLOAD_FINISHED, name, path)
 
     def receive(self, q: Queue):
         while True:
