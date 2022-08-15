@@ -35,11 +35,7 @@ class Panel(ClickableWidget):
         self._stacked = stacked
         scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         scroll_area.setWidgetResizable(True)
-        scroll_area.setStyleSheet("""
-            border: none;
-            background-color: transparent;
-        """)
-        scroll_bar.setStyleSheet(utils.get_style("scrollbar"))
+        scroll_area.setStyleSheet(utils.get_style("scrollarea"))
         scroll_bar.setContextMenuPolicy(Qt.NoContextMenu)
         stacked.addWidget(self._no_content_widget)
         stacked.addWidget(scroll_area)
