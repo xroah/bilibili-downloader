@@ -22,7 +22,8 @@ class Item(ClickableWidget):
             self,
             *,
             parent: any = None,
-            ui: str
+            ui: str,
+            class_name: str
     ):
         loader = QUiLoader()
         widget = loader.load(utils.get_resource_path(f"uis/{ui}.ui"))
@@ -32,7 +33,9 @@ class Item(ClickableWidget):
         self.checked = False
         self._ctx_menu = Menu(self)
         self._widget.setParent(self)
+        self.setProperty("class", class_name)
         self.init_layout()
+        self.setStyleSheet(utils.get_style("item"))
 
     def delete(self):
         self._parent.del_sig.emit(self)

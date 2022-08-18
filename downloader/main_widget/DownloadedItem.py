@@ -20,11 +20,13 @@ class DownloadedItem(Item):
             cid: int,
             finish_time: str
     ):
+        deleted = not os.path.exists(path)
+        class_name = f"downloaded-item{'-deleted' if deleted else ''}"
         super().__init__(
             parent=parent,
-            ui="downloaded-item"
+            ui="downloaded-item",
+            class_name=class_name
         )
-        deleted = not os.path.exists(path)
         widget = self._widget
         self.deleted = deleted
         self.name_label = utils.get_child(widget, QLabel, "videoName")
@@ -44,15 +46,10 @@ class DownloadedItem(Item):
         self.size_label.setText(utils.format_size(size))
         self.time_label.setText(finish_time)
 
-        self.setProperty(
-            "class",
-            f"downloaded-item{'-deleted' if deleted else ''}"
-        )
         self.setProperty("name", name)
         self.setProperty("path", path)
         self.setProperty("cid", cid)
         self.setAttribute(Qt.WA_StyledBackground, True)
-        self.setStyleSheet(utils.get_style("downloaded-item"))
         self.init_menu()
 
     def init_menu(self):

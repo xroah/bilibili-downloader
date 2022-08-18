@@ -8,7 +8,6 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtGui import QContextMenuEvent
 from PySide6.QtCore import Signal, QObject, QSize
-from PySide6.QtUiTools import QUiLoader
 
 from ..utils import utils
 from ..enums import Status
@@ -31,10 +30,10 @@ class DownloadingItem(Item):
             quality: int,
             size: int
     ):
-        loader = QUiLoader()
         super().__init__(
             parent=parent,
-            ui="downloading-item"
+            ui="downloading-item",
+            class_name="downloading-item"
         )
         widget = self._widget
         self.paused = False
@@ -71,7 +70,6 @@ class DownloadingItem(Item):
         self.setProperty("quality", quality)
         self.video_name.setText(name)
         self.setProperty("class", "downloading-item")
-        self.setStyleSheet(utils.get_style("downloading-item"))
         self.init_downloaded()
         self.start()
 

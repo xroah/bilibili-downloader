@@ -1,10 +1,10 @@
+.item {
+    background-color: rgba(255, 255, 255, .2)
+}
+
 .downloading-item {
     max-height: 65px;
     min-height: 65px;
-}
-
-.video-item {
-    background-color: rgba(255, 255, 255, .2)
 }
 
 .progress-bar {
@@ -33,6 +33,25 @@
     background-color: transparent;
 }
 
-.downloading-item #background {
-    background-color: transparent;
+
+
+.downloaded-item, .downloaded-item-deleted {
+    max-height: 72px;
+    min-height: 72px;
+}
+
+.downloaded-item .info {
+    color: #555;
+}
+
+.downloaded-item-deleted .video-name {
+    color: #999;
+}
+
+.downloaded-item-deleted .info {
+    color: #aaa;
+}
+
+.deleted-text {
+    color: rgba(255, 0, 0, .6);
 }
