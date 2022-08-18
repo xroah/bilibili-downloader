@@ -129,7 +129,7 @@ def merge(*, album, audio, video, name):
     d_path = settings.get(SettingsKey.DOWNLOAD_PATH)
     output = os.path.join(d_path, album, name) + ".mp4"
     ffmpeg = "ffmpeg.exe" if sys.platform == "win32" else "ffmpeg"
-    subprocess.run([
+    subprocess.run((
         os.path.join(os.getcwd(), ffmpeg),
         "-i",
         audio,
@@ -139,7 +139,7 @@ def merge(*, album, audio, video, name):
         "-c",
         "copy",
         output
-    ])
+    ))
     try:
         os.unlink(audio)
         os.unlink(video)
