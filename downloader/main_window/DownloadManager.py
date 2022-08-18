@@ -81,6 +81,7 @@ class DownloadManager(QObject):
                     break
 
     def download(self, item: DownloadingItem):
+        return
         if item is None:
             return
 

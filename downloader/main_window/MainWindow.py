@@ -168,7 +168,10 @@ class MainWindow(QMainWindow):
         self.current_tab = btn
         tab = btn.property("tab")
         self.right_panel.setCurrentIndex(tab)
-        btn.setStyleSheet(utils.get_style("active"))
+        btn.setStyleSheet("""
+            background-color: rgba(0, 174, 236, .8);
+            color: #fff;
+        """)
 
         # 已下载tab
         self.pause_all_btn.setEnabled(tab != 1)

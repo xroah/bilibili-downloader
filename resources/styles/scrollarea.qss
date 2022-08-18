@@ -1,4 +1,4 @@
-QScrollArea {
+QScrollArea, .list {
     border: none;
     background-color: transparent;
 }

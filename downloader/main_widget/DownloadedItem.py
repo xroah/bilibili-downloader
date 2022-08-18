@@ -3,14 +3,13 @@ from pathlib import PurePath
 
 from PySide6.QtWidgets import QWidget, QLabel
 from PySide6.QtCore import Qt
-from PySide6.QtUiTools import QUiLoader
 from PySide6.QtGui import QMouseEvent
 
 from ..utils import utils
-from .CheckableItem import CheckableItem
+from .Item import Item
 
 
-class DownloadedItem(CheckableItem):
+class DownloadedItem(Item):
     def __init__(
             self,
             parent: QWidget = None,
@@ -21,13 +20,12 @@ class DownloadedItem(CheckableItem):
             cid: int,
             finish_time: str
     ):
-        loader = QUiLoader()
-        widget = loader.load(utils.get_resource_path("uis/downloaded-item.ui"))
         super().__init__(
             parent=parent,
-            widget=widget
+            ui="downloaded-item"
         )
         deleted = not os.path.exists(path)
+        widget = self._widget
         self.deleted = deleted
         self.name_label = utils.get_child(widget, QLabel, "videoName")
         self.path_label = utils.get_child(widget, QLabel, "videoPath")

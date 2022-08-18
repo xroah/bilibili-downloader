@@ -12,9 +12,7 @@
     margin: 3px 0;
 }
 
-.downloaded-item .video-size,
-.downloaded-item .video-date,
-.downloaded-item .video-path {
+.downloaded-item .info {
     color: #555;
 }
 
@@ -22,9 +20,7 @@
     color: #999;
 }
 
-.downloaded-item-deleted .video-size,
-.downloaded-item-deleted .video-date,
-.downloaded-item-deleted .video-path {
+.downloaded-item-deleted .info {
     color: #aaa;
 }
 

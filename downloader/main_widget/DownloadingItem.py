@@ -12,11 +12,11 @@ from PySide6.QtUiTools import QUiLoader
 
 from ..utils import utils
 from ..enums import Status
-from .CheckableItem import CheckableItem
+from .Item import Item
 from ..download import get_album_dir, get_fullpath
 
 
-class DownloadingItem(CheckableItem):
+class DownloadingItem(Item):
     status_changed = Signal(QObject, Status)
 
     def __init__(
@@ -32,8 +32,11 @@ class DownloadingItem(CheckableItem):
             size: int
     ):
         loader = QUiLoader()
-        widget = loader.load(utils.get_resource_path("uis/downloading-item.ui"))
-        super().__init__(widget=widget, parent=parent)
+        super().__init__(
+            parent=parent,
+            ui="downloading-item"
+        )
+        widget = self._widget
         self.paused = False
         self.downloaded_size = 0
         self.total = 0

@@ -9,7 +9,7 @@ from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtCore import Qt, QObject, Signal
 
 from ..common_widgets import ClickableWidget
-from .CheckableItem import CheckableItem
+from .Item import Item
 from ..utils import utils
 
 
@@ -18,37 +18,30 @@ class Panel(ClickableWidget):
     rm_sig = Signal(QObject)
     toggle_sig = Signal(QObject)
 
-    def __init__(
-            self,
-            *,
-            parent: QWidget = None,
-            widget: QWidget = None
-    ):
+    def __init__(self, parent: QWidget):
         super().__init__(parent)
         stacked = QStackedLayout(self)
         scroll_area = QScrollArea(self)
         scroll_bar = scroll_area.verticalScrollBar()
         self._layout = stacked
-        self._widget: QWidget | None = widget
+        self._widget: QWidget = QWidget(self)
         self._scroll_area = scroll_area
         self._no_content_widget = self.gen_no_content_widget()
         self._stacked = stacked
         scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         scroll_area.setWidgetResizable(True)
-        scroll_area.setStyleSheet(utils.get_style("scrollarea"))
         scroll_bar.setContextMenuPolicy(Qt.NoContextMenu)
         stacked.addWidget(self._no_content_widget)
         stacked.addWidget(scroll_area)
         stacked.setContentsMargins(0, 0, 0, 0)
-        self.set_widget(widget)
+        self.init_widget()
+        scroll_area.setStyleSheet(utils.get_style("scrollarea"))
 
-    def set_widget(self, widget: QWidget = None):
-        if not widget:
-            return
-
+    def init_widget(self):
         w_layout = QVBoxLayout()
-        self._widget = widget
-        widget.setParent(self)
+        widget = self._widget
+
+        widget.setProperty("class", "list")
         w_layout.setAlignment(Qt.AlignTop)
         w_layout.setContentsMargins(0, 0, 0, 10)
         w_layout.setSpacing(10)
@@ -79,7 +72,7 @@ class Panel(ClickableWidget):
         return widget
 
     def find_children(self, get_all=True):
-        children = super().findChildren(CheckableItem)
+        children = super().findChildren(Item)
 
         if not get_all:
             children = filter(

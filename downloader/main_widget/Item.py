@@ -3,7 +3,7 @@ from typing import cast
 from PySide6.QtWidgets import (
     QWidget,
     QLabel,
-    QStackedLayout
+    QVBoxLayout
 )
 from PySide6.QtGui import (
     QCursor,
@@ -11,20 +11,23 @@ from PySide6.QtGui import (
     QPixmap
 )
 from PySide6.QtCore import QSize, Qt, QEvent
+from PySide6.QtUiTools import QUiLoader
 
 from ..common_widgets import Menu, ClickableWidget
+from ..utils import utils
 
 
-class CheckableItem(ClickableWidget):
+class Item(ClickableWidget):
     def __init__(
             self,
             *,
-            widget: QWidget,
-            parent: any = None
+            parent: any = None,
+            ui: str
     ):
+        loader = QUiLoader()
+        widget = loader.load(utils.get_resource_path(f"uis/{ui}.ui"))
         super().__init__(parent)
         self._parent = parent
-        self._bg = QWidget(self)
         self._widget = widget
         self.checked = False
         self._ctx_menu = Menu(self)
@@ -39,7 +42,7 @@ class CheckableItem(ClickableWidget):
         super().setParent(parent)
 
     def init_layout(self):
-        layout = QStackedLayout(self)
+        layout = QVBoxLayout()
         icon = cast(
             QLabel,
             self._widget.findChild(QLabel, "icon")
@@ -54,21 +57,30 @@ class CheckableItem(ClickableWidget):
                 border: none;
                 background-color: transparent;
             """)
-        self._bg.setObjectName("background")
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self._widget)
-        layout.addWidget(self._bg)
-        layout.setStackingMode(QStackedLayout.StackAll)
+        self.setLayout(layout)
 
     def check(self):
         self.checked = True
-        self._bg.setStyleSheet("""
-                background-color: rgba(0, 174, 236, .5);
-        """)
+        self.set_style_sheet(.5)
+
+    def set_style_sheet(self, opacity: float):
+        self._widget.setStyleSheet("""
+            .item {
+                background-color: rgba(0, 174, 236, %s);
+            }
+        """ % opacity)
+
+    def remove_style_sheet(self):
+        self._widget.setStyleSheet("")
 
     def uncheck(self):
+        if not self.checked:
+            return
+
         self.checked = False
-        self._bg.setStyleSheet("")
+        self.remove_style_sheet()
 
     def click_event(self, modifier: Qt.KeyboardModifiers):
         ctrl_pressed = Qt.ControlModifier == modifier
@@ -81,12 +93,6 @@ class CheckableItem(ClickableWidget):
     def uncheck_all(self):
         self._parent.uncheck_all()
 
-    def set_enter_style(self):
-        if not self.checked:
-            self._bg.setStyleSheet("""
-                background-color: rgba(0, 174, 236, .3);
-            """)
-
     def contextMenuEvent(self, e: QContextMenuEvent) -> None:
         if not self.checked:
             self.uncheck_all()
@@ -98,12 +104,10 @@ class CheckableItem(ClickableWidget):
         super().enterEvent(e)
 
         if not self.checked:
-            self._bg.setStyleSheet("""
-                background-color: rgba(0, 174, 236, .3);
-            """)
+            self.set_style_sheet(.3)
 
     def leaveEvent(self, e: QEvent):
         super().leaveEvent(e)
 
         if not self.checked:
-            self._bg.setStyleSheet("")
+            self.remove_style_sheet()

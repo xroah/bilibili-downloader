@@ -7,10 +7,7 @@ from .DownloadingItem import DownloadingItem
 class DownloadingPanel(Panel):
 
     def __init__(self, parent: QWidget = None):
-        super().__init__(
-            parent=parent,
-            widget=QWidget()
-        )
+        super().__init__(parent)
         self.set_current_index(0)
 
     def add_item(self, item: DownloadingItem):
