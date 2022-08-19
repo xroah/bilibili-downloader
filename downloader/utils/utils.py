@@ -35,7 +35,7 @@ def get_icon(name: str, ext="svg") -> QIcon | None:
 def get_style(*names: str) -> str:
     ss = ""
     for name in names:
-        file = get_resource_path(f"styles/{name}.qss")
+        file = get_resource_path(f"styles/{name}.css")
 
         try:
             with open(file, "r") as f:

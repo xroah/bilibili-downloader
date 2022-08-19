@@ -34,7 +34,7 @@ class Input(QLineEdit):
         self.textChanged.connect(self.text_changed_cb)
 
     def set_qss(self):
-        qss = utils.get_resource_path("styles/input.qss")
+        qss = utils.get_style("input")
         with open(qss) as ss:
             self.setStyleSheet(ss.read())
 
