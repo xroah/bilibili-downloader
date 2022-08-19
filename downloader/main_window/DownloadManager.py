@@ -198,22 +198,7 @@ class DownloadManager(QObject):
     def stop(self):
         if self.e:
             self.e.set()
-
-    def item_status_change(
-            self,
-            item: DownloadingItem,
-            status: Status
-    ):
-        match status:
-            case Status.PAUSE:
-                if item not in self.current_items:
-                    return
-
-                self.current_items.remove(item)
-                self.stop()
-            case Status.START:
-                if len(self.current_items) == 0:
-                    self.download(item)
+            self.e = None
 
     def delete_items(
             self,
@@ -244,27 +229,31 @@ class DownloadManager(QObject):
         cids = []
 
         if (
-                len(self.current_items) and
-                self.current_items[0] in checked
+                (
+                        len(self.current_items) and
+                        self.current_items[0] in checked
+                ) or
+                item in self.current_items
         ):
             self.stop()
             downloading = True
 
-        for c in checked:
-            match t:
-                case "delete":
-                    cids.append(str(c.property("cid")))
-                case "toggle":
-                    if paused:
-                        c.start()
-                    else:
-                        c.pause()
+        if len(checked):
+            for c in checked:
+                match t:
+                    case "delete":
+                        cids.append(str(c.property("cid")))
+                    case "toggle":
+                        if paused:
+                            c.start()
+                        else:
+                            c.pause()
 
-        if t == "delete":
-            self.delete_items(cids, checked, True)
+            if t == "delete":
+                self.delete_items(cids, checked, True)
 
         # if downloading, download next will be called by the update thread
-        if not downloading:
+        if not downloading and not self.e:
             self.download_next()
 
     def toggle_downloading(self, item: DownloadingItem):
@@ -276,6 +265,9 @@ class DownloadManager(QObject):
     def handle_downloaded(self, t: str):
         checked = self.downloaded_tab.find_children(False)
         cids = []
+
+        if not len(checked):
+            return
 
         for c in checked:
             cids.append(str(c.property("cid")))
@@ -360,7 +352,6 @@ class DownloadManager(QObject):
                     size=row["size"] if "size" in row else 0
                 )
                 self.downloading_tab.add_item(item)
-                item.status_changed.connect(self.item_status_change)
                 self.downloading_items.append(item)
             else:
                 self.add_downloaded_item(

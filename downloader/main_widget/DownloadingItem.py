@@ -7,17 +7,14 @@ from PySide6.QtWidgets import (
     QProgressBar,
 )
 from PySide6.QtGui import QContextMenuEvent
-from PySide6.QtCore import Signal, QObject, QSize
+from PySide6.QtCore import QSize
 
 from ..utils import utils
-from ..enums import Status
 from .Item import Item
 from ..download import get_album_dir, get_fullpath
 
 
 class DownloadingItem(Item):
-    status_changed = Signal(QObject, Status)
-
     def __init__(
             self,
             parent: any = None,
@@ -49,9 +46,7 @@ class DownloadingItem(Item):
         self.toggle_action = self._ctx_menu.addAction("开始")
         open_action = self._ctx_menu.addAction("打开文件夹")
         del_action = self._ctx_menu.addAction("删除")
-        self.toggle_action.triggered.connect(
-            lambda: self._parent.toggle_sig.emit(self)
-        )
+        self.toggle_action.triggered.connect(self.emit_change)
         open_action.triggered.connect(self.open_dir)
         del_action.triggered.connect(self.delete)
 
@@ -120,8 +115,8 @@ class DownloadingItem(Item):
             if v != p:
                 self._progress.setValue(int(p))
 
-    def emit_change(self, status: Status):
-        self.status_changed.emit(self, status)
+    def emit_change(self):
+        self._parent.toggle_sig.emit(self)
 
     def delete_later(self):
         audio_path, video_path = self.get_paths()
@@ -139,7 +134,7 @@ class DownloadingItem(Item):
 
     def _pause(self):
         self.pause()
-        self.emit_change(Status.PAUSE)
+        self.emit_change()
 
     def pause(self):
         self.paused = True
@@ -149,7 +144,7 @@ class DownloadingItem(Item):
 
     def _start(self):
         self.start()
-        self.emit_change(Status.START)
+        self.emit_change()
 
     def start(self):
         self.paused = False
