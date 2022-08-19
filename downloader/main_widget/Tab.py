@@ -13,7 +13,7 @@ from .Item import Item
 from ..utils import utils
 
 
-class Panel(ClickableWidget):
+class Tab(ClickableWidget):
     del_sig = Signal(QObject)
     rm_sig = Signal(QObject)
     toggle_sig = Signal(QObject)
@@ -35,7 +35,7 @@ class Panel(ClickableWidget):
         stacked.addWidget(scroll_area)
         stacked.setContentsMargins(0, 0, 0, 0)
         self.init_widget()
-        scroll_area.setStyleSheet(utils.get_style("scrollarea"))
+        scroll_area.setStyleSheet(utils.get_style("tab"))
 
     def init_widget(self):
         w_layout = QVBoxLayout()

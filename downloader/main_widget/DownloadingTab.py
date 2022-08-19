@@ -1,10 +1,10 @@
 from PySide6.QtWidgets import QWidget
 
-from .Panel import Panel
+from .Tab import Tab
 from .DownloadingItem import DownloadingItem
 
 
-class DownloadingPanel(Panel):
+class DownloadingTab(Tab):
 
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)

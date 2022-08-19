@@ -1,11 +1,11 @@
 from PySide6.QtCore import Signal, QObject
 from PySide6.QtWidgets import QWidget
 
-from .Panel import Panel
+from .Tab import Tab
 from .DownloadedItem import DownloadedItem
 
 
-class DownloadedPanel(Panel):
+class DownloadedTab(Tab):
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)
         self.set_current_index(0)

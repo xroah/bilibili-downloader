@@ -2,13 +2,13 @@ from multiprocessing import Process, Queue, Event
 from threading import Thread
 import time
 
-from PySide6.QtWidgets import QPushButton, QMainWindow
+from PySide6.QtWidgets import QMainWindow
 from PySide6.QtCore import Signal, QObject
 
 from ..common_widgets import MessageBox
 from ..main_widget import (
-    DownloadingPanel,
-    DownloadedPanel,
+    DownloadingTab,
+    DownloadedTab,
     DownloadedItem,
     DownloadingItem
 )
@@ -19,33 +19,27 @@ from ..enums import EventName, SettingsKey, Status
 from ..settings import settings
 from ..download import download
 
-downloading_text = "正在下载"
-downloaded_text = "已下载"
-
 
 class DownloadManager(QObject):
     inited_sig = Signal()
     update_sig = Signal(dict)
     next_sig = Signal()
+    change_sig = Signal(dict)
 
     def __init__(
             self,
             *,
             window: QMainWindow,
-            downloading_btn: QPushButton,
-            downloaded_btn: QPushButton,
-            downloading_panel: DownloadingPanel,
-            downloaded_panel: DownloadedPanel
+            downloading_tab: DownloadingTab,
+            downloaded_tab: DownloadedTab
     ):
         super().__init__()
         self.downloading_items = []
         self.downloaded_items = []
         # current downloading items
         self.current_items = []
-        self.downloading_btn = downloading_btn
-        self.downloaded_btn = downloaded_btn
-        self.downloading_panel = downloading_panel
-        self.downloaded_panel = downloaded_panel
+        self.downloading_tab = downloading_tab
+        self.downloaded_tab = downloaded_tab
         self._window = window
         self.p: Process | None = None
         self.t: Thread | None = None
@@ -55,12 +49,12 @@ class DownloadManager(QObject):
         event_bus.on(EventName.NEW_DOWNLOAD, self.new_download)
         self.update_sig.connect(self.update)
         self.next_sig.connect(self.download_next)
-        self.downloading_panel.del_sig.connect(self.delete_downloading)
-        self.downloading_panel.toggle_sig.connect(
+        self.downloading_tab.del_sig.connect(self.delete_downloading)
+        self.downloading_tab.toggle_sig.connect(
             self.toggle_downloading
         )
-        self.downloaded_panel.del_sig.connect(self.delete_downloaded)
-        self.downloaded_panel.rm_sig.connect(self.remove_downloaded)
+        self.downloaded_tab.del_sig.connect(self.delete_downloaded)
+        self.downloaded_tab.rm_sig.connect(self.remove_downloaded)
 
     def init_data(self):
         with DB() as db:
@@ -81,7 +75,6 @@ class DownloadManager(QObject):
                     break
 
     def download(self, item: DownloadingItem):
-        return
         if item is None:
             return
 
@@ -159,7 +152,7 @@ class DownloadManager(QObject):
         current.set_hint_text("已完成")
         current.deleteLater()
         self.download_next()
-        self.update_text()
+        self.emit_change()
 
         if settings.get(SettingsKey.IS_PLAY_RINGTONE):
             play_ring(self._window)
@@ -242,10 +235,10 @@ class DownloadManager(QObject):
                     self.downloaded_items.remove(item)
                     item.delete_later(delete_file)
 
-        self.update_text()
+        self.emit_change()
 
     def handle_downloading(self, t: str, item: DownloadingItem):
-        checked = self.downloading_panel.find_children(False)
+        checked = self.downloading_tab.find_children(False)
         downloading = False
         paused = item.paused
         cids = []
@@ -281,7 +274,7 @@ class DownloadManager(QObject):
         self.handle_downloading("delete", item)
 
     def handle_downloaded(self, t: str):
-        checked = self.downloaded_panel.find_children(False)
+        checked = self.downloaded_tab.find_children(False)
         cids = []
 
         for c in checked:
@@ -347,9 +340,9 @@ class DownloadManager(QObject):
             cid=cid,
             finish_time=finish_time
         )
-        self.downloaded_panel.insert_item(item)
+        self.downloaded_tab.insert_item(item)
         self.downloaded_items.append(item)
-        self.update_text()
+        self.emit_change()
 
     def add_downloads(self, rows):
         for r in rows:
@@ -366,7 +359,7 @@ class DownloadManager(QObject):
                     vid=row["vid"],
                     size=row["size"] if "size" in row else 0
                 )
-                self.downloading_panel.add_item(item)
+                self.downloading_tab.add_item(item)
                 item.status_changed.connect(self.item_status_change)
                 self.downloading_items.append(item)
             else:
@@ -378,21 +371,13 @@ class DownloadManager(QObject):
                     cid=cid
                 )
 
-            self.update_text()
+        self.emit_change()
 
-    def update_downloading_text(self):
-        self.downloading_btn.setText(
-            f"{downloading_text}({len(self.downloading_items)})"
-        )
-
-    def update_downloaded_text(self):
-        self.downloaded_btn.setText(
-            f"{downloaded_text}({len(self.downloaded_items)})"
-        )
-
-    def update_text(self):
-        self.update_downloading_text()
-        self.update_downloaded_text()
+    def emit_change(self):
+        self.change_sig.emit({
+            "downloading": len(self.downloading_items),
+            "downloaded": len(self.downloaded_items)
+        })
 
     def new_download(self, data):
         self.add_downloads(data)

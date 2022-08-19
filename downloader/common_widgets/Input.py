@@ -30,13 +30,8 @@ class Input(QLineEdit):
         layout.setContentsMargins(5, 5, 5, 5)
 
         self.setLayout(layout)
-        self.set_qss()
         self.textChanged.connect(self.text_changed_cb)
-
-    def set_qss(self):
-        qss = utils.get_style("input")
-        with open(qss) as ss:
-            self.setStyleSheet(ss.read())
+        self.setStyleSheet(utils.get_style("input"))
 
     def get_menu(self) -> QMenu:
         has_selected = self.hasSelectedText()

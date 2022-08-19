@@ -1,5 +1,5 @@
-from .DownloadedPanel import DownloadedPanel
-from .DownloadingPanel import DownloadingPanel
+from .DownloadedTab import DownloadedTab
+from .DownloadingTab import DownloadingTab
 from .DownloadingItem import DownloadingItem
 from .DownloadedItem import DownloadedItem
 

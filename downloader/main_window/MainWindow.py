@@ -33,12 +33,14 @@ from ..utils import (
 from ..enums import EventName, Req
 from .MainMenu import MainMenu
 from .NewDialog import NewDialog
-from ..main_widget import DownloadingPanel, DownloadedPanel
+from ..main_widget import DownloadingTab, DownloadedTab
 from ..common_widgets import MessageBox
 from ..cookie import cookie
 from .DownloadManager import DownloadManager
 
 T = TypeVar("T", bound='QWidget')
+downloading_text = "正在下载"
+downloaded_text = "已下载"
 
 
 @decorators.singleton
@@ -68,12 +70,12 @@ class MainWindow(QMainWindow):
         self.username = utils.get_child(widget, QLabel, "username")
         self.menu = MainMenu(self, self.menu_btn)
         self.current_tab: QPushButton | None = None
-        self.downloading_tab = utils.get_child(
+        self.downloading_btn = utils.get_child(
             widget,
             QPushButton,
             "downloading"
         )
-        self.downloaded_tab = utils.get_child(
+        self.downloaded_btn = utils.get_child(
             widget,
             QPushButton,
             "downloaded"
@@ -83,23 +85,18 @@ class MainWindow(QMainWindow):
             QStackedWidget,
             "rightPanel"
         )
-        self.downloading = DownloadingPanel(self)
-        self.downloaded = DownloadedPanel(self)
-        self.downloading_count = 0
-        self.downloaded_count = 0
+        downloading_tab = DownloadingTab(self)
+        downloaded_tab = DownloadedTab(self)
         self.dm = DownloadManager(
             window=self,
-            downloaded_btn=self.downloaded_tab,
-            downloading_btn=self.downloading_tab,
-            downloaded_panel=self.downloaded,
-            downloading_panel=self.downloading
+            downloaded_tab=downloaded_tab,
+            downloading_tab=downloading_tab
         )
         toolbar.setFixedHeight(50)
-        self.downloading_tab.setFixedWidth(150)
-        self.downloaded_tab.setFixedWidth(150)
-        self.right_panel.addWidget(self.downloading)
-        self.right_panel.addWidget(self.downloaded)
-        widget.setParent(central_widget)
+        self.downloading_btn.setFixedWidth(150)
+        self.downloaded_btn.setFixedWidth(150)
+        self.right_panel.addWidget(downloading_tab)
+        self.right_panel.addWidget(downloaded_tab)
         central_layout = QStackedLayout(central_widget)
         central_layout.setStackingMode(QStackedLayout.StackAll)
         central_layout.addWidget(self.bg_label)
@@ -126,7 +123,7 @@ class MainWindow(QMainWindow):
             Qt.WindowMinimizeButtonHint
         )
         self.set_bg_img()
-        self.switch_tab(self.downloading_tab)
+        self.switch_tab(self.downloading_btn)
         self.start_check_login()
         # self.show()
 
@@ -134,15 +131,16 @@ class MainWindow(QMainWindow):
         event_bus.on(EventName.COOKIE_CHANGE, self.start_check_login)
         self.bg_sig.connect(self.set_bg_img)
         self.new_btn.clicked.connect(lambda: NewDialog(self))
-        self.downloading_tab.clicked.connect(
-            lambda: self.switch_tab(self.downloading_tab)
+        self.downloading_btn.clicked.connect(
+            lambda: self.switch_tab(self.downloading_btn)
         )
-        self.downloaded_tab.clicked.connect(
-            lambda: self.switch_tab(self.downloaded_tab)
+        self.downloaded_btn.clicked.connect(
+            lambda: self.switch_tab(self.downloaded_btn)
         )
         self.login_sig.connect(self.login_checked)
         self.start_all_btn.clicked.connect(self.dm.start_all)
         self.pause_all_btn.clicked.connect(self.dm.pause_all)
+        self.dm.change_sig.connect(self.update_text)
 
     def set_bg_img(self, bg: str = ""):
         if bg:
@@ -203,6 +201,14 @@ class MainWindow(QMainWindow):
                 data["isLogin"],
                 data["uname"]
             )
+
+    def update_text(self, d: dict):
+        self.downloading_btn.setText(
+            f'{downloading_text}({d["downloading"]})'
+        )
+        self.downloaded_btn.setText(
+            f'{downloaded_text}({d["downloaded"]})'
+        )
 
     def start_check_login(self):
         t = Thread(target=self.check_login_state)
