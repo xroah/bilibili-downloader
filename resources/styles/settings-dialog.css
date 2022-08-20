@@ -2,7 +2,7 @@
     background-color: #eee;
 }
 
-.settings-dialog .show-file-dialog-btn {
+.show-file-dialog-btn {
     min-width: 120px;
     max-width: 120px;
     padding: 8px 0;
@@ -11,24 +11,24 @@
     background-color: #fff;
 }
 
-.settings-dialog .download-path {
+.download-path {
     background-color: transparent;
     border: none;
 }
 
-.settings-dialog .show-file-dialog-btn:hover {
+.show-file-dialog-btn:hover {
     background-color: #f8f8f8;
 }
 
-.settings-dialog .used-text {
+.used-text {
     min-width: 80px;
 }
 
-.settings-dialog .cookie-input {
+.cookie-input {
     border: 1px solid #eee;
     color: #666;
 }
 
-.settings-dialog .cookie-input:focus {
+.cookie-input:focus {
     border-color: rgba(13, 110, 253, .8);
 }
