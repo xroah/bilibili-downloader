@@ -224,7 +224,6 @@ class DownloadManager(QObject):
 
     def handle_downloading(self, t: str, item: DownloadingItem):
         checked = self.downloading_tab.find_children(False)
-        downloading = False
         paused = item.paused
         cids = []
 
@@ -236,7 +235,6 @@ class DownloadManager(QObject):
                 item in self.current_items
         ):
             self.stop()
-            downloading = True
 
         if len(checked):
             for c in checked:
@@ -253,7 +251,7 @@ class DownloadManager(QObject):
                 self.delete_items(cids, checked, True)
 
         # if downloading, download next will be called by the update thread
-        if not downloading and not self.e:
+        if not len(self.current_items):
             self.download_next()
 
     def toggle_downloading(self, item: DownloadingItem):
