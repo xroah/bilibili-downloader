@@ -2,7 +2,6 @@ import sys
 import os
 from typing import Callable, Union
 from threading import Thread
-import subprocess
 import shutil
 
 from PySide6.QtGui import (

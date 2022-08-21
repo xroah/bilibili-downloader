@@ -1,11 +1,7 @@
 from typing import Callable
 
 from PySide6.QtGui import QAction, QShowEvent, QCursor
-from PySide6.QtWidgets import (
-    QWidget,
-    QMainWindow,
-    QToolButton
-)
+from PySide6.QtWidgets import QMainWindow, QToolButton
 
 from ..common_widgets import Menu
 from ..utils import utils

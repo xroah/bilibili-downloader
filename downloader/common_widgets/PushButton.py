@@ -1,8 +1,6 @@
 from PySide6.QtWidgets import QPushButton, QWidget
 from PySide6.QtCore import Qt
 
-from ..utils import utils
-
 
 class PushButton(QPushButton):
     def __init__(
