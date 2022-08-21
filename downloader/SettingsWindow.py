@@ -73,7 +73,7 @@ class SettingsWindow(QMainWindow):
         self.is_play = utils.get_child(w, QCheckBox, "isPlayRingtone")
         self.is_auto_download = utils.get_child(w, QCheckBox, "isAutoDownload")
         self.cookie_input = utils.get_child(w, QPlainTextEdit, "cookieInput")
-        w.setStyleSheet(utils.get_style("settings-dialog"))
+        w.setStyleSheet(utils.get_style("settings-window"))
 
         self.init_signal()
         self.init_settings()

@@ -51,7 +51,7 @@ class Dialog(QDialog):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
         self.setLayout(layout)
-        self.setStyleSheet(utils.get_style("dialog", "pushbutton"))
+        self.setStyleSheet(utils.get_style("dialog"))
 
     def _get_body(self) -> QWidget:
         body = QWidget(self)
