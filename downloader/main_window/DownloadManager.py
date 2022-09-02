@@ -13,8 +13,7 @@ from ..main_widget import (
     DownloadingItem
 )
 from ..db import DB
-from ..utils import event_bus
-from ..utils.play_ring import play_ring
+from ..utils import event_bus, play_ring
 from ..enums import EventName, SettingsKey, Status
 from ..settings import settings
 from ..download import download
