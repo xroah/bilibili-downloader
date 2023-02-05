@@ -24,7 +24,7 @@ class Settings(Singleton):
         settings = _default_settings.copy()
 
         if not os.path.exists(_settings_file):
-            self.save_settings()
+            self.save()
             return settings
 
         try:
