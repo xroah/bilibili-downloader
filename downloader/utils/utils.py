@@ -3,21 +3,6 @@ import subprocess
 import sys
 from urllib.parse import urlparse
 import re
-from typing import (
-    cast,
-    TypeVar,
-    Type,
-    Tuple
-)
-
-from PySide6.QtCore import QObject, QUrl
-from PySide6.QtMultimedia import (
-    QMediaPlayer,
-    QAudioOutput,
-    QMediaDevices
-)
-from PySide6.QtWidgets import QWidget
-from PySide6.QtGui import QIcon, QGuiApplication
 
 
 def get_data_dir():
@@ -29,27 +14,6 @@ def get_resource_path(resource: str):
     file_path = os.path.join(dir_name, "resources", resource)
 
     return os.path.normpath(file_path)
-
-
-def get_icon(name: str, ext="svg") -> QIcon | None:
-    if not name:
-        return None
-
-    return QIcon(f":/icons/{name}.{ext}")
-
-
-def get_style(*names: str) -> str:
-    ss = ""
-    for name in names:
-        file = get_resource_path(f"styles/{name}.css")
-
-        try:
-            with open(file, "r") as f:
-                ss += f.read()
-        except FileNotFoundError:
-            pass
-
-    return ss
 
 
 def get_default_download_path() -> str:
@@ -110,40 +74,6 @@ def parse_url(url: str) -> str | None:
     return None
 
 
-def center(
-        widget: QWidget,
-        parent: QWidget | bool
-) -> Tuple[float, float]:
-    size = widget.size()
-
-    # center in screen
-    if isinstance(parent, bool):
-        screen = QGuiApplication.primaryScreen()
-        avail_size = screen.availableSize()
-        left = (avail_size.width() - size.width()) / 2
-        top = (avail_size.height() - size.height()) / 2
-    else:
-        p_geometry = parent.frameGeometry()
-        left = (p_geometry.width() - size.width()) / 2
-        top = (p_geometry.height() - size.height()) / 2
-        left += p_geometry.x()
-        top += p_geometry.y()
-
-    widget.move(left, top)
-
-    return left, top
-
-
-T = TypeVar("T", bound=QWidget)
-
-
-def get_child(p: QWidget, t: Type[T], name: str) -> T:
-    return cast(
-        t,
-        p.findChild(t, name)
-    )
-
-
 def open_path(path):
     if not os.path.exists(path):
         return
@@ -153,15 +83,3 @@ def open_path(path):
         os.startfile(path, "open")
     else:
         subprocess.call(("open", path))
-
-
-def play_ring(parent: QObject):
-    player = QMediaPlayer(parent)
-    output = QAudioOutput(parent)
-    ring_file = os.path.join(os.getcwd(), "resources/ring.mp3")
-    ring_file = os.path.normpath(ring_file)
-    output.setDevice(QMediaDevices.defaultAudioOutput())
-    output.setVolume(50)
-    player.setSource(QUrl.fromLocalFile(ring_file))
-    player.setAudioOutput(output)
-    player.play()
