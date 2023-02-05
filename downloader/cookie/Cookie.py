@@ -1,6 +1,6 @@
 import os
 
-from downloader.utils import utils, event_bus
+from downloader.utils import utils
 from downloader.utils.Singleton import Singleton
 from downloader.enums import EventName
 
@@ -34,7 +34,6 @@ class Cookie(Singleton):
         self.cookie = v
         with open(cookie_file, "w") as f:
             f.write(v)
-        event_bus.emit(EventName.COOKIE_CHANGE)
 
     def delete(self):
         cookie_file = self.get_cookie_file()
