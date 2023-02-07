@@ -52,7 +52,8 @@ def get_episodes(bvid: str):
     ret = {
         "episodes": [],
         "code": 0,
-        "msg": ""
+        "msg": "",
+        "album": ""
     }
     try:
         res = get(f"{Req.REFERER}/video/{bvid}")
@@ -79,6 +80,7 @@ def get_episodes(bvid: str):
                 state = json.loads(text)
                 if len(state.get("sections", [])):
                     sections = state["sections"]
+                    ret["album"] = state["sectionsInfo"]["title"]
 
                     for sec in sections[0]["episodes"]:
                         ret["episodes"].append({
@@ -90,6 +92,7 @@ def get_episodes(bvid: str):
                 elif "videoData" in state:
                     video_data = state["videoData"]
                     pages = video_data["pages"]
+                    ret["album"] = video_data["title"]
 
                     for p in pages:
                         ret["episodes"].append({
