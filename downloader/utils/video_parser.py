@@ -53,10 +53,11 @@ def get_episodes(bvid: str):
         "episodes": [],
         "code": 0,
         "msg": "",
-        "album": ""
+        "album": "",
+        "current": dict()
     }
     try:
-        res = get(f"{Req.REFERER}/video/{bvid}")
+        res = get(f"{Req.VIDEO_PAGE}/{bvid}")
     except:
         ret["code"] = -1
         ret["msg"] = "请求发生错误"
@@ -78,6 +79,13 @@ def get_episodes(bvid: str):
                 # remove js code
                 text = re.sub(r";[\(\)]function.*", "", text)
                 state = json.loads(text)
+                video_data = state["videoData"]
+                c = ret["current"]
+                c["aid"] = video_data["aid"]
+                c["bvid"] = video_data["bvid"]
+                c["cid"] = video_data["cid"]
+                c["title"] = video_data["title"]
+
                 if len(state.get("sections", [])):
                     sections = state["sections"]
                     ret["album"] = state["sectionsInfo"]["title"]
@@ -89,18 +97,52 @@ def get_episodes(bvid: str):
                             "cid": sec["cid"],
                             "title": sec["title"]
                         })
-                elif "videoData" in state:
-                    video_data = state["videoData"]
+                else:
                     pages = video_data["pages"]
                     ret["album"] = video_data["title"]
 
                     for p in pages:
-                        ret["episodes"].append({
-                            "aid": video_data["aid"],
-                            "bvid": video_data["bvid"],
-                            "cid": p["cid"],
-                            "title": p["part"]
-                        })
+                        episode = c.copy()
+                        episode["title"] = p["part"]
+                        ret["episodes"].append(episode)
+                break
+
+    return ret
+
+
+def get_info(bvid: str):
+    ret = {
+        "code": 0,
+        "msg": "",
+        "info": dict()
+    }
+
+    try:
+        res = get(f"{Req.VIDEO_PAGE}/{bvid}")
+    except:
+        ret["code"] = -1
+        ret["msg"] = "获取视频信息失败"
+    else:
+        soup = BeautifulSoup(res.text, "html.parser")
+        info = ret["info"]
+        title = html.unescape(soup.select_one(".video-title").text)
+        info["title"] = title
+        scripts = soup.select("script")
+
+        for s in scripts:
+            text = s.text.strip()
+
+            if not s:
+                continue
+
+            if text.startswith(_info_prefix):
+                text = text.lstrip(_info_prefix)
+                play_info = json.loads(text)
+                dash = play_info["data"]["dash"]
+                info["duration"] = dash["duration"]
+                info["audio"] = dash["audio"]
+                info["video"] = dash["video"]
+
                 break
 
     return ret
