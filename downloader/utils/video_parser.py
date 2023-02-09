@@ -59,7 +59,7 @@ def get_video_page(bvid: str):
     ret = {
         "code": 0,
         "msg": "",
-        "text": ""
+        "html_str": ""
     }
     try:
         res = get(f"{Req.VIDEO_PAGE}/{bvid}")
@@ -73,25 +73,17 @@ def get_video_page(bvid: str):
             ret["code"] = -1
             ret["msg"] = "视频不存在"
         else:
-            ret["text"] = text
+            ret["html_str"] = text
 
     return ret
 
 
-def get_episodes(bvid: str):
+def get_episodes(html_str: str):
     ret = {
         "episodes": [],
-        "code": 0,
         "album": "",
         "current": dict()
     }
-
-    page_ret = get_video_page(bvid)
-
-    if page_ret["code"] != 0:
-        return page_ret
-
-    html_str = page_ret["text"]
     soup = BeautifulSoup(html_str, "html.parser")
     scripts = soup.select("script")
 
@@ -107,7 +99,7 @@ def get_episodes(bvid: str):
         if text.startswith(_state_prefix):
             text = text.replace(_state_prefix, "")
             # remove js code
-            text = re.sub(r";[\(\)]function.*", "", text)
+            text = re.sub(r";[()]function.*", "", text)
             state = json.loads(text)
             video_data = state["videoData"]
             c = ret["current"]
@@ -140,22 +132,11 @@ def get_episodes(bvid: str):
     return ret
 
 
-def get_info(bvid: str):
-    ret = {
-        "code": 0,
-        "info": dict()
-    }
-
-    page_ret = get_video_page(bvid)
-
-    if page_ret["code"] != 0:
-        return page_ret
-
-    html_str = page_ret["text"]
+def get_info(html_str: str):
+    ret = dict()
     soup = BeautifulSoup(html_str, "html.parser")
-    info = ret["info"]
     title = html.unescape(soup.select_one(".video-title").text)
-    info["title"] = title
+    ret["title"] = title
     scripts = soup.select("script")
 
     for s in scripts:
@@ -168,9 +149,9 @@ def get_info(bvid: str):
             text = text.lstrip(_info_prefix)
             play_info = json.loads(text)
             dash = play_info["data"]["dash"]
-            info["duration"] = dash["duration"]
-            info["audio"] = dash["audio"]
-            info["video"] = dash["video"]
+            ret["duration"] = dash["duration"]
+            ret["audio"] = dash["audio"]
+            ret["video"] = dash["video"]
 
             break
 
