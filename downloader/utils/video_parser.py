@@ -48,13 +48,18 @@ def parse_url(url: str) -> str | None:
     return None
 
 
-def get_episodes(bvid: str):
+def is_error_page(text: str) -> bool:
+    soup = BeautifulSoup(text, "html.parser")
+    err_container = soup.select_one(".error-container")
+
+    return err_container is not None
+
+
+def get_video_page(bvid: str):
     ret = {
-        "episodes": [],
         "code": 0,
         "msg": "",
-        "album": "",
-        "current": dict()
+        "text": ""
     }
     try:
         res = get(f"{Req.VIDEO_PAGE}/{bvid}")
@@ -62,50 +67,75 @@ def get_episodes(bvid: str):
         ret["code"] = -1
         ret["msg"] = "请求发生错误"
     else:
-        soup = BeautifulSoup(res.text, "html.parser")
-        scripts = soup.select("script")
+        text = res.text
 
-        for s in scripts:
-            text = s.string
+        if is_error_page(text):
+            ret["code"] = -1
+            ret["msg"] = "视频不存在"
+        else:
+            ret["text"] = text
 
-            if not text:
-                continue
+    return ret
 
-            text = re.sub(r"\s+", "", text.strip())
-            text = html.unescape(text)
 
-            if text.startswith(_state_prefix):
-                text = text.replace(_state_prefix, "")
-                # remove js code
-                text = re.sub(r";[\(\)]function.*", "", text)
-                state = json.loads(text)
-                video_data = state["videoData"]
-                c = ret["current"]
-                c["aid"] = video_data["aid"]
-                c["bvid"] = video_data["bvid"]
-                c["cid"] = video_data["cid"]
-                c["title"] = video_data["title"]
+def get_episodes(bvid: str):
+    ret = {
+        "episodes": [],
+        "code": 0,
+        "album": "",
+        "current": dict()
+    }
 
-                if len(state.get("sections", [])):
-                    sections = state["sections"]
-                    ret["album"] = state["sectionsInfo"]["title"]
+    page_ret = get_video_page(bvid)
 
-                    for sec in sections[0]["episodes"]:
-                        ret["episodes"].append({
-                            "aid": sec["aid"],
-                            "bvid": sec["bvid"],
-                            "cid": sec["cid"],
-                            "title": sec["title"]
-                        })
-                else:
-                    pages = video_data["pages"]
-                    ret["album"] = video_data["title"]
+    if page_ret["code"] != 0:
+        return page_ret
 
-                    for p in pages:
-                        episode = c.copy()
-                        episode["title"] = p["part"]
-                        ret["episodes"].append(episode)
-                break
+    html_str = page_ret["text"]
+    soup = BeautifulSoup(html_str, "html.parser")
+    scripts = soup.select("script")
+
+    for s in scripts:
+        text = s.string
+
+        if not text:
+            continue
+
+        text = re.sub(r"\s+", "", text.strip())
+        text = html.unescape(text)
+
+        if text.startswith(_state_prefix):
+            text = text.replace(_state_prefix, "")
+            # remove js code
+            text = re.sub(r";[\(\)]function.*", "", text)
+            state = json.loads(text)
+            video_data = state["videoData"]
+            c = ret["current"]
+            c["aid"] = video_data["aid"]
+            c["bvid"] = video_data["bvid"]
+            c["cid"] = video_data["cid"]
+            c["title"] = video_data["title"]
+
+            if len(state.get("sections", [])):
+                sections = state["sections"]
+                ret["album"] = state["sectionsInfo"]["title"]
+
+                for sec in sections[0]["episodes"]:
+                    ret["episodes"].append({
+                        "aid": sec["aid"],
+                        "bvid": sec["bvid"],
+                        "cid": sec["cid"],
+                        "title": sec["title"]
+                    })
+            else:
+                pages = video_data["pages"]
+                ret["album"] = video_data["title"]
+
+                for p in pages:
+                    episode = c.copy()
+                    episode["title"] = p["part"]
+                    ret["episodes"].append(episode)
+            break
 
     return ret
 
@@ -113,36 +143,35 @@ def get_episodes(bvid: str):
 def get_info(bvid: str):
     ret = {
         "code": 0,
-        "msg": "",
         "info": dict()
     }
 
-    try:
-        res = get(f"{Req.VIDEO_PAGE}/{bvid}")
-    except:
-        ret["code"] = -1
-        ret["msg"] = "获取视频信息失败"
-    else:
-        soup = BeautifulSoup(res.text, "html.parser")
-        info = ret["info"]
-        title = html.unescape(soup.select_one(".video-title").text)
-        info["title"] = title
-        scripts = soup.select("script")
+    page_ret = get_video_page(bvid)
 
-        for s in scripts:
-            text = s.text.strip()
+    if page_ret["code"] != 0:
+        return page_ret
 
-            if not s:
-                continue
+    html_str = page_ret["text"]
+    soup = BeautifulSoup(html_str, "html.parser")
+    info = ret["info"]
+    title = html.unescape(soup.select_one(".video-title").text)
+    info["title"] = title
+    scripts = soup.select("script")
 
-            if text.startswith(_info_prefix):
-                text = text.lstrip(_info_prefix)
-                play_info = json.loads(text)
-                dash = play_info["data"]["dash"]
-                info["duration"] = dash["duration"]
-                info["audio"] = dash["audio"]
-                info["video"] = dash["video"]
+    for s in scripts:
+        text = s.text.strip()
 
-                break
+        if not text:
+            continue
+
+        if text.startswith(_info_prefix):
+            text = text.lstrip(_info_prefix)
+            play_info = json.loads(text)
+            dash = play_info["data"]["dash"]
+            info["duration"] = dash["duration"]
+            info["audio"] = dash["audio"]
+            info["video"] = dash["video"]
+
+            break
 
     return ret
