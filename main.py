@@ -1,3 +1,4 @@
+import argparse
 from downloader.utils.video_parser import get_episodes, get_info, get_video_page
 
 if __name__ == "__main__":
