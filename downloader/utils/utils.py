@@ -1,12 +1,16 @@
 import os
 import subprocess
 import sys
-from urllib.parse import urlparse
-import re
 
 
 def get_data_dir():
-    return os.path.join(os.getcwd(), "data")
+    home = os.path.expanduser("~")
+    data_dir = os.path.join(home, "bilibili-downloader/data")
+
+    if not os.path.exists(data_dir):
+        os.makedirs(data_dir)
+
+    return data_dir
 
 
 def get_resource_path(resource: str):

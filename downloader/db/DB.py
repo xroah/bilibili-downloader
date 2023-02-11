@@ -13,9 +13,9 @@ class DB(Singleton):
         self._conn = sqlite3.connect(path)
         self._conn.row_factory = sqlite3.Row
         self._cursor = self._conn.cursor()
+        self.create_table()
 
     def __enter__(self):
-        self.create_table()
         return self
 
     def __exit__(self, t, v, tb):
