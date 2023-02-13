@@ -5,19 +5,12 @@ import sys
 
 def get_data_dir():
     home = os.path.expanduser("~")
-    data_dir = os.path.join(home, "bilibili-downloader/data")
+    data_dir = os.path.join(home, ".bilibili-downloader/data")
 
     if not os.path.exists(data_dir):
         os.makedirs(data_dir)
 
     return data_dir
-
-
-def get_resource_path(resource: str):
-    dir_name = os.getcwd()
-    file_path = os.path.join(dir_name, "resources", resource)
-
-    return os.path.normpath(file_path)
 
 
 def get_default_download_path() -> str:
