@@ -39,7 +39,20 @@ def get_fullpath(cid: int, type_: str, album: str) -> str:
     return os.path.normpath(fullpath)
 
 
-def _download(
+def get_video_url(videos: list[dict], quality: int):
+    ret = ""
+
+    for v in videos:
+        q = v["id"]
+
+        if q == quality or q < quality:
+            ret = v["base_url"]
+            break
+
+    return ret
+
+
+def download_media(
         *,
         album: str,
         url: str,
@@ -110,19 +123,6 @@ def _download(
                     return False
 
     return fullpath
-
-
-def get_video_url(videos: list[dict], quality: int):
-    ret = ""
-
-    for v in videos:
-        q = v["id"]
-
-        if q == quality or q < quality:
-            ret = v["base_url"]
-            break
-
-    return ret
 
 
 def merge(*, album, audio, video, name):
@@ -215,7 +215,7 @@ def download(
             with DB() as db:
                 db.update_size(cid, video_size + audio_size)
 
-        audio = _download(
+        audio = download_media(
             album=album,
             url=audio_url,
             event=event,
@@ -228,7 +228,7 @@ def download(
         if not audio:
             return
 
-        video = _download(
+        video = download_media(
             album=album,
             url=video_url,
             event=event,
@@ -242,12 +242,14 @@ def download(
             return
 
         queue.put({"status": Status.MERGE})
+
         video_path = merge(
             album=album,
             audio=audio,
             video=video,
             name=name
         )
+
         queue.put({
             "status": Status.DONE,
             "video_path": os.path.normpath(video_path)
