@@ -11,5 +11,5 @@ def root():
     return {"hello world": b}
 
 
-if __name__ == "__main__":
+def run_server():
     uvicorn.run(app, port=8080)

@@ -1,11 +1,13 @@
-import argparse
 from downloader.utils.video_parser import get_episodes, get_info, get_video_page
+from downloader.cli import cli
+from server.server import run_server
 
 if __name__ == "__main__":
-    page = get_video_page("BV1r54y1m7gd")
+    args = cli.parse()
 
-    if page["code"] == 0:
-        print(get_info(page["html_str"]))
-        print(get_episodes(page["html_str"]))
+    if not hasattr(args, "bvid"):
+        run_server()
     else:
-        print(page["msg"])
+        page = get_video_page(args.bvid)
+
+        print(get_info(page["html_str"]))
