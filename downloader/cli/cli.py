@@ -7,7 +7,7 @@ def parse():
         description="Download videos from bilibili.com"
     )
     subparsers = parser.add_subparsers()
-    parser_d = subparsers.add_parser("d")
+    parser_d = subparsers.add_parser("download", aliases=["d"])
 
     parser_d.add_argument("bvid")
 
