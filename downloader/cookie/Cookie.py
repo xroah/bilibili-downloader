@@ -2,7 +2,6 @@ import os
 
 from downloader.utils import utils
 from downloader.utils.Singleton import Singleton
-from downloader.enums import EventName
 
 
 class Cookie(Singleton):

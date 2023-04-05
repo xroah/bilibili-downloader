@@ -135,9 +135,11 @@ def get_episodes(html_str: str):
 def get_info(html_str: str):
     ret = dict()
     soup = BeautifulSoup(html_str, "html.parser")
-    title = html.unescape(soup.select_one(".video-title").text)
-    ret["title"] = title
+    title = soup.select_one(".video-title")
     scripts = soup.select("script")
+
+    if title is not None:
+        ret["title"] = title.text
 
     for s in scripts:
         text = s.text.strip()

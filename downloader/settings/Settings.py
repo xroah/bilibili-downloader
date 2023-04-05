@@ -1,6 +1,6 @@
 import os
 import json
-from typing import cast
+from typing import cast, Any
 
 from ..utils.Singleton import Singleton
 from ..utils import utils
@@ -47,7 +47,7 @@ class Settings(Singleton):
         except Exception as e:
             print("Save error:", e)
 
-    def get(self, name: str | SettingsKey) -> any:
+    def get(self, name: str | SettingsKey) -> Any:
         key = str(name)
 
         if key not in self._dict:
@@ -55,7 +55,7 @@ class Settings(Singleton):
 
         return self._dict[key]
 
-    def set(self, name: str | SettingsKey, value: any):
+    def set(self, name: str | SettingsKey, value: Any):
         key = str(name)
 
         if key not in self._dict and self._dict[key] != value:

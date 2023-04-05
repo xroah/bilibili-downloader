@@ -1,5 +1,6 @@
 import sys
-from multiprocessing import Event, Queue
+from multiprocessing import Queue
+from threading import Event
 import os
 import subprocess
 import time
@@ -58,7 +59,7 @@ def download_media(
         url: str,
         event: Event,
         queue: Queue,
-        size: int,
+        size: float,
         type_: str,
         cid: int
 ) -> bool | str:

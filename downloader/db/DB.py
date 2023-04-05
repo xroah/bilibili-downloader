@@ -72,12 +72,12 @@ class DB(Singleton):
             path='{path}', status=1 WHERE cid={cid};
         """)
 
-    def update_size(self, cid: int, size: int):
+    def update_size(self, cid: float, size: float):
         self._cursor.execute(f"""
             UPDATE download SET size='{size}' WHERE cid={cid};
         """)
 
-    def insert(self, data, cb: Callable = None):
+    def insert(self, data, cb: Callable):
         bvid = data["bvid"]
         exist_album = self._cursor.execute(
             f"SELECT vid FROM album WHERE vid='{bvid}';"
