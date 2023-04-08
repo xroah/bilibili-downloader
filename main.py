@@ -1,6 +1,6 @@
 from downloader.utils.video_parser import get_episodes, get_info, get_video_page
 from downloader.cli import cli
-from server.server import run_server
+from downloader.server.server import run_server
 
 if __name__ == "__main__":
     args = cli.parse()
