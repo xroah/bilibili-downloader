@@ -129,9 +129,8 @@ def download_media(
 def merge(*, album, audio, video, name):
     d_path = settings.get(SettingsKey.DOWNLOAD_PATH)
     output = os.path.join(d_path, album, name) + ".mp4"
-    ffmpeg = "ffmpeg.exe" if sys.platform == "win32" else "ffmpeg"
     subprocess.run((
-        os.path.join(os.getcwd(), ffmpeg),
+        "ffmpeg",
         "-i",
         audio,
         "-i",

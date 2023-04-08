@@ -11,7 +11,6 @@ class Req(Enum):
     API_ADDR = api
     PLAY_URL = f"{api}/playurl"
     VIDEO_PAGE = f"{host}/video"
-    CHECK_LOGIN = "https://api.bilibili.com/x/web-interface/nav"
 
     def __str__(self) -> str:
         return self.value

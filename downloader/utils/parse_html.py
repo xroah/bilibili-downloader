@@ -1,6 +1,4 @@
 import re
-import os.path
-from urllib.parse import urlparse
 import html
 import json
 from bs4 import BeautifulSoup
@@ -10,42 +8,6 @@ from ..enums import Req
 
 _info_prefix = "window.__playinfo__="
 _state_prefix = "window.__INITIAL_STATE__="
-
-
-def match_video_id(vid: str) -> bool:
-    av_pattern = r"^av\d+$"
-    bv_pattern = r"^bv[\da-zA-Z]{10}$"
-
-    if (
-            re.fullmatch(av_pattern, vid, re.IGNORECASE) or
-            re.fullmatch(bv_pattern, vid, re.IGNORECASE)
-    ):
-        return True
-
-    return False
-
-
-def parse_url(url: str) -> str | None:
-    if not url.strip():
-        return
-
-    matched = match_video_id(url)
-
-    if matched:
-        return url
-
-    if "bilibili.com" not in url:
-        return None
-
-    # like: https://www.bilibili.com/video/BVxxxx/?xxx
-    path = urlparse(url).path.rstrip("/")
-    base = os.path.basename(path)
-    matched = match_video_id(base)
-
-    if matched:
-        return base
-
-    return None
 
 
 def is_error_page(text: str) -> bool:
@@ -133,7 +95,10 @@ def get_episodes(html_str: str):
 
 
 def get_info(html_str: str):
-    ret = dict()
+    ret = {
+        "code": -1, 
+        "title": ""
+    }
     soup = BeautifulSoup(html_str, "html.parser")
     title = soup.select_one(".video-title")
     scripts = soup.select("script")
@@ -148,6 +113,7 @@ def get_info(html_str: str):
             continue
 
         if text.startswith(_info_prefix):
+            ret["code"] = 0
             text = text.lstrip(_info_prefix)
             play_info = json.loads(text)
             dash = play_info["data"]["dash"]

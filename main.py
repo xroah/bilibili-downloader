@@ -1,4 +1,4 @@
-from downloader.utils.video_parser import get_episodes, get_info, get_video_page
+from downloader.utils.parse_html import get_episodes, get_info, get_video_page
 from downloader.cli import cli
 from downloader.server.server import run_server
 
