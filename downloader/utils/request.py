@@ -4,7 +4,6 @@ from ..cookie import cookie
 from ..enums import Req
 
 headers = {
-    "cookie": cookie.cookie,
     "user-agent": Req.USER_AGENT.value,
     "referer": Req.REFERER.value
 }
