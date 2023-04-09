@@ -1,8 +1,5 @@
 from downloader.cli import cli
 from downloader.server.server import run_server
-from downloader.utils.encrypt_params import encrypt
-from downloader.utils.request import get
-from downloader.enums import Req
 
 
 if __name__ == "__main__":

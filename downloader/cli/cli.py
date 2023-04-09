@@ -1,11 +1,16 @@
 import argparse
+
 from ..cookie import cookie
+from ..utils.request import get
+from ..utils.encrypt_params import encrypt
+from ..enums.Req import Req
 
 
 def _handle_cmd(args: argparse.Namespace):
     if hasattr(args, "bvid"):
         # params = "avid=712020469&bvid=BV1wD4y1o7AS&cid=234725733&fnval=16&fnver=0&fourk=1&gaia_source=&qn=0"
-        print(args.bvid)
+        res = get(str(Req.VIEW_URL) + "?" + encrypt(f"bvid={args.bvid}"))
+        print(res.json())
     elif hasattr(args, "cookie"):
         if args.d:
             cookie.delete()
@@ -23,7 +28,7 @@ def parse():
     subparsers = parser.add_subparsers()
 
     download_parser = subparsers.add_parser("download", aliases=["d"])
-    download_parser.add_argument("bvid", nargs="+")
+    download_parser.add_argument("bvid")
 
     cookie_parser = subparsers.add_parser("cookie", aliases=["c"])
     cookie_parser.add_argument("cookie", nargs="?")
