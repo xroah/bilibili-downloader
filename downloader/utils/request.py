@@ -3,14 +3,13 @@ import requests
 from ..cookie import cookie
 from ..enums import Req
 
-headers = {
-    "user-agent": Req.USER_AGENT.value,
-    "referer": Req.REFERER.value
-}
-
 
 def get(url: str, **kwargs):
-    global headers
+    headers = {
+        "user-agent": Req.USER_AGENT.value,
+        "referer": Req.REFERER.value,
+        "cookie": cookie.cookie
+    }
 
     if "headers" in kwargs:
         for k, v in kwargs["headers"].items():

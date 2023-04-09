@@ -5,7 +5,7 @@ import sys
 
 def get_data_dir():
     home = os.path.expanduser("~")
-    data_dir = os.path.join(home, ".bilibili-downloader/data")
+    data_dir = os.path.join(home, ".bilibili-downloader")
 
     if not os.path.exists(data_dir):
         os.makedirs(data_dir)
