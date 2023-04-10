@@ -1,14 +1,15 @@
 import requests
 
-from ..cookie import cookie
 from ..enums import Req
+from ..settings import settings
+from ..enums import SettingsKey
 
 
 def get(url: str, **kwargs):
     headers = {
         "user-agent": Req.USER_AGENT.value,
         "referer": Req.REFERER.value,
-        "cookie": cookie.cookie
+        "cookie": settings.get(SettingsKey.COOKIE)
     }
 
     if "headers" in kwargs:

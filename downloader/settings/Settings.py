@@ -9,7 +9,8 @@ from ..enums import SettingsKey
 _settings_dir = utils.get_data_dir()
 _settings_file = os.path.join(_settings_dir, "settings.json")
 _default_settings = {
-    SettingsKey.DOWNLOAD_PATH.value: utils.get_default_download_path(),
+    str(SettingsKey.DOWNLOAD_PATH): utils.get_default_download_path(),
+    str(SettingsKey.COOKIE): ""
 }
 
 
@@ -27,13 +28,13 @@ class Settings(Singleton):
             with open(_settings_file, "r") as f:
                 d = cast(dict, json.load(f))
         except Exception as e:
-            print("Load error:", e)
+            print("Load settings error:", e)
             return settings
-
+        
         for k, v in d.items():
-            if k in settings:
+            if k in settings and k in _default_settings and v:
                 settings[k] = v
-
+                
         return settings
 
     def save(self) -> None:
@@ -41,7 +42,7 @@ class Settings(Singleton):
             with open(_settings_file, "w") as f:
                 json.dump(self._dict, f, indent=4)
         except Exception as e:
-            print("Save error:", e)
+            print("Save settings error:", e)
 
     def get(self, name: str | SettingsKey) -> Any:
         key = str(name)
@@ -58,6 +59,10 @@ class Settings(Singleton):
             print("Invalid settings key.")
             return False
         
+        if not value:
+            print("The value can not be empty")
+            return False
+
         if self._dict[key] == value:
             return False
 
