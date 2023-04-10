@@ -1,7 +1,7 @@
-from enum import Enum
+from .BaseEnum import BaseEnum
 
 
-class Status(Enum):
+class Status(BaseEnum):
     ERROR = "error"
     DONE = "done"
     UPDATE = "update"

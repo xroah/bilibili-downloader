@@ -1,9 +1,6 @@
-from enum import Enum
+from .BaseEnum import BaseEnum
 
 
-class SettingsKey(Enum):
+class SettingsKey(BaseEnum):
     DOWNLOAD_PATH = "path"
-
-    def __str__(self):
-        return self.value
 
