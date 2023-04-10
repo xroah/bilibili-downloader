@@ -18,7 +18,8 @@ class Settings(Singleton):
     def __init__(self) -> None:
         self._dict = self.get_all()
 
-    def get_all(self) -> dict:
+    @staticmethod
+    def get_all() -> dict:
         settings = _default_settings.copy()
 
         if not os.path.exists(_settings_file):
@@ -30,11 +31,11 @@ class Settings(Singleton):
         except Exception as e:
             print("Load settings error:", e)
             return settings
-        
+
         for k, v in d.items():
             if k in settings and k in _default_settings and v:
                 settings[k] = v
-                
+
         return settings
 
     def save(self) -> None:
@@ -58,7 +59,7 @@ class Settings(Singleton):
         if key not in self._dict:
             print("Invalid settings key.")
             return False
-        
+
         if not value:
             print("The value can not be empty")
             return False
@@ -67,7 +68,7 @@ class Settings(Singleton):
             return False
 
         self._dict[key] = value
-        
+
         self.save()
 
         return True

@@ -4,8 +4,9 @@ from ..utils import request
 from ..enums import Req
 from ..utils.encrypt_params import encrypt
 
-# qn reference: https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/video/videostream_url.md#qn%E8%A7%86%E9%A2%91%E6%B8%85%E6%99%B0%E5%BA%A6%E6%A0%87%E8%AF%86
+# reference: https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/video/videostream_url.md
 """
+video qualities:
 6	240P 极速
 16	360P 流畅
 32	480P 清晰
@@ -19,8 +20,8 @@ from ..utils.encrypt_params import encrypt
 126	杜比视界
 127	8K 超高清
 """
-# audio reference: https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/video/videostream_url.md#%E8%A7%86%E9%A2%91%E4%BC%B4%E9%9F%B3%E9%9F%B3%E8%B4%A8%E4%BB%A3%E7%A0%81
 """
+audio qualities:
 30216	64K
 30232	132K
 30280	192K
@@ -127,7 +128,7 @@ def get_video_url(
             ret["video_url"] = v["base_url"]
     
     if ret["video_url"] == "":
-        videos.sort(key=lambda v: v["id"], reverse=True)
+        videos.sort(key=lambda video: video["id"], reverse=True)
         ret["video_url"] = videos[0]["base_url"]
 
     return ret
