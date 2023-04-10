@@ -21,7 +21,6 @@ class Settings(Singleton):
         settings = _default_settings.copy()
 
         if not os.path.exists(_settings_file):
-            self.save()
             return settings
 
         try:
@@ -52,10 +51,18 @@ class Settings(Singleton):
 
         return self._dict[key]
 
-    def set(self, name: str | SettingsKey, value: Any):
+    def set(self, name: str | SettingsKey, value: Any) -> bool:
         key = str(name)
 
-        if key not in self._dict and self._dict[key] != value:
-            return
+        if key not in self._dict:
+            print("Invalid settings key.")
+            return False
+        
+        if self._dict[key] == value:
+            return False
 
         self._dict[key] = value
+        
+        self.save()
+
+        return True
