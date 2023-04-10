@@ -23,3 +23,18 @@ def get(url: str, **kwargs):
         raise E
     else:
         return res
+
+def get_json(url: str, **kwargs):
+    res = get(url, **kwargs)
+
+    if res.status_code != 200:
+        print(res.reason)
+        
+        ret = {
+            "code": res.status_code,
+            "message": res.reason
+        }
+
+        return ret
+    
+    return res.json()
