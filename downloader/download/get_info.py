@@ -73,13 +73,12 @@ def get_videos_by_bvid(bvid: str, one=False) -> dict:
     elif "pages" in data:
         pages = data["pages"]
         for p in pages:
-            if p["cid"] != data["cid"]:
-                videos.append({
-                    "aid": data["aid"],
-                    "bvid": data["bvid"],
-                    "page": p["page"],
-                    "title": p["part"]
-                })
+            videos.append({
+                "aid": data["aid"],
+                "bvid": data["bvid"],
+                "page": p["page"],
+                "title": p["part"]
+            })
 
     return ret
 
@@ -120,13 +119,14 @@ def get_video_url(
     for a in audios:
         if a["id"] == default_audio:
             ret["audio_url"] = a["base_url"]
+
     if ret["audio_url"] == "":
         ret["audio_url"] = audios[0]["base_url"]
 
     for v in videos:
         if v["id"] == qn:
             ret["video_url"] = v["base_url"]
-    
+
     if ret["video_url"] == "":
         videos.sort(key=lambda video: video["id"], reverse=True)
         ret["video_url"] = videos[0]["base_url"]
