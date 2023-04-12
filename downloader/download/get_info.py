@@ -52,13 +52,15 @@ def get_videos_by_bvid(bvid: str, one=False) -> dict:
         section = data["ugc_season"]["sections"][0]
         ret["video_data"]["is_season"] = True
         ret["title"] = section["title"]
-        ret["video_data"]["season_id"] = section["season_id"]
+        season_id = section["season_id"]
         episodes = section["episodes"]
         videos.append({
             "aid": data["aid"],
             "bvid": data["bvid"],
             "cid": data["cid"],
             "title": data["title"],
+            "page": 1,
+            "season_id": season_id
         })
 
         if not one:
@@ -68,7 +70,9 @@ def get_videos_by_bvid(bvid: str, one=False) -> dict:
                         "aid": e["aid"],
                         "bvid": e["bvid"],
                         "cid": e["cid"],
-                        "title": e["title"]
+                        "page": 1,
+                        "title": e["title"],
+                        "season_id": season_id
                     })
     elif "pages" in data:
         pages = data["pages"]
@@ -76,6 +80,7 @@ def get_videos_by_bvid(bvid: str, one=False) -> dict:
             videos.append({
                 "aid": data["aid"],
                 "bvid": data["bvid"],
+                "cid": p["cid"],
                 "page": p["page"],
                 "title": p["part"]
             })

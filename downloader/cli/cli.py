@@ -1,6 +1,7 @@
 import argparse
 
 from ..download.get_info import get_videos_by_bvid
+from ..download.Download import Download
 from ..settings import settings
 
 
@@ -10,7 +11,7 @@ def _handle_cmd(args: argparse.Namespace):
             pass
         else:
             ret = get_videos_by_bvid(args.bvid)
-            print(ret)
+            Download(ret)
     elif hasattr(args, "settings"):
         settings_args = args.settings
         print(args)
