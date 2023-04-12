@@ -6,8 +6,11 @@ from ..settings import settings
 
 def _handle_cmd(args: argparse.Namespace):
     if hasattr(args, "bvid"):
-        ret = get_videos_by_bvid(args.bvid)
-        print(ret)
+        if args.bvid is None:
+            pass
+        else:
+            ret = get_videos_by_bvid(args.bvid)
+            print(ret)
     elif hasattr(args, "settings"):
         settings_args = args.settings
         print(args)
@@ -30,7 +33,7 @@ def parse():
         aliases=["d"],
         description="Download videos"
     )
-    download_parser.add_argument("bvid")
+    download_parser.add_argument("bvid", nargs="?")
 
     config_parser = subparsers.add_parser(
         "config",
