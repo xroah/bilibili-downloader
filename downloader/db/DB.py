@@ -3,10 +3,9 @@ import os
 from typing import Callable
 
 from ..utils import utils
-from ..utils.Singleton import Singleton
 
 
-class DB(Singleton):
+class DB:
     def __init__(self) -> None:
         data_dir = utils.get_data_dir()
         path = os.path.join(data_dir, "data.db")

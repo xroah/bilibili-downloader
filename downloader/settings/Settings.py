@@ -2,7 +2,6 @@ import os
 import json
 from typing import cast, Any
 
-from ..utils.Singleton import Singleton
 from ..utils import utils
 from ..enums import SettingsKey
 
@@ -14,7 +13,7 @@ _default_settings = {
 }
 
 
-class Settings(Singleton):
+class Settings:
     def __init__(self) -> None:
         self._dict = self.get_all()
 
