@@ -1,14 +1,12 @@
-from .DB import DB
 from .BaseModel import db
+from .PartTable import Part
 from .VideoTable import Video
+from .SeasonTable import Season
 
 
 def create_table():
     db.connect()
-
-    if not db.table_exists("video"):
-        db.create_tables([Video])
-
+    db.create_tables([Part, Video, Season])
     db.close()
 
 

@@ -11,6 +11,7 @@ db = SqliteDatabase(
         "cache_size": -1 * 32000
     }
 )
+date_format = "%Y-%m-%d %H:%M:%S"
 
 
 class BaseModel(Model):

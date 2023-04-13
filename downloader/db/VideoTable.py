@@ -1,30 +1,9 @@
-from peewee import (
-    CharField,
-    IntegerField,
-    DateTimeField,
-    BooleanField,
-    CompositeKey
-)
+from peewee import CharField, DateTimeField
 
-from .BaseModel import BaseModel, db
-
-date_format = "%Y-%m-%d %H:%M:%S"
+from .BaseModel import BaseModel, date_format
 
 
 class Video(BaseModel):
-    bvid = CharField(max_length=20)
-    aid = IntegerField()
-    cid = IntegerField()
-    season_id = IntegerField(null=True)
-    page = IntegerField()
-    multiple = BooleanField()
+    bvid = CharField(max_length=20, primary_key=True)
     title = CharField(max_length=100)
     create_time = DateTimeField(formats=date_format)
-    finish_time = DateTimeField(formats=date_format, null=True)
-    finished = BooleanField()
-
-    class Meta:
-        primary_key = CompositeKey("bvid", "cid")
-
-
-

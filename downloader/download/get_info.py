@@ -33,10 +33,11 @@ audio qualities:
 def get_videos_by_bvid(bvid: str, one=False) -> dict:
     ret = {
         "code": 0,
-        "title": "",
         "video_data": {
             "is_season": False,
-            "videos": []
+            "season_id": "",
+            "videos": [],
+            "title": ""
         }
     }
     params = encrypt(f"bvid={bvid}")
@@ -49,10 +50,12 @@ def get_videos_by_bvid(bvid: str, one=False) -> dict:
     videos = ret["video_data"]["videos"]
 
     if "ugc_season" in data:
-        section = data["ugc_season"]["sections"][0]
+        season = data["ugc_season"]
+        section = season["sections"][0]
         ret["video_data"]["is_season"] = True
-        ret["title"] = section["title"]
+        ret["video_data"]["title"] = season["title"]
         season_id = section["season_id"]
+        ret["video_data"]["season_id"] = season_id
         episodes = section["episodes"]
         videos.append({
             "aid": data["aid"],
@@ -76,6 +79,8 @@ def get_videos_by_bvid(bvid: str, one=False) -> dict:
                     })
     elif "pages" in data:
         pages = data["pages"]
+        ret["video_data"]["title"] = data["title"]
+
         for p in pages:
             videos.append({
                 "aid": data["aid"],
