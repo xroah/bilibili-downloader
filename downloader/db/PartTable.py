@@ -18,6 +18,7 @@ class Part(BaseModel):
     page = IntegerField()
     multiple = BooleanField()
     title = CharField(max_length=100)
+    quality = IntegerField(null=True)
     create_time = DateTimeField(formats=date_format)
     finish_time = DateTimeField(formats=date_format, null=True)
     finished = BooleanField()

@@ -1,17 +1,16 @@
 import argparse
 
 from ..download.get_info import get_videos_by_bvid
-from ..download.Download import Download
 from ..settings import settings
+from ..download.Download import Download
 
 
 def _handle_cmd(args: argparse.Namespace):
     if hasattr(args, "bvid"):
-        if args.bvid is None:
-            pass
-        else:
-            ret = get_videos_by_bvid(args.bvid)
-            Download(ret)
+        if args.bvid is not None:
+            get_videos_by_bvid(args.bvid)
+
+        Download()
     elif hasattr(args, "settings"):
         settings_args = args.settings
 

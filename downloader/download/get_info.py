@@ -1,8 +1,12 @@
 from urllib.parse import urlencode
+import time
 
 from ..utils import request
 from ..enums import Req
 from ..utils.encrypt_params import encrypt
+from ..db import Part, Video, Season
+from ..settings import settings
+from ..db.BaseModel import date_format
 
 # reference: https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/video/videostream_url.md
 """
@@ -28,6 +32,47 @@ audio qualities:
 30250	杜比全景声
 30251	Hi-Res无损
 """
+
+
+def save_to_db(obj: dict):
+    video_data = obj["video_data"]
+    is_season = video_data["is_season"]
+    videos = video_data["videos"]
+    data = []
+    multiple = len(videos) > 1 or is_season
+
+    for v in videos:
+        v["create_time"] = time.strftime(date_format)
+        v["finished"] = False
+        v["multiple"] = multiple
+        v["path"] = settings.get("path")
+
+        data.append(v)
+
+    if multiple:
+        if not is_season:
+            v = videos[0]
+
+            Video.insert({
+                "bvid": v["bvid"],
+                "title": video_data["title"],
+                "create_time": time.strftime(date_format)
+            }) \
+                .on_conflict_ignore(True) \
+                .execute()
+        else:
+            Season.insert({
+                "season_id": video_data["season_id"],
+                "title": video_data["title"],
+                "create_time": time.strftime(date_format)
+            }) \
+                .on_conflict_ignore(True) \
+                .execute()
+
+    Part \
+        .insert_many(data) \
+        .on_conflict_ignore(True) \
+        .execute()
 
 
 def get_videos_by_bvid(bvid: str, one=False) -> dict:
@@ -90,6 +135,8 @@ def get_videos_by_bvid(bvid: str, one=False) -> dict:
                 "title": p["part"]
             })
 
+    save_to_db(ret)
+
     return ret
 
 
@@ -103,6 +150,7 @@ def get_video_url(
         "code": 0,
         "audio_url": "",
         "video_url": "",
+        "quality": qn
     }
     params = {
         "avid": aid,
@@ -140,5 +188,6 @@ def get_video_url(
     if ret["video_url"] == "":
         videos.sort(key=lambda video: video["id"], reverse=True)
         ret["video_url"] = videos[0]["base_url"]
+        ret["quality"] = videos[0]["id"]
 
     return ret
