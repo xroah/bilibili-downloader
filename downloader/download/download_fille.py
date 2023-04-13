@@ -1,4 +1,5 @@
 import subprocess
+import time
 from queue import Queue
 import os
 
@@ -7,7 +8,20 @@ from ..enums import Status
 
 
 def download_file(url: str, filename: str, q: Queue):
-    res = get(url, stream=True)
+    exists = os.path.exists(filename)
+    range_start = 0
+
+    if exists:
+        stat = os.lstat(filename)
+        range_start = stat.st_size
+
+    res = get(
+        url,
+        stream=True,
+        headers={
+            "range": f"bytes={range_start}-"
+        }
+    )
     ret = {
         "status": "start",
         "size": res.headers["Content-Length"],
@@ -16,7 +30,7 @@ def download_file(url: str, filename: str, q: Queue):
     q.put(ret)
 
     try:
-        with open(filename, "wb") as f:
+        with open(filename, "ab+") as f:
             for chunk in res.iter_content(chunk_size=10 * 1024):
                 ret["status"] = str(Status.UPDATE)
                 ret["size"] = len(chunk)
@@ -32,7 +46,7 @@ def download_file(url: str, filename: str, q: Queue):
 
 
 def merge(audio: str, video: str, output: str):
-    subprocess.run((
+    subprocess.run([
         "ffmpeg",
         "-i",
         audio,
@@ -42,7 +56,8 @@ def merge(audio: str, video: str, output: str):
         "-c",
         "copy",
         output
-    ))
+    ])
+
     try:
         os.unlink(audio)
         os.unlink(video)

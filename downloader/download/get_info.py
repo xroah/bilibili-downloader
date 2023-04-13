@@ -45,7 +45,6 @@ def save_to_db(obj: dict):
         v["create_time"] = time.strftime(date_format)
         v["finished"] = False
         v["multiple"] = multiple
-        v["path"] = settings.get("path")
 
         data.append(v)
 
@@ -182,12 +181,16 @@ def get_video_url(
         ret["audio_url"] = audios[0]["base_url"]
 
     for v in videos:
-        if v["id"] == qn:
+        if v["id"] == qn and "avc" in v["codecs"]:
             ret["video_url"] = v["base_url"]
 
     if ret["video_url"] == "":
         videos.sort(key=lambda video: video["id"], reverse=True)
-        ret["video_url"] = videos[0]["base_url"]
-        ret["quality"] = videos[0]["id"]
+
+        for v in videos:
+            if "avc" in v["codecs"]:
+                ret["video_url"] = videos[0]["base_url"]
+                ret["quality"] = videos[0]["id"]
+                break
 
     return ret

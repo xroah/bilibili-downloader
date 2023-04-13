@@ -13,7 +13,7 @@ class Part(BaseModel):
     bvid = CharField(max_length=20)
     aid = IntegerField()
     cid = IntegerField()
-    path = CharField(max_length=100)
+    path = CharField(max_length=200, null=True)
     season_id = IntegerField(null=True)
     page = IntegerField()
     multiple = BooleanField()

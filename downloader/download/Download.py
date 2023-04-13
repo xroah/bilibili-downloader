@@ -1,4 +1,6 @@
 import os
+import re
+import sys
 import time
 from threading import Thread
 from queue import Queue
@@ -7,6 +9,7 @@ from peewee import JOIN
 
 from .download_fille import download_file, merge
 from ..db import Video, Season, Part
+from ..db.BaseModel import date_format
 from ..enums import Status
 from .get_info import get_video_url
 from ..settings import settings
@@ -64,34 +67,61 @@ class Download:
         elif hasattr(item, "season"):
             directory = item.season.title
 
-        directory = os.path.join(settings.get("path"), directory)
-        download_url = get_video_url(
+        download_info = get_video_url(
             aid=item.aid,
             bvid=item.bvid,
             cid=item.cid
         )
+        pattern = r'[/\\":*<>|?]'
+        name = re.sub(pattern, "", item.title)
+        directory = re.sub(pattern, "", directory)
+        directory = os.path.join(settings.get("path"), directory)
         audio_name = os.path.join(
             directory,
-            f"{item.cid}-audio.m4s"
+            f"{item.cid}-audio"
         )
         video_name = os.path.join(
             directory,
-            f"{item.cid}-video.m4s"
+            f"{item.cid}-video"
         )
+        ext = ".m4s"
+        tmp_ext = ".tmp"
+        audio_tmp = audio_name + tmp_ext
+        video_tmp = video_name + tmp_ext
+        audio_m4s = audio_name + ext
+        video_m4s = video_name + ext
+        output = os.path.join(directory, f"{name}.mp4")
 
         if not os.path.exists(directory):
             os.makedirs(directory)
 
-        print(f"下载{item.title}音频")
-        self.start_thread(download_url["audio_url"], audio_name)
-        print(f"下载{item.title}视频")
-        self.start_thread(download_url["video_url"], video_name)
-        print("合成视频")
-        merge(
-            video_name,
-            audio_name,
-            os.path.join(directory, f"{item.title}.mp4")
-        )
+        try:
+            if not os.path.exists(audio_m4s):
+                print(f"正在下载'{item.title}'音频")
+                self.start_thread(download_info["audio_url"], audio_tmp)
+                os.rename(audio_tmp, audio_m4s)
+
+            if not os.path.exists(video_m4s):
+                print(f"正在下载'{item.title}'视频")
+                self.start_thread(download_info["video_url"], video_tmp)
+                os.rename(video_tmp, video_m4s)
+
+            print("正在合成视频...")
+            merge(audio_m4s, video_m4s, output)
+        except KeyboardInterrupt:
+            sys.exit(1)
+        except Exception as E:
+            raise E
+
+        # downloaded and merged successfully
+        if os.path.exists(output):
+            Part.update({
+                Part.finished: True,
+                Part.finish_time: time.strftime(date_format),
+                Part.quality: download_info["quality"],
+                Part.path: output
+            }).where((Part.bvid == item.bvid) & (Part.cid == item.cid)) \
+                .execute()
 
         self.start_download()
 
@@ -106,6 +136,7 @@ class Download:
             ]
         )
         total = 0
+        self.t.daemon = True
 
         self.new_progress()
         self.t.start()
@@ -118,16 +149,11 @@ class Download:
             if status == str(Status.ERROR) or status == str(Status.DONE):
                 break
             elif status == str(Status.START):
-                total = size
                 self.progress.reset(total=size)
             else:
                 self.progress.update(size)
 
         self.t.join()
-
-        if status == str(Status.DONE):
-            self.progress.update(total)
-
         self.progress.close()
         time.sleep(.5)
 
