@@ -14,7 +14,7 @@ def _handle_cmd(args: argparse.Namespace):
             Download(ret)
     elif hasattr(args, "settings"):
         settings_args = args.settings
-        print(args)
+
         if len(settings_args) > 1:
             settings.set(settings_args[0], settings_args[1])
         else:
@@ -38,6 +38,7 @@ def parse():
 
     config_parser = subparsers.add_parser(
         "config",
+        aliases=["c"],
         description="Get or set configurations"
     )
     config_parser.add_argument("settings", nargs="+")
