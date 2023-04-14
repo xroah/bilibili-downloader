@@ -187,8 +187,8 @@ def save_episodes_to_db(obj: dict):
             "title": data["title"],
             "season_id": data["season_id"],
             "create_time": create_time
-        })\
-            .on_conflict_ignore(True)\
+        }) \
+            .on_conflict_ignore(True) \
             .execute()
 
     eps = []
@@ -200,9 +200,9 @@ def save_episodes_to_db(obj: dict):
 
         eps.append(item)
 
-    Episode\
-        .insert_many(eps)\
-        .on_conflict_ignore(True)\
+    Episode \
+        .insert_many(eps) \
+        .on_conflict_ignore(True) \
         .execute()
 
 
@@ -230,7 +230,8 @@ def get_episodes(ep_id: str):
     data = json["result"]
     eps = data["episodes"]
     episodes = ret["ep_data"]["episodes"]
-    ret["ep_data"]["season_id"] = data["season_id"]
+    season_id = data["season_id"]
+    ret["ep_data"]["season_id"] = season_id
     ret["ep_data"]["title"] = data["season_title"]
 
     for e in eps:
@@ -239,7 +240,8 @@ def get_episodes(ep_id: str):
             "ep_id": e["id"],
             "aid": e["aid"],
             "cid": e["cid"],
-            "bvid": e["bvid"]
+            "bvid": e["bvid"],
+            "season_id": season_id
         })
 
     save_episodes_to_db(ret)
@@ -278,6 +280,23 @@ def get_info_from_dash(dash: dict, qn: int):
                 ret["quality"] = videos[0]["id"]
                 break
 
+    return ret
+
+def get_url(url: str, params: dict, qn: int) -> dict | None:
+    params = encrypt(urlencode(params))
+    json = request.get_json(url + "?" + params)
+
+    if json["code"] != 0:
+        return None
+
+    data = json["data"] if "data" in json else json["result"]
+
+    if "dash" not in data:
+        print_warning("没有获取到下载地址，可能需要登录或者开通会员")
+        return None
+
+    return get_info_from_dash(data["dash"], qn)
+
 
 def get_video_url(
         aid: int,
@@ -295,16 +314,27 @@ def get_video_url(
         "gaia_source": "",
         "qn": 0
     }
-    params = encrypt(urlencode(params))
-    json = request.get_json(str(Req.PLAY_URL) + "?" + params)
 
-    if json["code"] != 0:
-        return None
+    return get_url(str(Req.PLAY_URL), params, qn)
 
-    data = json["data"]
 
-    if "dash" not in data:
-        print_warning("没有获取到下载地址，可能需要登录或者开通会员")
-        return None
+def get_episode_url(
+        aid: int,
+        ep_id: int,
+        cid: int,
+        qn: int = 80
+) -> dict | None:
+    params = {
+        "support_multi_audio": True,
+        "avid": aid,
+        "cid": cid,
+        "qn": 0,
+        "fnver": 0,
+        "fnval": 16,
+        "fourk": 1,
+        "ep_id": ep_id,
+        "from_client": "BROWSER",
+        "drm_tech_type": 2
+    }
 
-    return get_info_from_dash(data["dash"], qn)
+    return get_url(str(Req.EP_PLAY_URL), params, qn)

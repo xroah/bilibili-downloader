@@ -8,10 +8,10 @@ from tqdm import tqdm
 from peewee import JOIN
 
 from .download_fille import download_file, merge
-from ..db import Video, Season, Part
+from ..db import Video, Season, Part, Episode
 from ..db.BaseModel import date_format
 from ..enums import Status
-from .get_info import get_video_url
+from .get_info import get_video_url, get_episode_url
 from ..settings import settings
 
 
@@ -26,8 +26,6 @@ class Download:
             Part.bvid,
             Part.title,
             Part.cid,
-            Part.path,
-            Part.multiple,
             Video,
             Season
         ).join(
@@ -41,8 +39,23 @@ class Download:
             on=(Part.season_id == Season.season_id),
             attr="season"
         ).where(Part.finished == False)
+        e_query = Episode.select(
+            Episode.aid,
+            Episode.ep_id,
+            Episode.cid,
+            Episode.title,
+            Season
+        ).join(
+            Season,
+            JOIN.LEFT_OUTER,
+            on=(Episode.season_id == Season.season_id),
+            attr="season"
+        ).where(Episode.finished == False)
 
         for r in query:
+            self.items.append(r)
+
+        for r in e_query:
             self.items.append(r)
 
         self.start_download()
@@ -55,21 +68,40 @@ class Download:
             unit="B"
         )
 
-    def start_download(self):
-        if len(self.items) == 0:
+    @staticmethod
+    def update_db(item: Part | Episode, output: str, qn: int):
+        # downloaded and merged successfully
+        if not os.path.exists(output):
             return
 
-        item = self.items.pop(0)
+        finish_time = time.strftime(date_format)
+
+        if hasattr(item, "ep_id"):
+            q = Episode.update({
+                Episode.finished: True,
+                Episode.finish_time: finish_time,
+                Episode.quality: qn,
+                Episode.path: output
+            }).where(
+                (Episode.ep_id == item.ep_id) &
+                (Episode.aid == item.aid)
+            )
+        else:
+            q = Part.update({
+                Part.finished: True,
+                Part.finish_time: finish_time,
+                Part.quality: qn,
+                Part.path: output
+            }).where(
+                (Part.bvid == item.bvid) &
+                (Part.cid == item.cid)
+            )
+
+        q.execute()
+
+    @staticmethod
+    def get_name(item: Part | Episode):
         directory = "."
-        download_info = get_video_url(
-            aid=item.aid,
-            bvid=item.bvid,
-            cid=item.cid
-        )
-
-        if not download_info:
-            return self.start_download()
-
         if hasattr(item, "video"):
             directory = item.video.title
         elif hasattr(item, "season"):
@@ -79,66 +111,86 @@ class Download:
         name = re.sub(pattern, "", item.title)
         directory = re.sub(pattern, "", directory)
         directory = os.path.join(settings.get("path"), directory)
-        audio_name = os.path.join(
-            directory,
-            f"{item.cid}_a"
+        audio_name = os.path.join(directory, f"{item.cid}_a")
+        video_name = os.path.join(directory, f"{item.cid}_v")
+        output = os.path.join(directory, f"{name}.mp4")
+
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        return audio_name, video_name, output
+
+    @staticmethod
+    def get_download_url(item: Part | Episode):
+        if hasattr(item, "ep_id"):
+            return get_episode_url(
+                aid=item.aid,
+                ep_id=item.ep_id,
+                cid=item.cid
+            )
+
+        return get_video_url(
+            aid=item.aid,
+            cid=item.cid,
+            bvid=item.bvid
         )
-        video_name = os.path.join(
-            directory,
-            f"{item.cid}_v"
-        )
+
+    def start_download(self):
+        if len(self.items) == 0:
+            print("=" * 20 + "完成" + "=" * 20)
+            return
+
+        item = self.items.pop(0)
+        d_url = self.get_download_url(item)
+
+        if not d_url:
+            return self.start_download()
+
+        (audio_name, video_name, output) = self.get_name(item)
         ext = ".m4s"
         tmp_ext = ".tmp"
         audio_tmp = audio_name + tmp_ext
         video_tmp = video_name + tmp_ext
         audio_m4s = audio_name + ext
         video_m4s = video_name + ext
-        output = os.path.join(directory, f"{name}.mp4")
-
-        if not os.path.exists(directory):
-            os.makedirs(directory)
+        a_success = False
+        b_success = False
 
         try:
             # already downloaded
             if not os.path.exists(audio_m4s):
                 print(f"正在下载'{item.title}'音频")
-                success = self.start_thread(
-                    download_info["audio_url"],
+                a_success = self.start_thread(
+                    d_url["audio_url"],
                     audio_tmp
                 )
 
-                if success:
+                if a_success:
                     os.rename(audio_tmp, audio_m4s)
+            else:
+                a_success = True
 
             if not os.path.exists(video_m4s):
                 print(f"正在下载'{item.title}'视频")
-                success = self.start_thread(
-                    download_info["video_url"],
+                b_success = self.start_thread(
+                    d_url["video_url"],
                     video_tmp
                 )
 
-                if success:
+                if b_success:
                     os.rename(video_tmp, video_m4s)
+            else:
+                b_success = True
 
-            print("正在合成视频...")
-            merge(audio_m4s, video_m4s, output)
+            if a_success and b_success:
+                print("正在合成视频...")
+                merge(audio_m4s, video_m4s, output)
         except KeyboardInterrupt:
             sys.exit(1)
         except Exception as E:
             raise E
 
-        # downloaded and merged successfully
-        if os.path.exists(output):
-            Part.update({
-                Part.finished: True,
-                Part.finish_time: time.strftime(date_format),
-                Part.quality: download_info["quality"],
-                Part.path: output
-            }).where(
-                (Part.bvid == item.bvid) &
-                (Part.cid == item.cid)
-            ) .execute()
-
+        self.update_db(item, output, d_url["quality"])
         self.start_download()
 
     def start_thread(self, url: str, filename: str) -> bool:
