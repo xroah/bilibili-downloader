@@ -4,6 +4,7 @@ from ..download.get_info import get
 from ..download.history import print_downloaded_videos
 from ..settings import settings
 from ..download.Download import Download
+from ..utils.parser import parse_url
 
 
 def _handle_cmd(args: argparse.Namespace):
@@ -12,7 +13,8 @@ def _handle_cmd(args: argparse.Namespace):
             print_downloaded_videos()
             return
         if args.bvid is not None:
-            get(args.bvid, args.no_season)
+            bvid = parse_url(args.bvid)
+            get(bvid, args.no_season)
         Download()
     elif hasattr(args, "settings"):
         settings_args = args.settings

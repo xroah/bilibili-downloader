@@ -2,6 +2,7 @@ import re
 import html
 import json
 from urllib.parse import urlparse
+import os
 from bs4 import BeautifulSoup
 
 from .request import get
@@ -12,7 +13,14 @@ _state_prefix = "window.__INITIAL_STATE__="
 
 
 def parse_url(url: str):
-    pass
+    if not url.startswith("https://"):
+        return url
+
+    path = urlparse(url).path
+    path = re.sub(r"/+$", "", path)
+
+    return os.path.basename(path)
+
 
 
 def is_error_page(text: str) -> bool:
