@@ -22,7 +22,7 @@ def download_file(url: str, filename: str, q: Queue):
             "range": f"bytes={range_start}-"
         }
     )
-    total = res.headers["Content-Length"]
+    total = int(res.headers["Content-Length"])
     ret = {
         "status": "start",
         "size": total,

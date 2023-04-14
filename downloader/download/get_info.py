@@ -1,5 +1,6 @@
 from urllib.parse import urlencode
 import time
+import re
 
 from ..utils import request
 from ..enums import Req
@@ -74,7 +75,7 @@ def save_videos_to_db(obj: dict):
         .execute()
 
 
-def get_videos_by_bvid(bvid: str, one=False) -> dict:
+def get_videos(bvid: str, one=False) -> dict:
     ret = {
         "code": 0,
         "video_data": {
@@ -84,7 +85,10 @@ def get_videos_by_bvid(bvid: str, one=False) -> dict:
             "title": ""
         }
     }
-    params = encrypt(f"bvid={bvid}")
+    is_av_id = re.match(r"^av", bvid, flags=re.IGNORECASE)
+    params = encrypt(
+        f"aid={bvid[2:]}" if is_av_id is not None else f"bvid={bvid}"
+    )
     json = request.get_json(str(Req.VIEW_URL) + "?" + params)
 
     if json["code"] != 0:

@@ -99,15 +99,26 @@ class Download:
             os.makedirs(directory)
 
         try:
+            # already downloaded
             if not os.path.exists(audio_m4s):
                 print(f"正在下载'{item.title}'音频")
-                self.start_thread(download_info["audio_url"], audio_tmp)
-                os.rename(audio_tmp, audio_m4s)
+                success = self.start_thread(
+                    download_info["audio_url"],
+                    audio_tmp
+                )
+
+                if success:
+                    os.rename(audio_tmp, audio_m4s)
 
             if not os.path.exists(video_m4s):
                 print(f"正在下载'{item.title}'视频")
-                self.start_thread(download_info["video_url"], video_tmp)
-                os.rename(video_tmp, video_m4s)
+                success = self.start_thread(
+                    download_info["video_url"],
+                    video_tmp
+                )
+
+                if success:
+                    os.rename(video_tmp, video_m4s)
 
             print("正在合成视频...")
             merge(audio_m4s, video_m4s, output)
@@ -123,12 +134,14 @@ class Download:
                 Part.finish_time: time.strftime(date_format),
                 Part.quality: download_info["quality"],
                 Part.path: output
-            }).where((Part.bvid == item.bvid) & (Part.cid == item.cid)) \
-                .execute()
+            }).where(
+                (Part.bvid == item.bvid) &
+                (Part.cid == item.cid)
+            ) .execute()
 
         self.start_download()
 
-    def start_thread(self, url: str, filename: str) -> str:
+    def start_thread(self, url: str, filename: str) -> bool:
         self.q = Queue()
         self.t = Thread(
             target=download_file,
@@ -138,7 +151,6 @@ class Download:
                 self.q
             ]
         )
-        total = 0
         self.t.daemon = True
 
         self.new_progress()
@@ -164,4 +176,4 @@ class Download:
         self.q = None
         self.t = None
 
-        return status
+        return status == str(Status.DONE)
