@@ -1,15 +1,19 @@
 import argparse
 
 from ..download.get_info import get_videos_by_bvid
+from ..download.history import print_downloaded_videos
 from ..settings import settings
 from ..download.Download import Download
 
 
 def _handle_cmd(args: argparse.Namespace):
+    print(args)
     if hasattr(args, "bvid"):
+        if args.history:
+            print_downloaded_videos()
+            return
         if args.bvid is not None:
-            get_videos_by_bvid(args.bvid)
-
+            get_videos_by_bvid(args.bvid, args.no_season)
         Download()
     elif hasattr(args, "settings"):
         settings_args = args.settings
@@ -34,6 +38,16 @@ def parse():
         description="Download videos"
     )
     download_parser.add_argument("bvid", nargs="?")
+    download_parser.add_argument(
+        "--no-season",
+        "-S",
+        action="store_true",
+    )
+    download_parser.add_argument(
+        "--history",
+        "-H",
+        action="store_true"
+    )
 
     config_parser = subparsers.add_parser(
         "config",

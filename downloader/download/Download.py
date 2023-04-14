@@ -78,11 +78,11 @@ class Download:
         directory = os.path.join(settings.get("path"), directory)
         audio_name = os.path.join(
             directory,
-            f"{item.cid}-audio"
+            f"{item.cid}_a"
         )
         video_name = os.path.join(
             directory,
-            f"{item.cid}-video"
+            f"{item.cid}_v"
         )
         ext = ".m4s"
         tmp_ext = ".tmp"
@@ -158,5 +158,7 @@ class Download:
         time.sleep(.5)
 
         self.progress = None
+        self.q = None
+        self.t = None
 
         return status

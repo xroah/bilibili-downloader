@@ -34,7 +34,7 @@ audio qualities:
 """
 
 
-def save_to_db(obj: dict):
+def save_videos_to_db(obj: dict):
     video_data = obj["video_data"]
     is_season = video_data["is_season"]
     videos = video_data["videos"]
@@ -134,7 +134,7 @@ def get_videos_by_bvid(bvid: str, one=False) -> dict:
                 "title": p["part"]
             })
 
-    save_to_db(ret)
+    save_videos_to_db(ret)
 
     return ret
 
