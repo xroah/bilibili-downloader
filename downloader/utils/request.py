@@ -40,4 +40,9 @@ def get_json(url: str, **kwargs):
 
         return ret
 
-    return res.json()
+    json = res.json()
+
+    if json["code"] != 0:
+        print_error(json)
+
+    return json

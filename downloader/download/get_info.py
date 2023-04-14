@@ -5,8 +5,8 @@ import re
 from ..utils import request
 from ..enums import Req
 from ..utils.encrypt_params import encrypt
-from ..db import Part, Video, Season
-from ..utils.utils import print_warning
+from ..db import Part, Video, Season, Episode
+from ..utils.utils import print_warning, print_error
 from ..db.BaseModel import date_format
 
 # reference: https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/video/videostream_url.md
@@ -36,6 +36,9 @@ audio qualities:
 
 
 def save_videos_to_db(obj: dict):
+    if obj["code"] != 0:
+        return
+
     video_data = obj["video_data"]
     is_season = video_data["is_season"]
     videos = video_data["videos"]
@@ -75,6 +78,23 @@ def save_videos_to_db(obj: dict):
         .execute()
 
 
+def get(b_id: str, *args):
+    v_pattern = r"^av|^bv"
+    e_pattern = r"^ss|^ep"
+    is_video = re.match(v_pattern, b_id, flags=re.IGNORECASE)
+    is_episode = re.match(e_pattern, b_id, flags=re.IGNORECASE)
+
+    if is_video is None and is_episode is None:
+        print_error("id不正确")
+        return
+
+    if is_video is not None:
+        get_videos(b_id, *args)
+        return
+
+    get_episodes(b_id)
+
+
 def get_videos(bvid: str, one=False) -> dict:
     ret = {
         "code": 0,
@@ -85,10 +105,12 @@ def get_videos(bvid: str, one=False) -> dict:
             "title": ""
         }
     }
-    is_av_id = re.match(r"^av", bvid, flags=re.IGNORECASE)
-    params = encrypt(
-        f"aid={bvid[2:]}" if is_av_id is not None else f"bvid={bvid}"
-    )
+    is_av_id = re.match(
+        r"^av",
+        bvid,
+        flags=re.IGNORECASE
+    ) is not None
+    params = encrypt(f"aid={bvid[2:]}" if is_av_id else f"bvid={bvid}")
     json = request.get_json(str(Req.VIEW_URL) + "?" + params)
 
     if json["code"] != 0:
@@ -128,58 +150,111 @@ def get_videos(bvid: str, one=False) -> dict:
     elif "pages" in data:
         pages = data["pages"]
         ret["video_data"]["title"] = data["title"]
-        only_one = len(pages) == 1
 
-        for p in pages:
+        if len(pages) == 1:
             videos.append({
                 "aid": data["aid"],
                 "bvid": data["bvid"],
-                "cid": p["cid"],
-                "page": p["page"],
-                "title": data["title"] if only_one else p["part"]
+                "cid": data["cid"],
+                "page": 1,
+                "title": data["title"]
             })
+        else:
+            for p in pages:
+                videos.append({
+                    "aid": data["aid"],
+                    "bvid": data["bvid"],
+                    "cid": p["cid"],
+                    "page": p["page"],
+                    "title": p["part"]
+                })
 
     save_videos_to_db(ret)
 
     return ret
 
 
-def get_video_url(
-        aid: int,
-        bvid: str,
-        cid: int,
-        qn: int = 80
-) -> dict | None:
+def save_episodes_to_db(obj: dict):
+    if obj["code"] != 0:
+        return
+
+    data = obj["ep_data"]
+    episodes = data["episodes"]
+    create_time = time.strftime(date_format)
+
+    if len(episodes) > 1:
+        Season.insert({
+            "title": data["title"],
+            "season_id": data["season_id"],
+            "create_time": create_time
+        })\
+            .on_conflict_ignore(True)\
+            .execute()
+
+    eps = []
+
+    for e in episodes:
+        item = e.copy()
+        item["finished"] = False
+        item["create_time"] = create_time
+
+        eps.append(item)
+
+    Episode\
+        .insert_many(eps)\
+        .on_conflict_ignore(True)\
+        .execute()
+
+
+def get_episodes(ep_id: str):
+    is_season_id = re.match(
+        r"^ss",
+        ep_id,
+        flags=re.IGNORECASE
+    ) is not None
+    id_ = ep_id[2:]
+    params = f"season_id={id_}" if is_season_id else f"ep_id={id_}"
+    json = request.get_json(str(Req.SEASON_URL) + "?" + params)
     ret = {
         "code": 0,
-        "audio_url": "",
-        "video_url": "",
-        "quality": qn
+        "ep_data": {
+            "title": "",
+            "episodes": [],
+            "season_id": ""
+        }
     }
-    params = {
-        "avid": aid,
-        "bvid": bvid,
-        "cid": cid,
-        "fnval": 16,
-        "fnver": 0,
-        "fourk": 1,
-        "gaia_source": "",
-        "qn": 0
-    }
-    params = encrypt(urlencode(params))
-    json = request.get_json(str(Req.PLAY_URL) + "?" + params)
 
     if json["code"] != 0:
         return json
 
+    data = json["result"]
+    eps = data["episodes"]
+    episodes = ret["ep_data"]["episodes"]
+    ret["ep_data"]["season_id"] = data["season_id"]
+    ret["ep_data"]["title"] = data["season_title"]
+
+    for e in eps:
+        episodes.append({
+            "title": e["share_copy"],
+            "ep_id": e["id"],
+            "aid": e["aid"],
+            "cid": e["cid"],
+            "bvid": e["bvid"]
+        })
+
+    save_episodes_to_db(ret)
+
+    return ret
+
+
+def get_info_from_dash(dash: dict, qn: int):
     default_audio = 30232
-    data = json["data"]
+    ret = {
+        "audio_url": "",
+        "video_url": "",
+        "quality": qn
+    }
 
-    if "dash" not in data:
-        print_warning("没有获取到下载地址，可能需要登录或者开通会员")
-        return None
-
-    dash = data["dash"]
     audios = dash["audio"]
     videos = dash["video"]
 
@@ -203,4 +278,33 @@ def get_video_url(
                 ret["quality"] = videos[0]["id"]
                 break
 
-    return ret
+
+def get_video_url(
+        aid: int,
+        bvid: str,
+        cid: int,
+        qn: int = 80
+) -> dict | None:
+    params = {
+        "avid": aid,
+        "bvid": bvid,
+        "cid": cid,
+        "fnval": 16,
+        "fnver": 0,
+        "fourk": 1,
+        "gaia_source": "",
+        "qn": 0
+    }
+    params = encrypt(urlencode(params))
+    json = request.get_json(str(Req.PLAY_URL) + "?" + params)
+
+    if json["code"] != 0:
+        return None
+
+    data = json["data"]
+
+    if "dash" not in data:
+        print_warning("没有获取到下载地址，可能需要登录或者开通会员")
+        return None
+
+    return get_info_from_dash(data["dash"], qn)

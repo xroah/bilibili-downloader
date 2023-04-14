@@ -1,6 +1,7 @@
 import re
 import html
 import json
+from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 
 from .request import get
@@ -8,6 +9,10 @@ from ..enums import Req
 
 _info_prefix = "window.__playinfo__="
 _state_prefix = "window.__INITIAL_STATE__="
+
+
+def parse_url(url: str):
+    pass
 
 
 def is_error_page(text: str) -> bool:
@@ -96,7 +101,7 @@ def get_episodes(html_str: str):
 
 def get_info(html_str: str):
     ret = {
-        "code": -1, 
+        "code": -1,
         "title": ""
     }
     soup = BeautifulSoup(html_str, "html.parser")
