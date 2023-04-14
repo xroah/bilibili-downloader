@@ -44,3 +44,11 @@ def open_path(path):
         os.startfile(path, "open")
     else:
         subprocess.call(("open", path))
+
+
+def print_error(msg: str):
+    print(f"\033[91m{msg}\033[0m")
+
+
+def print_warning(msg: str):
+    print(f"\033[93mf{msg}\033[0m")

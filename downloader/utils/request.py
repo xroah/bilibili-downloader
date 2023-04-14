@@ -3,6 +3,7 @@ import requests
 from ..enums import Req
 from ..settings import settings
 from ..enums import SettingsKey
+from .utils import print_error
 
 
 def get(url: str, **kwargs):
@@ -20,7 +21,7 @@ def get(url: str, **kwargs):
     try:
         res = requests.get(url, headers=headers, **kwargs)
     except Exception as E:
-        print(f"Request {url} error: ", E.args)
+        print_error(f"Request {url} error: {E.args}")
         raise E
     else:
         return res
@@ -30,7 +31,7 @@ def get_json(url: str, **kwargs):
     res = get(url, **kwargs)
 
     if res.status_code != 200:
-        print(res.reason)
+        print_error(res.reason)
 
         ret = {
             "code": res.status_code,

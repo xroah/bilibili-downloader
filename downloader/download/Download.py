@@ -61,17 +61,20 @@ class Download:
 
         item = self.items.pop(0)
         directory = "."
+        download_info = get_video_url(
+            aid=item.aid,
+            bvid=item.bvid,
+            cid=item.cid
+        )
+
+        if not download_info:
+            return self.start_download()
 
         if hasattr(item, "video"):
             directory = item.video.title
         elif hasattr(item, "season"):
             directory = item.season.title
 
-        download_info = get_video_url(
-            aid=item.aid,
-            bvid=item.bvid,
-            cid=item.cid
-        )
         pattern = r'[/\\":*<>|?]'
         name = re.sub(pattern, "", item.title)
         directory = re.sub(pattern, "", directory)

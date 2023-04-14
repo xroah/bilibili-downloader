@@ -7,7 +7,6 @@ from ..download.Download import Download
 
 
 def _handle_cmd(args: argparse.Namespace):
-    print(args)
     if hasattr(args, "bvid"):
         if args.history:
             print_downloaded_videos()

@@ -5,7 +5,7 @@ from ..utils import request
 from ..enums import Req
 from ..utils.encrypt_params import encrypt
 from ..db import Part, Video, Season
-from ..settings import settings
+from ..utils.utils import print_warning
 from ..db.BaseModel import date_format
 
 # reference: https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/video/videostream_url.md
@@ -124,6 +124,7 @@ def get_videos_by_bvid(bvid: str, one=False) -> dict:
     elif "pages" in data:
         pages = data["pages"]
         ret["video_data"]["title"] = data["title"]
+        only_one = len(pages) == 1
 
         for p in pages:
             videos.append({
@@ -131,7 +132,7 @@ def get_videos_by_bvid(bvid: str, one=False) -> dict:
                 "bvid": data["bvid"],
                 "cid": p["cid"],
                 "page": p["page"],
-                "title": p["part"]
+                "title": data["title"] if only_one else p["part"]
             })
 
     save_videos_to_db(ret)
@@ -144,7 +145,7 @@ def get_video_url(
         bvid: str,
         cid: int,
         qn: int = 80
-) -> dict:
+) -> dict | None:
     ret = {
         "code": 0,
         "audio_url": "",
@@ -169,6 +170,11 @@ def get_video_url(
 
     default_audio = 30232
     data = json["data"]
+
+    if "dash" not in data:
+        print_warning("没有获取到下载地址，可能需要登录或者开通会员")
+        return None
+
     dash = data["dash"]
     audios = dash["audio"]
     videos = dash["video"]
