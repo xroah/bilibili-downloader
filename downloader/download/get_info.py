@@ -232,11 +232,21 @@ def get_episodes(ep_id: str):
     episodes = ret["ep_data"]["episodes"]
     season_id = data["season_id"]
     ret["ep_data"]["season_id"] = season_id
-    ret["ep_data"]["title"] = data["season_title"]
+    season_title = data["season_title"]
+    ret["ep_data"]["title"] = season_title
+    multiple = len(eps) > 1
 
     for e in eps:
+        title = e["share_copy"]
+
+        if multiple:
+            title = title\
+                .replace(season_title, "")\
+                .replace("《", "")\
+                .replace("》", "")
+
         episodes.append({
-            "title": e["share_copy"],
+            "title": title,
             "ep_id": e["id"],
             "aid": e["aid"],
             "cid": e["cid"],
@@ -281,6 +291,7 @@ def get_info_from_dash(dash: dict, qn: int):
                 break
 
     return ret
+
 
 def get_url(url: str, params: dict, qn: int) -> dict | None:
     params = encrypt(urlencode(params))
