@@ -1,4 +1,14 @@
-from ..db import Part
+from ..db import Part, Episode
+
+
+def _print(item: Part | Episode):
+    print(
+        item.title,
+        item.path,
+        item.finish_time,
+        sep=" " * 3 + "|" + " " * 3
+    )
+    print("-" * 100)
 
 
 def print_downloaded_videos():
@@ -7,12 +17,14 @@ def print_downloaded_videos():
         Part.path,
         Part.finish_time
     ).where(Part.finished == True)
+    e_query = Episode.select(
+        Episode.title,
+        Episode.path,
+        Episode.finish_time
+    ).where(Episode.finished == True)
 
     for r in query:
-        print(
-            r.title,
-            r.path,
-            r.finish_time,
-            sep=" " * 3 + "|" + " " * 3
-        )
-        print("-" * 100)
+        _print(r)
+
+    for r in e_query:
+        _print(r)
