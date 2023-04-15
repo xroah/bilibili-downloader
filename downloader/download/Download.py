@@ -100,7 +100,12 @@ class Download:
         q.execute()
 
     @staticmethod
-    def get_name(item: Part | Episode):
+    def handle_path(*args):
+        p = os.path.join(*args)
+
+        return os.path.normpath(p)
+
+    def get_name(self, item: Part | Episode):
         directory = "."
         if hasattr(item, "video"):
             directory = item.video.title
@@ -110,10 +115,10 @@ class Download:
         pattern = r'[/\\":*<>|?]'
         name = re.sub(pattern, "", item.title)
         directory = re.sub(pattern, "", directory)
-        directory = os.path.join(settings.get("path"), directory)
-        audio_name = os.path.join(directory, f"{item.cid}_a")
-        video_name = os.path.join(directory, f"{item.cid}_v")
-        output = os.path.join(directory, f"{name}.mp4")
+        directory = self.handle_path(settings.get("path"), directory)
+        audio_name = self.handle_path(directory, f"{item.cid}_a")
+        video_name = self.handle_path(directory, f"{item.cid}_v")
+        output = self.handle_path(directory, f"{name}.mp4")
 
         if not os.path.exists(directory):
             os.makedirs(directory)
@@ -153,8 +158,6 @@ class Download:
         video_tmp = video_name + tmp_ext
         audio_m4s = audio_name + ext
         video_m4s = video_name + ext
-        a_success = False
-        b_success = False
 
         try:
             # already downloaded
@@ -172,17 +175,17 @@ class Download:
 
             if not os.path.exists(video_m4s):
                 print(f"正在下载'{item.title}'视频")
-                b_success = self.start_thread(
+                v_success = self.start_thread(
                     d_url["video_url"],
                     video_tmp
                 )
 
-                if b_success:
+                if v_success:
                     os.rename(video_tmp, video_m4s)
             else:
-                b_success = True
+                v_success = True
 
-            if a_success and b_success:
+            if a_success and v_success:
                 print("正在合成视频...")
                 merge(audio_m4s, video_m4s, output)
         except KeyboardInterrupt:
