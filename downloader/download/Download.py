@@ -6,6 +6,7 @@ from threading import Thread
 from queue import Queue
 from tqdm import tqdm
 from peewee import JOIN
+from typing import cast
 
 from .download_fille import download_file, merge
 from ..db import Video, Season, Part, Episode
@@ -77,6 +78,7 @@ class Download:
         finish_time = time.strftime(date_format)
 
         if hasattr(item, "ep_id"):
+            item = cast(Episode, item)
             q = Episode.update({
                 Episode.finished: True,
                 Episode.finish_time: finish_time,
@@ -108,12 +110,12 @@ class Download:
     def get_name(self, item: Part | Episode):
         directory = "."
         if hasattr(item, "video"):
-            directory = item.video.title
+            directory = item.video.title  # type: ignore
         elif hasattr(item, "season"):
-            directory = item.season.title
+            directory = item.season.title  # type: ignore
 
         pattern = r'[/\\":*<>|?]'
-        name = re.sub(pattern, "", item.title)
+        name = re.sub(pattern, "", cast(str, item.title))
         directory = re.sub(pattern, "", directory)
         directory = self.handle_path(settings.get("path"), directory)
         audio_name = self.handle_path(directory, f"{item.cid}_a")
@@ -127,17 +129,24 @@ class Download:
 
     @staticmethod
     def get_download_url(item: Part | Episode):
+        aid = cast(int, item.aid)
+        cid = cast(int, item.cid)
+
         if hasattr(item, "ep_id"):
+            item = cast(Episode, item)
+
             return get_episode_url(
-                aid=item.aid,
-                ep_id=item.ep_id,
-                cid=item.cid
+                aid=aid,
+                ep_id=cast(int, item.ep_id),
+                cid=cid
             )
 
+        item = cast(Part, item)
+
         return get_video_url(
-            aid=item.aid,
-            cid=item.cid,
-            bvid=item.bvid
+            aid=aid,
+            cid=cid,
+            bvid=cast(str, item.bvid)
         )
 
     def start_download(self):
@@ -211,6 +220,8 @@ class Download:
         self.new_progress()
         self.t.start()
 
+        progress = cast(tqdm, self.progress)
+
         while True:
             info = self.q.get()
             status = info["status"]
@@ -219,12 +230,12 @@ class Download:
             if status == str(Status.ERROR) or status == str(Status.DONE):
                 break
             elif status == str(Status.START):
-                self.progress.reset(total=size)
+                progress.reset(total=size)
             else:
-                self.progress.update(size)
+                progress.update(size)
 
         self.t.join()
-        self.progress.close()
+        progress.close()
         time.sleep(.5)
 
         self.progress = None
