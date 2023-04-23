@@ -13,8 +13,9 @@ def _handle_cmd(args: argparse.Namespace):
             print_downloaded_videos()
             return
         if args.bvid is not None:
-            bvid = parse_url(args.bvid)
-            get(bvid, args.no_season)
+            for bvid in args.bvid:
+                bvid = parse_url(args.bvid)
+                get(bvid, args.no_season)
         Download()
     elif hasattr(args, "settings"):
         settings_args = args.settings
@@ -38,7 +39,7 @@ def parse():
         aliases=["d"],
         description="Download videos"
     )
-    download_parser.add_argument("bvid", nargs="?")
+    download_parser.add_argument("bvid", nargs="*")
     download_parser.add_argument(
         "--no-season",
         "-S",
