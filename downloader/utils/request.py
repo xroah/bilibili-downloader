@@ -19,7 +19,7 @@ def get(url: str, **kwargs):
         del kwargs["headers"]
 
     try:
-        res = requests.get(url, headers=headers, **kwargs)
+        res = requests.get(url=url, headers=headers, **kwargs)
     except Exception as E:
         print_error(f"Request {url} error: {E.args}")
         raise E

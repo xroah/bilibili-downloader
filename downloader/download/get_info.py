@@ -294,8 +294,8 @@ def get_info_from_dash(dash: dict, qn: int):
 
 
 def get_url(url: str, params: dict, qn: int) -> dict | None:
-    params = encrypt(urlencode(params))
-    json = request.get_json(url + "?" + params)
+    qs = encrypt(urlencode(params))
+    json = request.get_json(url + "?" + qs)
 
     if json["code"] != 0:
         return None
