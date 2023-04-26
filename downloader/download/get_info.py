@@ -95,6 +95,17 @@ def get(b_id: str, *args):
     get_episodes(b_id)
 
 
+def get_episode(data: dict, season_id: str):
+    return {
+        "aid": data["aid"],
+        "bvid": data["bvid"],
+        "cid": data["cid"],
+        "title": data["title"],
+        "page": 1,
+        "season_id": season_id
+    }
+
+
 def get_videos(bvid: str, one=False) -> dict:
     ret = {
         "code": 0,
@@ -127,34 +138,24 @@ def get_videos(bvid: str, one=False) -> dict:
         season_id = section["season_id"]
         ret["video_data"]["season_id"] = season_id
         episodes = section["episodes"]
-        videos.append({
-            "aid": data["aid"],
-            "bvid": data["bvid"],
-            "cid": data["cid"],
-            "title": data["title"],
-            "page": 1,
-            "season_id": season_id
-        })
+        videos.append(get_episode(data, season_id))
 
         if not one:
             for e in episodes:
                 if e["bvid"] != data["bvid"]:
-                    videos.append({
-                        "aid": e["aid"],
-                        "bvid": e["bvid"],
-                        "cid": e["cid"],
-                        "page": 1,
-                        "title": e["title"],
-                        "season_id": season_id
-                    })
+                    videos.append(get_episode(e, season_id))
+
     elif "pages" in data:
         pages = data["pages"]
         ret["video_data"]["title"] = data["title"]
+        common = {
+            "aid": data["aid"],
+            "bvid": data["bvid"]
+        }
 
         if len(pages) == 1:
             videos.append({
-                "aid": data["aid"],
-                "bvid": data["bvid"],
+                **common,
                 "cid": data["cid"],
                 "page": 1,
                 "title": data["title"]
@@ -162,8 +163,7 @@ def get_videos(bvid: str, one=False) -> dict:
         else:
             for p in pages:
                 videos.append({
-                    "aid": data["aid"],
-                    "bvid": data["bvid"],
+                    **common,
                     "cid": p["cid"],
                     "page": p["page"],
                     "title": p["part"]
