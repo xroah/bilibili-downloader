@@ -2,7 +2,7 @@ import hashlib
 import time
 import random
 
-_key = "e850e6b2063bb78bc7476d62fd0d4e72"
+_key = "86217b4772916fc323ce3b38264b4773"
 
 
 def md5(data: str) -> str:

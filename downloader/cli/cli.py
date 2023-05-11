@@ -14,8 +14,8 @@ def _handle_cmd(args: argparse.Namespace):
             return
         if args.bvid is not None:
             for bvid in args.bvid:
-                bvid = parse_url(args.bvid)
-                get(bvid, args.no_season)
+                real_bvid = parse_url(bvid)
+                get(real_bvid, args.no_season)
         Download()
     elif hasattr(args, "settings"):
         settings_args = args.settings
