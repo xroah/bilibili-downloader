@@ -1,12 +1,5 @@
 .idea
-venv
-build
-dist
-__pycache__
+target
 .DS_Store
 tmp
-bg
 data
-ffmpeg
-ffmpeg.exe
-node_modules
