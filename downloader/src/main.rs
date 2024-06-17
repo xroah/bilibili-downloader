@@ -1,3 +1,9 @@
+use clap::Command;
+
+mod cmd;
+
 fn main() {
-    println!("Hello, world!");
+    let matches = cmd::create_cmd().get_matches();
+
+    cmd::core::handle(&matches);
 }
