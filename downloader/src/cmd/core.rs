@@ -1,4 +1,4 @@
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 use clap::ArgMatches;
 use reqwest::Url;
@@ -16,7 +16,7 @@ pub fn handle(matches: &ArgMatches) {
 
     if let Some(videos) = videos {
         for v in videos {
-            if v.starts_with("http") {
+            if v.starts_with("https") {
                 parse(v);
             } else {
                 println!("{v}");
