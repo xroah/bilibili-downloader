@@ -9,11 +9,6 @@ use md5::{Digest, Md5};
 static IMG_KEY: &str = "7cd084941338484aae1ad9425b84077c";
 static SUB_KEY: &str = "4932caff0ff746eab6f01bf08b70ac45";
 
-pub struct EncryptedObject {
-    pub w_rid: String,
-    pub wts: String,
-}
-
 pub fn get_mixin_key(key: &str) -> String {
     let chars = key.chars().collect::<Vec<char>>();
 
@@ -49,11 +44,12 @@ fn encode(value: &str) -> String {
     ret
 }
 
-pub fn enc_wbi(query_map: HashMap<&str, &str>) -> EncryptedObject {
+pub fn enc_wbi(query_map: HashMap<&str, String>) -> HashMap<String, String> {
+    let mut ret = HashMap::new();
     let mut query_map: HashMap<String, String, RandomState> = HashMap::from_iter(
         query_map
             .iter()
-            .map(|(&k, &v)| (k.to_string(), v.to_string())),
+            .map(|(&k, v)| (k.to_string(), v.clone())),
     );
     let key = format!("{IMG_KEY}{SUB_KEY}");
     let key = get_mixin_key(&key);
@@ -88,8 +84,8 @@ pub fn enc_wbi(query_map: HashMap<&str, &str>) -> EncryptedObject {
         md5_string.push_str(&format!("{:x}", b))
     }
 
-    EncryptedObject {
-        w_rid: md5_string,
-        wts: now,
-    }
+    ret.insert("w_rid".to_string(), md5_string);
+    ret.insert("wts".to_string(), now);
+
+    ret
 }
