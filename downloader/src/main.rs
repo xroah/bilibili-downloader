@@ -30,8 +30,8 @@ async fn main() {
     }
 
     match matches.subcommand() {
-        Some(("settings", settings_matches)) => {
-            println!("Settings");
+        Some(("login", settings_matches)) => {
+            println!("Login");
         }
         _ => {}
     }
